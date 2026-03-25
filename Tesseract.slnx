@@ -1,1 +1,10 @@
-<Solution />
+<Solution>
+    <Project Path="src/Tesseract.Application/Tesseract.Application.csproj"/>
+    <Project Path="src/Tesseract.Domain/Tesseract.Domain.csproj"/>
+    <Project Path="src/Tesseract.Infrastructure/Tesseract.Infrastructure.csproj"/>
+    <Project Path="src/Tesseract.Web/Tesseract.Web.csproj"/>
+    <Project Path="tests/Tesseract.Application.Tests/Tesseract.Application.Tests.csproj"/>
+    <Project Path="tests/Tesseract.Domain.Tests/Tesseract.Domain.Tests.csproj"/>
+    <Project Path="tests/Tesseract.Infrastructure.Tests/Tesseract.Infrastructure.Tests.csproj"/>
+    <Project Path="tests/Tesseract.Web.Tests/Tesseract.Web.Tests.csproj"/>
+</Solution>
