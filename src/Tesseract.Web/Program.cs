@@ -1,8 +1,8 @@
+using Tesseract.Web;
+
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-
-builder.Services.AddOpenApi();
+builder.AddWebServices();
 
 var app = builder.Build();
 
@@ -12,6 +12,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors();
 
 app.MapControllers();
 
