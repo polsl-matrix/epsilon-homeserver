@@ -1,8 +1,10 @@
+using Tesseract.Application;
 using Tesseract.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddWebServices();
+builder.Services.AddApplication();
+builder.Services.AddWeb();
 
 var app = builder.Build();
 

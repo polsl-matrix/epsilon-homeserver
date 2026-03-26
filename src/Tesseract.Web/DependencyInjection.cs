@@ -11,18 +11,18 @@ public static class DependencyInjection
         policy.WithHeaders("X-Requested-With", "Content-Type", "Authorization");
     }
 
-    extension(IHostApplicationBuilder builder)
+    extension(IServiceCollection services)
     {
-        public void AddWebServices()
+        public void AddWeb()
         {
-            builder.Services.AddCors(options =>
+            services.AddCors(options =>
             {
                 options.AddDefaultPolicy(DefaultCorsPolicy);
             });
 
-            builder.Services.AddControllers();
+            services.AddControllers();
 
-            builder.Services.AddOpenApi();
+            services.AddOpenApi();
         }
     }
 }
