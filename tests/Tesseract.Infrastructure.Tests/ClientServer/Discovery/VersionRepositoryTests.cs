@@ -8,33 +8,25 @@ public partial class VersionRepositoryTests
 {
     private readonly VersionRepository _repository = new();
 
-    [GeneratedRegex(@"^v\d+\.\d+(?:-[a-z])?$", RegexOptions.Singleline)]
+    [GeneratedRegex(@"^v\d+\.\d+(?:-[a-z]+)?$", RegexOptions.Singleline)]
     private static partial Regex MatrixVersionRegex();
 
     [Fact]
-    public async Task GetSupportedVersion_Always_ReturnsAtLeastOneVersion()
+    public async Task GetSupportedVersions_RepositoryCalled_ReturnsAtLeastOneVersion()
     {
-        // Act
-        var versions = await _repository
-            .GetSupportedVersions(CancellationToken.None);
+        var versions = await _repository.GetSupportedVersions(CancellationToken.None);
 
-        // Assert
-        versions.Should().NotBeEmpty(
-            "the server must provide at least one version to allow clients to complete the version negotiation handshake");
+        versions.Should().NotBeEmpty();
     }
 
     [Fact]
-    public async Task GetSupportedVersions_Always_FollowValidScheme()
+    public async Task GetSupportedVersions_RepositoryCalled_ReturnsVersionsMatchingExpectedFormat()
     {
-        // Act
-        var versions = await _repository
-            .GetSupportedVersions(CancellationToken.None);
+        var versions = await _repository.GetSupportedVersions(CancellationToken.None);
 
-        // Assert
         versions.Should().AllSatisfy(version =>
         {
-            version.Should().MatchRegex(MatrixVersionRegex(),
-                "versions must follow Matrix's semantic versioning schema");
+            version.Should().MatchRegex(MatrixVersionRegex());
         });
     }
 }

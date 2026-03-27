@@ -47,13 +47,12 @@ public class VersionControllerTests
     [Fact]
     public async Task GetSupportedVersions_MediatorThrowsException_PropagatesException()
     {
-        var exception = new InvalidOperationException("Something failed.");
+        var exception = new InvalidOperationException("Something went wrong.");
 
-        _mediator
-            .Send(Arg.Any<GetSupportedVersions.Query>(), Arg.Any<CancellationToken>())
+        _mediator.Send(Arg.Any<GetSupportedVersions.Query>(), Arg.Any<CancellationToken>())
             .Throws(exception);
 
-        Func<Task> act = () => _controller.GetSupportedVersions(CancellationToken.None);
+        var act = () => _controller.GetSupportedVersions(CancellationToken.None);
 
         var thrown = await act.Should().ThrowAsync<InvalidOperationException>();
         thrown.Which.Should().BeSameAs(exception);

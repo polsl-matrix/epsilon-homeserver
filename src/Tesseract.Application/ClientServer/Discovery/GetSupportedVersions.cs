@@ -5,9 +5,9 @@ namespace Tesseract.Application.ClientServer.Discovery;
 
 public static class GetSupportedVersions
 {
-    public record Query : IRequest<Response>;
+    public sealed record Query : IRequest<Response>;
 
-    internal class Handler(IVersionRepository versionRepository) : IRequestHandler<Query, Response>
+    internal sealed class Handler(IVersionRepository versionRepository) : IRequestHandler<Query, Response>
     {
         public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
         {
@@ -18,5 +18,5 @@ public static class GetSupportedVersions
         }
     }
 
-    public record Response(IReadOnlyList<string> Versions);
+    public sealed record Response(IReadOnlyList<string> Versions);
 }
