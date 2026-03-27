@@ -6,4 +6,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\Tesseract.Application\Tesseract.Application.csproj"/>
+        <ProjectReference Include="..\Tesseract.Domain\Tesseract.Domain.csproj"/>
+    </ItemGroup>
+
 </Project>
