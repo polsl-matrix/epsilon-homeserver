@@ -8,6 +8,8 @@ builder.Services.AddWeb();
 
 var app = builder.Build();
 
+app.UseExceptionHandler(_ => { });
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
