@@ -1,3 +1,4 @@
+using Serilog;
 using Tesseract.Application;
 using Tesseract.Web;
 using Tesseract.Web.Common.Observability;
@@ -11,6 +12,10 @@ builder.Services.AddWeb();
 builder.AddOpenTelemetry();
 
 var app = builder.Build();
+
+app.UseExceptionHandler(_ => { });
+
+app.UseSerilogRequestLogging();
 
 if (app.Environment.IsDevelopment())
 {
