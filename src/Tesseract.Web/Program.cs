@@ -1,10 +1,12 @@
 using Tesseract.Application;
 using Tesseract.Web;
+using Tesseract.Web.Common.Observability;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplication();
 builder.Services.AddWeb();
+builder.AddOpenTelemetry();
 
 var app = builder.Build();
 
