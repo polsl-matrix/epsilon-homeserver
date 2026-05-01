@@ -15,9 +15,9 @@ internal static class Telemetry
 
     private static void DefaultRuntimeMetrics(MeterProviderBuilder options)
     {
-        options.AddAspNetCoreInstrumentation();
-        options.AddRuntimeInstrumentation();
-        options.AddOtlpExporter();
+        options.AddAspNetCoreInstrumentation()
+            .AddRuntimeInstrumentation()
+            .AddOtlpExporter();
     }
 
     private static void DefaultRuntimeTracing(
@@ -28,8 +28,8 @@ internal static class Telemetry
             options.SetSampler<AlwaysOnSampler>();
         }
 
-        options.AddAspNetCoreInstrumentation();
-        options.AddOtlpExporter();
+        options.AddAspNetCoreInstrumentation()
+            .AddOtlpExporter();
     }
 
     extension(IHostApplicationBuilder builder)
