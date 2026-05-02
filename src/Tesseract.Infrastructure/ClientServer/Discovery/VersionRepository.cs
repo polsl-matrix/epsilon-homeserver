@@ -9,8 +9,6 @@ public class VersionRepository : IVersionRepository
         "v1.11",
     ];
 
-    public Task<IEnumerable<string>> GetSupportedVersions(CancellationToken cancellationToken)
-    {
-        return Task.FromResult(SupportedVersions.AsEnumerable());
-    }
+    public Task<IEnumerable<string>> GetSupportedVersions(CancellationToken cancellationToken) =>
+        Task.FromResult(SupportedVersions.AsEnumerable());
 }

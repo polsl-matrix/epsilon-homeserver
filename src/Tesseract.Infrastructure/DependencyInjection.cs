@@ -8,9 +8,6 @@ public static class DependencyInjection
 {
     extension(IServiceCollection services)
     {
-        public void AddInfrastructure()
-        {
-            services.AddScoped<IVersionRepository, VersionRepository>();
-        }
+        public void AddInfrastructure() => services.AddScoped<IVersionRepository, VersionRepository>();
     }
 }
