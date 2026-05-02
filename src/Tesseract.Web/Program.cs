@@ -1,5 +1,6 @@
 using Serilog;
 using Tesseract.Application;
+using Tesseract.Infrastructure;
 using Tesseract.Web;
 using Tesseract.Web.Common.Observability;
 
@@ -8,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.AddLogging();
 
 builder.Services.AddApplication();
+builder.Services.AddInfrastructure();
 builder.Services.AddWeb();
 builder.AddOpenTelemetry();
 
