@@ -9,7 +9,8 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "OTEL_SERVICE_NAME": "tesseract-homeserver",
-        "OTEL_RESOURCE_ATTRIBUTES": "service.instance.id=local"
+        "OTEL_RESOURCE_ATTRIBUTES": "service.instance.id=local",
+        "ConnectionStrings__App": ""
       }
     }
   }
