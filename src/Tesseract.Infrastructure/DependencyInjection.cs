@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Tesseract.Application.ClientServer.Discovery.Abstractions;
 using Tesseract.Infrastructure.ClientServer.Discovery;
 using Tesseract.Infrastructure.Common.Database;
@@ -9,20 +10,17 @@ namespace Tesseract.Infrastructure;
 
 public static class DependencyInjection
 {
-    private static string? GetConnectionString(this IServiceProvider provider, string name)
-    {
-        var configuration = provider.GetRequiredService<IConfiguration>();
-        return configuration.GetConnectionString(name);
-    }
-
-    extension(IServiceCollection services)
+    extension(IHostApplicationBuilder builder)
     {
         public void AddInfrastructure()
         {
-            services.AddSingleton<IDbConnectionFactory>(provider =>
-                new NpgsqlConnectionFactory(provider.GetConnectionString("App")));
+            var connectionString = builder.Configuration
+                .GetConnectionString("Default");
 
-            services.AddScoped<IVersionRepository, VersionRepository>();
+            builder.Services.AddSingleton<IDbConnectionFactory>(_ =>
+                new NpgsqlConnectionFactory(connectionString));
+
+            builder.Services.AddScoped<IVersionRepository, VersionRepository>();
         }
     }
 }
