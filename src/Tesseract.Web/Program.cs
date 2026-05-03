@@ -9,9 +9,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.AddLogging();
 
-builder.Services.AddApplication();
+builder.AddApplication();
 builder.AddInfrastructure();
-builder.Services.AddWeb();
+builder.AddWeb();
+
 builder.AddOpenTelemetry();
 
 var app = builder.Build();
