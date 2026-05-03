@@ -13,13 +13,12 @@ public static class DependencyInjection
         policy.WithHeaders("X-Requested-With", "Content-Type", "Authorization");
     }
 
-    private static void AddServices(IServiceCollection services) =>
-        services.AddSingleton<IMatrixExceptionMapper, MatrixExceptionMapper>();
-
-    extension(IServiceCollection services)
+    extension(IHostApplicationBuilder builder)
     {
         public void AddWeb()
         {
+            var services = builder.Services;
+
             services.AddExceptionHandler<GlobalExceptionHandler>();
 
             services.AddCors(options =>
@@ -27,10 +26,9 @@ public static class DependencyInjection
                 options.AddDefaultPolicy(DefaultCorsPolicy);
             });
 
-            AddServices(services);
+            services.AddSingleton<IMatrixExceptionMapper, MatrixExceptionMapper>();
 
             services.AddControllers();
-
             services.AddOpenApi();
         }
     }
