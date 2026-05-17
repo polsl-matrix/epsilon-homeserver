@@ -25,9 +25,12 @@ public static class NpgsqlMigrationRunner
 
             EnsureDatabase.For.PostgresqlDatabase(connectionString, upgradeLogger);
 
+            var currentAssembly = typeof(NpgsqlMigrationRunner).Assembly;
+            var currentNamespace = typeof(NpgsqlMigrationRunner).Namespace;
+
             var upgrader = DeployChanges.To
                 .PostgresqlDatabase(connectionString)
-                .WithScriptsEmbeddedInAssembly(typeof(NpgsqlMigrationRunner).Assembly)
+                .WithScriptsEmbeddedInAssembly(currentAssembly, path => path.Contains(currentNamespace!))
                 .LogTo(upgradeLogger)
                 .Build();
 
