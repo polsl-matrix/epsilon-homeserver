@@ -1,0 +1,14 @@
+.git/
+.github/
+.husky/
+.idea/
+.agents/
+**/bin/
+**/obj/
+**/TestResults/
+docs/
+tools/
+skills-lock.json
+dotnet-tools.json
+Dockerfile
+docker-compose.yml

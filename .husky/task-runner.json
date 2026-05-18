@@ -1,0 +1,104 @@
+{
+   "$schema": "https://alirezanet.github.io/Husky.Net/schema.json",
+   "tasks": [
+      {
+         "name": "ensure-gitleaks-installed",
+         "group": "pre-commit",
+         "command": "dotnet",
+         "args": [
+            "run",
+            "--project",
+            "tools/Tesseract.DevGuard/Tesseract.DevGuard.csproj",
+            "--",
+            "check-gitleaks"
+         ],
+         "output": "always"
+      },
+      {
+         "name": "scan-staged-secrets",
+         "group": "pre-commit",
+         "command": "gitleaks",
+         "args": [
+            "git",
+            "--staged",
+            "--redact",
+            "--no-banner"
+         ],
+         "output": "always"
+      },
+      {
+         "name": "restore-solution",
+         "group": "pre-commit",
+         "command": "dotnet",
+         "args": [
+            "restore",
+            "Tesseract.slnx"
+         ],
+         "output": "always"
+      },
+      {
+         "name": "verify-format-and-analyzers",
+         "group": "pre-commit",
+         "command": "dotnet",
+         "args": [
+            "format",
+            "Tesseract.slnx",
+            "--verify-no-changes",
+            "--no-restore"
+         ],
+         "output": "always"
+      },
+      {
+         "name": "build-solution",
+         "group": "pre-commit",
+         "command": "dotnet",
+         "args": [
+            "build",
+            "Tesseract.slnx",
+            "--configuration",
+            "Release",
+            "--no-restore"
+         ],
+         "output": "always"
+      },
+      {
+         "name": "run-tests",
+         "group": "pre-commit",
+         "command": "dotnet",
+         "args": [
+            "test",
+            "Tesseract.slnx",
+            "--configuration",
+            "Release",
+            "--no-build"
+         ],
+         "output": "always"
+      },
+      {
+         "name": "commit-message-linter",
+         "command": "dotnet",
+         "args": [
+            "run",
+            "--project",
+            "tools/Tesseract.DevGuard/Tesseract.DevGuard.csproj",
+            "--",
+            "validate-commit-msg",
+            "${args}"
+         ],
+         "output": "always"
+      },
+      {
+         "name": "protect-main-branch",
+         "group": "pre-push",
+         "command": "dotnet",
+         "args": [
+            "run",
+            "--project",
+            "tools/Tesseract.DevGuard/Tesseract.DevGuard.csproj",
+            "--",
+            "validate-push-branch"
+         ],
+         "output": "always"
+      }
+   ]
+}
