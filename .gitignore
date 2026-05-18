@@ -6,3 +6,6 @@ riderModule.iml
 TestResults/
 *.trx
 .DS_Store
+.agents/
+AGENTS.md
+skills-lock.json
