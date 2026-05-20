@@ -3,3 +3,13 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+TestResults/
+*.trx
+.DS_Store
+.idea/
+skills-lock.json
+AGENTS.md
+skills-lock.json
+.agents/
+docs/
+matrix-docs.md

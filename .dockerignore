@@ -1,0 +1,13 @@
+.git/
+.github/
+.husky/
+.idea/
+.agents/
+**/bin/
+**/obj/
+**/TestResults/
+.DS_Store
+AGENTS.md
+skills-lock.json
+docs/
+matrix-docs.md
