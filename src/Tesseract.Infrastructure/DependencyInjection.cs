@@ -21,6 +21,7 @@ public static class DependencyInjection
                 new NpgsqlConnectionFactory(connectionString));
 
             builder.Services.AddScoped<IVersionRepository, VersionRepository>();
+            builder.Services.AddScoped<IWellKnownRepository, WellKnownRepository>();
         }
     }
 }
