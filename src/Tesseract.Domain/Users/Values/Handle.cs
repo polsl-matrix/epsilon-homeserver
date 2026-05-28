@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Tesseract.Domain.Common.Exceptions;
 
 namespace Tesseract.Domain.Users.Values;
@@ -15,30 +16,40 @@ public sealed record Handle
 
     public override string ToString() => $"@{Localpart}:{Domain}";
 
-    public static Handle Parse(string? value)
+    public static bool TryParse(string? value, [NotNullWhen(true)] out Handle? handle)
     {
+        handle = null;
+
         if (string.IsNullOrWhiteSpace(value))
         {
-            throw new ValidationException("Handle cannot be empty.");
+            return false;
         }
 
-        var normalized = value.TrimStart();
+        var normalized = value.Trim();
 
         if (!normalized.StartsWith('@'))
         {
-            throw new ValidationException("Invalid handle format.");
+            return false;
         }
 
         var separatorIndex = normalized.IndexOf(':');
 
         if (separatorIndex < 1)
         {
-            throw new ValidationException("Invalid handle format.");
+            return false;
         }
 
         var localpart = normalized[1..separatorIndex].Trim();
         var domain = normalized[(separatorIndex + 1)..].Trim();
 
-        return new Handle(localpart, domain);
+        try
+        {
+            handle = new Handle(localpart, domain);
+            return true;
+        }
+        catch (ValidationException)
+        {
+            return false;
+        }
     }
 }

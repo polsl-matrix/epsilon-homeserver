@@ -1,5 +1,4 @@
 using FluentAssertions;
-using Tesseract.Domain.Common.Exceptions;
 using Tesseract.Domain.Users.Values;
 
 namespace Tesseract.Domain.Tests.Users;
@@ -19,51 +18,49 @@ public class HandleTests
     }
 
     [Fact]
-    public void Parse_WithEmptyString_ShouldThrowValidationException()
+    public void TryParse_WithEmptyString_ShouldReturnFalse()
     {
-        var act = () => Handle.Parse(string.Empty);
+        var result = Handle.TryParse(string.Empty, out _);
 
-        var thrown = act.Should().Throw<ValidationException>();
-        thrown.Which.Message.Should().ContainEquivalentOf("empty");
+        result.Should().BeFalse("empty string is not a valid handle");
     }
 
     [Fact]
-    public void Parse_WithNoAtSign_ShouldThrowValidationException()
+    public void TryParse_WithNoAtSign_ShouldReturnFalse()
     {
-        var act = () => Handle.Parse("neo:zeros-n-ones");
+        var result = Handle.TryParse("neo:zeros-n-ones", out _);
 
-        var thrown = act.Should().Throw<ValidationException>();
-        thrown.Which.Message.Should().ContainEquivalentOf("invalid handle format");
+        result.Should().BeFalse("valid handles must contain @ sign");
     }
 
     [Fact]
-    public void Parse_WithNoSeparator_ShouldThrowValidationException()
+    public void TryParse_WithNoSeparator_ShouldReturnFalse()
     {
-        var act = () => Handle.Parse("@neo_zeros-n-ones");
+        var result = Handle.TryParse("@neo_zeros-n-ones", out _);
 
-        var thrown = act.Should().Throw<ValidationException>();
-        thrown.Which.Message.Should().ContainEquivalentOf("invalid handle format");
+        result.Should().BeFalse("valid handles must contain : sign");
     }
 
     [Theory]
     [InlineData("@jane+locust:server.io:1234", "jane+locust", "server.io:1234")]
     [InlineData("@jared.frog:192.168.44.12", "jared.frog", "192.168.44.12")]
-    public void Parse_WithValidHandle_ShouldSplitPartsCorrectly(string input, string localpart, string domain)
+    public void TryParse_WithValidHandle_ShouldSplitPartsCorrectlyAndReturnTrue(
+        string input, string localpart, string domain)
     {
-        var handle = Handle.Parse(input);
+        var result = Handle.TryParse(input, out var handle);
 
-        handle.Localpart.Value.Should().Be(localpart);
-        handle.Domain.Value.Should().Be(domain);
+        result.Should().BeTrue();
+        handle!.Localpart.Value.Should().Be(localpart);
+        handle!.Domain.Value.Should().Be(domain);
     }
 
     [Theory]
     [InlineData("@sam^anda93:server.com:3802", "localpart")]
     [InlineData("@blobfish:fe80:::3000", "domain")]
-    public void Parse_WithInvalidHandle_ShouldThrowValidationException(string input, string part)
+    public void TryParse_WithInvalidHandle_ShouldReturnFalse(string input, string part)
     {
-        var act = () => Handle.Parse(input);
+        var result = Handle.TryParse(input, out _);
 
-        var thrown = act.Should().Throw<ValidationException>();
-        thrown.Which.Message.Should().ContainEquivalentOf(part);
+        result.Should().BeFalse();
     }
 }
