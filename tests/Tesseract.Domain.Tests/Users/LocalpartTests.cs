@@ -83,7 +83,7 @@ public class LocalpartTests
     [InlineData("richart/d")]
     [InlineData("cooperative.wall393")]
     [InlineData("plenty-of-lasagna")]
-    public void ImplicitOperator_FromValidValue_ShouldCreateLocalpart(string value)
+    public void ImplicitOperator_WithValidValue_ShouldCreateLocalpart(string value)
     {
         Localpart localpart = value;
 
@@ -94,7 +94,7 @@ public class LocalpartTests
     [Theory]
     [InlineData("smiley&doggo")]
     [InlineData("vibe~s")]
-    public void ImplicitOperator_FromInValidValue_ShouldThrowValidationException(string value)
+    public void ImplicitOperator_WithInvalidValue_ShouldThrowValidationException(string value)
     {
         Func<Localpart> act = () => value;
 

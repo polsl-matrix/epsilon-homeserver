@@ -68,7 +68,7 @@ public class DomainTests
     [InlineData("172.16.81.30")]
     [InlineData("[fe80::e232:d902]")]
     [InlineData("rabbithole:3526")]
-    public void ImplicitOperator_FromValidValue_ShouldCreateLocalpart(string value)
+    public void ImplicitOperator_WithValidValue_ShouldCreateLocalpart(string value)
     {
         VDomain domain = value;
 
@@ -79,7 +79,7 @@ public class DomainTests
     [Theory]
     [InlineData("fe80::df89:d0c0")]
     [InlineData("cabbage:carrot")]
-    public void ImplicitOperator_FromInValidValue_ShouldThrowValidationException(string value)
+    public void ImplicitOperator_WithInvalidValue_ShouldThrowValidationException(string value)
     {
         Func<VDomain> act = () => value;
 
