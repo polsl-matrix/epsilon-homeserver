@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Tesseract.Infrastructure.Configuration;
 using Tesseract.Web.Common.Errors;
 using Tesseract.Web.Common.Errors.Interfaces;
 
@@ -30,6 +31,7 @@ public static class DependencyInjection
 
             services.AddControllers();
             services.AddOpenApi();
+            services.Configure<SupportInfoOptions>(builder.Configuration.GetSection(SupportInfoOptions.SectionName));
         }
     }
 }
