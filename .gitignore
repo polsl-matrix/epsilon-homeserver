@@ -3,3 +3,10 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+.env
+.DS_Store
+.agents
+/_ReSharper.Caches/
+.idea/.idea.Tesseract/.idea/*
+AGENTS.md
+skills-lock.json
