@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Tesseract.Application.ClientServer.Discovery;
 using Tesseract.Application.ClientServer.Discovery.Abstractions;
 using Tesseract.Infrastructure.ClientServer.Discovery;
 using Tesseract.Infrastructure.Common.Database;
@@ -19,6 +20,9 @@ public static class DependencyInjection
 
             builder.Services.AddSingleton<IDbConnectionFactory>(_ =>
                 new NpgsqlConnectionFactory(connectionString));
+
+            builder.Services.Configure<MatrixOptions>(
+                builder.Configuration.GetSection("Matrix"));
 
             builder.Services.AddScoped<IVersionRepository, VersionRepository>();
             builder.Services.AddScoped<IWellKnownRepository, WellKnownRepository>();

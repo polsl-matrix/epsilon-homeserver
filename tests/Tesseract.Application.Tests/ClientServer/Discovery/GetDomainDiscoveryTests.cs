@@ -3,6 +3,7 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Tesseract.Application.ClientServer.Discovery;
 using Tesseract.Application.ClientServer.Discovery.Abstractions;
+using Tesseract.Domain.Discovery.Values;
 
 namespace Tesseract.Application.Tests.ClientServer.Discovery;
 
@@ -25,20 +26,19 @@ public class GetDomainDiscoveryTests
 
         var response = await _handler.Handle(new GetDomainDiscovery.Query(), CancellationToken.None);
 
-        response.Should().NotBeNull();
-        response!.HomeserverBaseUrl.Should().Be("https://hs.example.com");
+        response.HomeserverBaseUrl.Should().Be("https://hs.example.com");
         response.IdentityServerBaseUrl.Should().Be("https://is.example.com");
     }
 
     [Fact]
-    public async Task Handle_RepositoryReturnsNull_ReturnsNull()
+    public async Task Handle_RepositoryReturnsNull_ThrowsInvalidOperationException()
     {
         _repository.GetDiscoveryInfo(Arg.Any<CancellationToken>())
             .Returns((DiscoveryInfo?)null);
 
-        var response = await _handler.Handle(new GetDomainDiscovery.Query(), CancellationToken.None);
+        var act = () => _handler.Handle(new GetDomainDiscovery.Query(), CancellationToken.None);
 
-        response.Should().BeNull();
+        await act.Should().ThrowAsync<InvalidOperationException>();
     }
 
     [Fact]
@@ -49,14 +49,16 @@ public class GetDomainDiscoveryTests
 
         var response = await _handler.Handle(new GetDomainDiscovery.Query(), CancellationToken.None);
 
-        response.Should().NotBeNull();
-        response!.IdentityServerBaseUrl.Should().BeNull();
+        response.IdentityServerBaseUrl.Should().BeNull();
     }
 
     [Fact]
     public async Task Handle_CancellationTokenProvided_PassesSameTokenToRepository()
     {
         var cancellationSource = new CancellationTokenSource();
+
+        _repository.GetDiscoveryInfo(Arg.Any<CancellationToken>())
+            .Returns(new DiscoveryInfo("https://hs.example.com", null));
 
         await _handler.Handle(new GetDomainDiscovery.Query(), cancellationSource.Token);
 

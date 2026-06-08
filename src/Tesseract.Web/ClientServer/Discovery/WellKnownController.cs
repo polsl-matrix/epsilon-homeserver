@@ -19,14 +19,9 @@ public class WellKnownController(IMediator mediator) : ControllerBase
         var result = await mediator
             .Send(new GetDomainDiscovery.Query(), cancellationToken);
 
-        if (result is null)
-        {
-            return NotFound();
-        }
-
         var response = new GetDomainDiscoveryResponse
         {
-            Homeserver = new HomeserverInfoResponse
+            Homeserver = new GetDomainDiscoveryResponse.HomeserverInfo
             {
                 BaseUrl = result.HomeserverBaseUrl,
             },
@@ -34,7 +29,7 @@ public class WellKnownController(IMediator mediator) : ControllerBase
 
         if (result.IdentityServerBaseUrl is not null)
         {
-            response.IdentityServer = new IdentityServerInfoResponse
+            response.IdentityServer = new GetDomainDiscoveryResponse.IdentityServerInfo
             {
                 BaseUrl = result.IdentityServerBaseUrl,
             };
