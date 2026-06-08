@@ -9,7 +9,6 @@ riderModule.iml
 .idea/.idea.Tesseract/.idea/*
 !.idea/.idea.Tesseract/.idea/vcs.xml
 !.idea/.idea.Tesseract/.idea/indexLayout.xml
-!.idea/.idea.Tesseract/.idea/.gitignore
 matrix-docs.md
 AGENTS.md
 skills-lock.json
