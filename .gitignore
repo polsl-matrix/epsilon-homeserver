@@ -8,6 +8,8 @@ riderModule.iml
 .agents
 /_ReSharper.Caches/
 .idea/.idea.Tesseract/.idea/*
+!.idea/.idea.Tesseract/.idea/vcs.xml
+!.idea/.idea.Tesseract/.idea/indexLayout.xml
 matrix-docs.md
 AGENTS.md
 skills-lock.json
