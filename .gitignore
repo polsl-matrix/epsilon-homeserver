@@ -8,6 +8,7 @@ riderModule.iml
 .agents
 /_ReSharper.Caches/
 .idea/.idea.Tesseract/.idea/*
+matrix-docs.md
 AGENTS.md
 skills-lock.json
 # Default ignored files
@@ -25,4 +26,3 @@ skills-lock.json
 /dataSources.local.xml
 # Editor-based HTTP Client requests
 /httpRequests/
-
