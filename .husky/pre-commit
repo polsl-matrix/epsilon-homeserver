@@ -1,0 +1,11 @@
+#!/bin/sh
+
+gitleaks protect --staged --no-banner --verbose || {
+  echo "Detected leaked secrets. Remove them before proceeding."
+  exit 1
+}
+
+dotnet format --verify-no-changes || {
+  echo "Code is not properly formatted. Run 'dotnet format' before proceeding."
+  exit 1
+}

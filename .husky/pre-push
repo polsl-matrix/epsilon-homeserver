@@ -1,0 +1,11 @@
+#!/bin/sh
+
+dotnet build --no-restore || {
+  echo "Build failed. Fix compilation errors before pushing."
+  exit 1
+}
+
+dotnet build --no-restore || {
+  echo "Tests failed. Fix code before pushing."
+  exit 1
+}
