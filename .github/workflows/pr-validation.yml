@@ -45,7 +45,13 @@ jobs:
       - name: Run gitleaks
         id: gitleaks
         continue-on-error: true
-        run: docker run --rm -v "$PWD:/repo" ghcr.io/gitleaks/gitleaks:latest git /repo --no-banner --redact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download --repo gitleaks/gitleaks --pattern "gitleaks_*_linux_x64.tar.gz" --dir /tmp
+          tar -xzf /tmp/gitleaks_*_linux_x64.tar.gz -C /tmp gitleaks
+          sudo mv /tmp/gitleaks /usr/local/bin/
+          gitleaks git . --no-banner --redact
 
       - name: Restore solution
         id: restore
@@ -91,7 +97,6 @@ jobs:
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          mkdir -p artifacts
           status_icon() {
             case "$1" in
               success) printf '✅ success' ;;
@@ -117,17 +122,17 @@ jobs:
             echo
             echo "<!-- pr-validation-status -->"
             echo "<!-- pr-number:$PR_NUMBER -->"
-          } > artifacts/pr-summary.md
+          } > pr-summary.md
 
           echo "Validation Summary:"
-          cat artifacts/pr-summary.md
+          cat pr-summary.md
 
       - name: Upload PR summary artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: pr-summary
-          path: artifacts/pr-summary.md
+          path: pr-summary.md
           retention-days: 7
           if-no-files-found: error
 
