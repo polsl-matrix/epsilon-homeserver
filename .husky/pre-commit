@@ -21,5 +21,5 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-# Re-stage files in case formatting changed them
-git update-index --again
+# Stage any changes made by dotnet format so they are included in the commit
+git add -u
