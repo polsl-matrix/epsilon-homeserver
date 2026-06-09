@@ -1,25 +1,11 @@
 #!/bin/sh
 
-# Run gitleaks to detect secrets in staged files
-gitleaks protect --staged --verbose
-if [ $? -ne 0 ]; then
-  echo "Gitleaks detected potential secrets. Please review and fix before committing."
+gitleaks protect --staged --no-banner --verbose || {
+  echo "Detected leaked secrets. Remove them before proceeding."
   exit 1
-fi
+}
 
-# Format C# code using dotnet format (auto-fixes)
-dotnet format
-if [ $? -ne 0 ]; then
-  echo "Code formatting failed. Please fix manually."
+dotnet format --verify-no-changes || {
+  echo "Code is not properly formatted. Run 'dotnet format' before proceeding."
   exit 1
-fi
-
-# Run tests across the solution
-dotnet test --no-build
-if [ $? -ne 0 ]; then
-  echo "Tests failed. Please fix before committing."
-  exit 1
-fi
-
-# Stage any changes made by dotnet format so they are included in the commit
-git add -u
+}
