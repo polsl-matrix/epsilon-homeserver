@@ -1,0 +1,25 @@
+#!/bin/sh
+
+protected_branch='main'
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+
+if [ "$current_branch" = "$protected_branch" ]; then
+  echo "Direct pushes to the $protected_branch branch are not allowed. Please create a pull request."
+  exit 1
+fi
+
+# Build the solution to catch compilation errors
+dotnet build
+if [ $? -ne 0 ]; then
+  echo "Build failed. Please fix compilation errors before pushing."
+  exit 1
+fi
+
+# Run full test suite (CI equivalent)
+dotnet test --no-build
+if [ $? -ne 0 ]; then
+  echo "Tests failed. Please fix before pushing."
+  exit 1
+fi
+
+exit 0
