@@ -55,9 +55,9 @@ public class HandleTests
     }
 
     [Theory]
-    [InlineData("@sam^anda93:server.com:3802", "localpart")]
-    [InlineData("@blobfish:fe80:::3000", "domain")]
-    public void TryParse_WithInvalidHandle_ShouldReturnFalse(string input, string part)
+    [InlineData("@sam^anda93:server.com:3802")]
+    [InlineData("@blobfish:fe80:::3000")]
+    public void TryParse_WithInvalidHandle_ShouldReturnFalse(string input)
     {
         var result = Handle.TryParse(input, out _);
 

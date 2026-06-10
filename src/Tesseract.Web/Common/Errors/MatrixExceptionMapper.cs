@@ -1,3 +1,4 @@
+using Tesseract.Application.ClientServer.Auth.Exceptions;
 using Tesseract.Web.Common.Errors.Contracts;
 using static Tesseract.Web.Common.Errors.Contracts.MatrixErrorCodes;
 
@@ -9,8 +10,12 @@ internal class MatrixExceptionMapper : IMatrixExceptionMapper
 {
     public ErrorMapping Map(Exception exception) => exception switch
     {
+        BadLoginTypeException => MapBadLoginType(),
         _ => MapUnknown(),
     };
+
+    private static ErrorMapping MapBadLoginType() => (StatusCodes.Status400BadRequest,
+        new MatrixErrorResponse(Unknown, "Bad login type."));
 
     private static ErrorMapping MapUnknown() => (StatusCodes.Status500InternalServerError,
         new MatrixErrorResponse(Unknown, "An unknown error has occurred."));
