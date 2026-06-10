@@ -2,5 +2,5 @@ using ApplicationException = Tesseract.Application.Common.Exceptions.Application
 
 namespace Tesseract.Application.ClientServer.Auth.Exceptions;
 
-public sealed class BadLoginTypeException(string type)
-    : ApplicationException($"Unrecognized login type: {type}");
+public sealed class ForbiddenException
+    : ApplicationException;
