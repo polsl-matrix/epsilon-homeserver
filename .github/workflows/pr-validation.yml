@@ -1,0 +1,160 @@
+name: Pull request validation
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: write
+  checks: write
+  pull-requests: read
+
+jobs:
+  validate:
+    name: Validate codebase
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET 10 SDK
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('Tesseract.slnx', '**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Run gitleaks
+        id: gitleaks
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download --repo gitleaks/gitleaks --pattern "gitleaks_*_linux_x64.tar.gz" --dir /tmp
+          tar -xzf /tmp/gitleaks_*_linux_x64.tar.gz -C /tmp gitleaks
+          sudo mv /tmp/gitleaks /usr/local/bin/
+          gitleaks git . --no-banner --redact
+
+      - name: Restore solution
+        id: restore
+        continue-on-error: true
+        run: dotnet restore Tesseract.slnx
+
+      - name: Verify format and analyzers
+        id: format
+        if: steps.restore.outcome == 'success'
+        continue-on-error: true
+        run: dotnet format Tesseract.slnx --verify-no-changes --no-restore
+
+      - name: Build solution
+        id: build
+        if: steps.restore.outcome == 'success'
+        continue-on-error: true
+        run: dotnet build Tesseract.slnx --configuration Release --no-restore
+
+      - name: Run tests
+        id: tests
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        run: dotnet test Tesseract.slnx --configuration Release --no-build --logger "trx;LogFileName=test-results.trx"
+
+      - name: Publish test results
+        if: always() && steps.tests.outcome == 'success'
+        uses: dorny/test-reporter@v2
+        with:
+          name: .NET Tests
+          path: '**/test-results.trx'
+          reporter: dotnet-trx
+          fail-on-error: false
+
+      - name: Build PR summary artifact
+        if: always()
+        shell: bash
+        env:
+          GITLEAKS_OUTCOME: ${{ steps.gitleaks.outcome }}
+          RESTORE_OUTCOME: ${{ steps.restore.outcome }}
+          FORMAT_OUTCOME: ${{ steps.format.outcome }}
+          BUILD_OUTCOME: ${{ steps.build.outcome }}
+          TESTS_OUTCOME: ${{ steps.tests.outcome }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          status_icon() {
+            case "$1" in
+              success) printf '✅ success' ;;
+              failure) printf '❌ failure' ;;
+              skipped) printf '⏭️ skipped' ;;
+              cancelled) printf '🚫 cancelled' ;;
+              *) printf '⚪ %s' "$1" ;;
+            esac
+          }
+
+          {
+            echo '## PR validation summary'
+            echo
+            echo '| Check | Result |'
+            echo '| --- | --- |'
+            echo "| Gitleaks | $(status_icon "$GITLEAKS_OUTCOME") |"
+            echo "| Restore | $(status_icon "$RESTORE_OUTCOME") |"
+            echo "| Format + analyzers | $(status_icon "$FORMAT_OUTCOME") |"
+            echo "| Build | $(status_icon "$BUILD_OUTCOME") |"
+            echo "| Tests | $(status_icon "$TESTS_OUTCOME") |"
+            echo
+            echo "[View run details]($RUN_URL)"
+            echo
+            echo "<!-- pr-validation-status -->"
+            echo "<!-- pr-number:$PR_NUMBER -->"
+          } > pr-summary.md
+
+          echo "Validation Summary:"
+          cat pr-summary.md
+
+      - name: Upload PR summary artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-summary
+          path: pr-summary.md
+          retention-days: 7
+          if-no-files-found: error
+
+      - name: Upload test results
+        if: always() && steps.tests.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: '**/test-results.trx'
+          retention-days: 7
+          if-no-files-found: warn
+
+      - name: Fail workflow when any validation failed
+        if: always()
+        shell: bash
+        env:
+          GITLEAKS_OUTCOME: ${{ steps.gitleaks.outcome }}
+          RESTORE_OUTCOME: ${{ steps.restore.outcome }}
+          FORMAT_OUTCOME: ${{ steps.format.outcome }}
+          BUILD_OUTCOME: ${{ steps.build.outcome }}
+          TESTS_OUTCOME: ${{ steps.tests.outcome }}
+        run: |
+          if [[ "$GITLEAKS_OUTCOME" != "success" || "$RESTORE_OUTCOME" != "success" || "$FORMAT_OUTCOME" != "success" || "$BUILD_OUTCOME" != "success" || "$TESTS_OUTCOME" != "success" ]]; then
+            exit 1
+          fi
