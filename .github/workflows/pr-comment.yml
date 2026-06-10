@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   comment:
-    if: ${{ github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.pull_requests[0].number }}
+    if: ${{ github.event.workflow_run.event == 'pull_request' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -23,7 +23,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           echo "Downloading artifact from workflow run ${{ github.event.workflow_run.id }}"
-          gh run download ${{ github.event.workflow_run.id }} --name pr-summary --dir pr-summary
+          gh run download ${{ github.event.workflow_run.id }} --name pr-summary --dir pr-summary --repo ${{ github.repository }}
           echo "Downloaded files:"
           ls -la pr-summary/
 
@@ -34,7 +34,12 @@ jobs:
             const fs = require('fs');
             const marker = '<!-- pr-validation-status -->';
             const body = fs.readFileSync('pr-summary/pr-summary.md', 'utf8');
-            const issue_number = context.payload.workflow_run.pull_requests[0].number;
+
+            const prNumberMatch = body.match(/<!-- pr-number:(\d+) -->/);
+            if (!prNumberMatch) {
+              throw new Error('Could not find PR number marker in pr-summary.md');
+            }
+            const issue_number = Number(prNumberMatch[1]);
             const { owner, repo } = context.repo;
 
             console.log(`Looking for existing comments on PR #${issue_number}`);
