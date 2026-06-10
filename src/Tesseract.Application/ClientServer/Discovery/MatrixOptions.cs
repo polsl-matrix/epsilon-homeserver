@@ -2,6 +2,8 @@ namespace Tesseract.Application.ClientServer.Discovery;
 
 public sealed class MatrixOptions
 {
+    public string? ServerName { get; set; }
+
     public HomeserverOptions? Homeserver { get; set; }
 
     public IdentityServerOptions? IdentityServer { get; set; }
