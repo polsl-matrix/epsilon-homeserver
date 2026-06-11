@@ -1,5 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Tesseract.Application.ClientServer.Auth.Abstractions;
+using Tesseract.Application.ClientServer.Auth.Flows;
 
 namespace Tesseract.Application;
 
@@ -15,6 +17,8 @@ public static class DependencyInjection
             {
                 options.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);
             });
+
+            services.AddScoped<IAuthenticationFlow, DummyAuthenticationFlow>();
         }
     }
 }
