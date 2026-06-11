@@ -70,7 +70,7 @@ public class LocalpartTests
     [InlineData("r0b0t5")]
     [InlineData("jerry.makes-stuff")]
     [InlineData(".skippy123")]
-    public void ToString_Always_ShouldReturnActualValue(string value)
+    public void ToString_Always_ReturnsActualValue(string value)
     {
         var localpart = new Localpart(value);
 

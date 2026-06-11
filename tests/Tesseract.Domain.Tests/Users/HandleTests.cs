@@ -8,7 +8,7 @@ public class HandleTests
     [Theory]
     [InlineData("jerry.smith", "localhost", "@jerry.smith:localhost")]
     [InlineData("marry/cole", "192.168.15.39:8391", "@marry/cole:192.168.15.39:8391")]
-    public void ToString_Always_ShouldReturnValidTextHandle(string localpart, string domain, string expected)
+    public void ToString_Always_ReturnsValidTextHandle(string localpart, string domain, string expected)
     {
         var handle = new Handle(localpart, domain);
 
@@ -18,7 +18,7 @@ public class HandleTests
     }
 
     [Fact]
-    public void TryParse_WithEmptyString_ShouldReturnFalse()
+    public void TryParse_WithEmptyString_ReturnsFalse()
     {
         var result = Handle.TryParse(string.Empty, out _);
 
@@ -26,7 +26,7 @@ public class HandleTests
     }
 
     [Fact]
-    public void TryParse_WithNoAtSign_ShouldReturnFalse()
+    public void TryParse_WithNoAtSign_ReturnsFalse()
     {
         var result = Handle.TryParse("neo:zeros-n-ones", out _);
 
@@ -34,7 +34,7 @@ public class HandleTests
     }
 
     [Fact]
-    public void TryParse_WithNoSeparator_ShouldReturnFalse()
+    public void TryParse_WithNoSeparator_ReturnsFalse()
     {
         var result = Handle.TryParse("@neo_zeros-n-ones", out _);
 
@@ -57,7 +57,7 @@ public class HandleTests
     [Theory]
     [InlineData("@sam^anda93:server.com:3802")]
     [InlineData("@blobfish:fe80:::3000")]
-    public void TryParse_WithInvalidHandle_ShouldReturnFalse(string input)
+    public void TryParse_WithInvalidHandle_ReturnsFalse(string input)
     {
         var result = Handle.TryParse(input, out _);
 

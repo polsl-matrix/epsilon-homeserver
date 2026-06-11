@@ -55,7 +55,7 @@ public class DomainTests
     [InlineData("epsilon.local:8374")]
     [InlineData("127.0.0.1")]
     [InlineData("[fe80::dd:3]:1892")]
-    public void ToString_Always_ShouldReturnActualValue(string value)
+    public void ToString_Always_ReturnsActualValue(string value)
     {
         var domain = new VDomain(value);
 
