@@ -6,6 +6,6 @@ public interface IAuthenticationFlow
 {
     string Type { get; }
 
-    Task<User?> AuthenticateAsync(string login, string password,
+    Task<User?> AuthenticateAsync(string? login, string? password,
         CancellationToken cancellationToken);
 }

@@ -8,7 +8,7 @@ public class DummyAuthenticationFlow : IAuthenticationFlow
 {
     public string Type => "m.login.dummy";
 
-    public Task<User?> AuthenticateAsync(string login, string password, CancellationToken cancellationToken)
+    public Task<User?> AuthenticateAsync(string? login, string? password, CancellationToken cancellationToken)
     {
         var handle = new Handle("dummy", "domain");
         var user = new User(Guid.Empty, handle);

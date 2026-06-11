@@ -18,7 +18,7 @@ public class DummyAuthenticationFlowTests
     [Fact]
     public async Task AuthenticateAsync_ReturnsDummyUser()
     {
-        var user = await _flow.AuthenticateAsync(string.Empty, string.Empty, CancellationToken.None);
+        var user = await _flow.AuthenticateAsync(string.Empty, null, CancellationToken.None);
 
         user.Should().NotBeNull();
         user.Id.Should().Be(Guid.Empty);
