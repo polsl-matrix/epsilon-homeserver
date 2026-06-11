@@ -27,6 +27,8 @@ public class AuthController(IMediator mediator)
         return new AuthenticateUserResponse
         {
             Handle = result.User.Handle.ToString(),
+            AccessToken = result.AccessToken,
+            RefreshToken = result.RefreshToken,
         };
     }
 }

@@ -11,18 +11,26 @@ namespace Tesseract.Application.Tests.ClientServer.Auth;
 public class LoginUserTests
 {
     private readonly IAuthenticationFlow _flow;
+
+    private readonly IAccessTokenService _accessTokenService;
+    private readonly IRefreshTokenService _refreshTokenService;
+
     private readonly LoginUser.Handler _handler;
 
     public LoginUserTests()
     {
         _flow = Substitute.For<IAuthenticationFlow>();
+
+        _accessTokenService = Substitute.For<IAccessTokenService>();
+        _refreshTokenService = Substitute.For<IRefreshTokenService>();
+
         _flow.Type.Returns("t.test.flow");
 
-        _handler = new LoginUser.Handler([_flow]);
+        _handler = new LoginUser.Handler([_flow], _accessTokenService, _refreshTokenService);
     }
 
     [Fact]
-    public async Task Handle_ValidCredentials_ReturnsAuthenticatedUser()
+    public async Task Handle_ValidCredentials_ReturnsUserAndTokens()
     {
         var command = new LoginUser.Command("mike", "password123", _flow.Type);
         var user = new User(Guid.NewGuid(), new Handle("mike123", "loves.maths"));
@@ -30,9 +38,14 @@ public class LoginUserTests
         _flow.AuthenticateAsync(command.User, command.Password, Arg.Any<CancellationToken>())
             .Returns(user);
 
+        _accessTokenService.Create(Arg.Any<CancellationToken>()).Returns("mock-accessToken!1");
+        _refreshTokenService.Create(Arg.Any<CancellationToken>()).Returns("mock-refreshToken!1");
+
         var response = await _handler.Handle(command, CancellationToken.None);
 
         response.User.Should().BeSameAs(user);
+        response.AccessToken.Should().BeSameAs("mock-accessToken!1");
+        response.RefreshToken.Should().BeSameAs("mock-refreshToken!1");
     }
 
     [Fact]
@@ -75,5 +88,7 @@ public class LoginUserTests
         await _handler.Handle(command, cancellationSource.Token);
 
         await _flow.Received().AuthenticateAsync(Arg.Any<string>(), Arg.Any<string>(), cancellationSource.Token);
+        await _accessTokenService.Received().Create(cancellationSource.Token);
+        await _refreshTokenService.Received().Create(cancellationSource.Token);
     }
 }

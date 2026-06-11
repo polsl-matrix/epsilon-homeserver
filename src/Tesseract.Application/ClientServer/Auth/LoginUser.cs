@@ -13,9 +13,16 @@ public static class LoginUser
     {
         private readonly Dictionary<string, IAuthenticationFlow> _flows;
 
-        public Handler(IEnumerable<IAuthenticationFlow> flows)
+        private readonly IAccessTokenService _accessTokenService;
+        private readonly IRefreshTokenService _refreshTokenService;
+
+        public Handler(IEnumerable<IAuthenticationFlow> flows,
+            IAccessTokenService accessTokenService, IRefreshTokenService refreshTokenService)
         {
             _flows = flows.ToDictionary(flow => flow.Type);
+
+            _accessTokenService = accessTokenService;
+            _refreshTokenService = refreshTokenService;
         }
 
         public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
@@ -30,11 +37,21 @@ public static class LoginUser
                 throw new ForbiddenException();
             }
 
+            var (accessToken, refreshToken) = await CreateTokenPair(cancellationToken);
+
             // TODO: Persist tokens in session (repository).
 
-            return new Response(user);
+            return new Response(user, accessToken, refreshToken);
+        }
+
+        private async Task<(string, string)> CreateTokenPair(CancellationToken cancellationToken)
+        {
+            var access = await _accessTokenService.Create(cancellationToken);
+            var refresh = await _refreshTokenService.Create(cancellationToken);
+
+            return (access, refresh);
         }
     }
 
-    public record Response(User User);
+    public record Response(User User, string AccessToken, string RefreshToken);
 }

@@ -1,7 +1,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Tesseract.Application.ClientServer.Auth;
 using Tesseract.Application.ClientServer.Discovery.Abstractions;
+using Tesseract.Infrastructure.ClientServer.Auth;
 using Tesseract.Infrastructure.ClientServer.Discovery;
 using Tesseract.Infrastructure.Common.Database;
 using Tesseract.Infrastructure.Common.Database.Abstractions;
@@ -19,6 +21,9 @@ public static class DependencyInjection
 
             builder.Services.AddSingleton<IDbConnectionFactory>(_ =>
                 new NpgsqlConnectionFactory(connectionString));
+
+            builder.Services.AddScoped<IAccessTokenService, OpaqueTokenService>();
+            builder.Services.AddScoped<IRefreshTokenService, OpaqueTokenService>();
 
             builder.Services.AddScoped<IVersionRepository, VersionRepository>();
         }

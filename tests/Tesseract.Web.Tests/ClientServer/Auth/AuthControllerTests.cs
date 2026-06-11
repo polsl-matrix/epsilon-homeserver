@@ -46,13 +46,12 @@ public class AuthControllerTests
             Password = password,
             Type = type,
         };
-        var user = CreateEmptyUser();
+        var response = CreateEmptyLoginUserResponse();
 
-        LoginUser.Command? command = null;
+        LoginUser.Command? calledCommand = null;
 
         _mediator.Send(Arg.Any<LoginUser.Command>(), Arg.Any<CancellationToken>())
-            .Returns(new LoginUser.Response(user))
-            .AndDoes(call => command = call.Arg<LoginUser.Command>());
+            .Returns(response).AndDoes(call => calledCommand = call.Arg<LoginUser.Command>());
 
         // Act
         await _controller.AuthenticateUser(request, CancellationToken.None);
@@ -60,10 +59,10 @@ public class AuthControllerTests
         // Assert
         await _mediator.Received().Send(Arg.Any<LoginUser.Command>(), Arg.Any<CancellationToken>());
 
-        command.Should().NotBeNull();
-        command.User.Should().Be(handle);
-        command.Password.Should().Be(password);
-        command.Type.Should().Be(type);
+        calledCommand.Should().NotBeNull();
+        calledCommand.User.Should().Be(handle);
+        calledCommand.Password.Should().Be(password);
+        calledCommand.Type.Should().Be(type);
     }
 
     [Theory]
@@ -72,44 +71,53 @@ public class AuthControllerTests
     {
         // Arrange
         var request = CreateEmptyAuthenticateUserRequest();
+        var response = new LoginUser.Response(user, string.Empty, string.Empty);
 
         _mediator.Send(Arg.Any<LoginUser.Command>(), Arg.Any<CancellationToken>())
-            .Returns(new LoginUser.Response(user));
+            .Returns(response);
 
         // Act
-        var response = await _controller.AuthenticateUser(request, CancellationToken.None);
+        var result = await _controller.AuthenticateUser(
+            request, CancellationToken.None);
 
         // Assert
-        response.Handle.Should().Be(user.Handle.ToString());
+        result.Handle.Should().Be(user.Handle.ToString());
     }
 
     [Fact]
     public async Task AuthenticateUser_CancellationTokenProvided_PassesSameTokenToMediator()
     {
+        // Arrange
         var request = CreateEmptyAuthenticateUserRequest();
-        var user = CreateEmptyUser();
+        var response = CreateEmptyLoginUserResponse();
 
         var cancellationToken = new CancellationTokenSource().Token;
 
         _mediator.Send(Arg.Any<LoginUser.Command>(), cancellationToken)
-            .Returns(new LoginUser.Response(user));
+            .Returns(response);
 
+        // Act
         await _controller.AuthenticateUser(request, cancellationToken);
 
+        // Assert
         await _mediator.Received().Send(Arg.Any<LoginUser.Command>(), cancellationToken);
     }
 
     [Fact]
     public async Task AuthenticateUser_MediatorThrowsException_PropagatesException()
     {
+        // Arrange
         var request = CreateEmptyAuthenticateUserRequest();
+
         var exception = new InvalidOperationException("Something went wrong.");
 
         _mediator.Send(Arg.Any<LoginUser.Command>(), Arg.Any<CancellationToken>())
             .Throws(exception);
 
+        // Act
         var act = async () => await _controller.AuthenticateUser(request, CancellationToken.None);
 
+        // Assert
         var thrown = await act.Should().ThrowAsync<InvalidOperationException>();
         thrown.Which.Should().BeSameAs(exception);
     }
@@ -123,6 +131,9 @@ public class AuthControllerTests
         Type = string.Empty,
     };
 
-    private static User CreateEmptyUser() => new(
-        Guid.Empty, new Handle("localpart", "domain"));
+    private static LoginUser.Response CreateEmptyLoginUserResponse()
+    {
+        var user = new User(Guid.Empty, new Handle("localpart", "domain"));
+        return new LoginUser.Response(user, string.Empty, string.Empty);
+    }
 }
