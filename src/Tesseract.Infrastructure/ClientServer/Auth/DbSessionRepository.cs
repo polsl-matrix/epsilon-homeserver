@@ -13,14 +13,14 @@ public class DbSessionRepository(IDbConnectionFactory dbConnectionFactory) : ISe
 
         const string sql = """
                            INSERT INTO auth.sessions(session_id, user_id, current_auth_token_hash, current_refresh_token_hash)
-                           VALUES (@SessionId, @UserId, @CurrentAuthTokenHash, @CurrentRefreshTokenHash);
+                           VALUES (@SessionId, @UserId, @CurrentAccessTokenHash, @CurrentRefreshTokenHash);
                            """;
 
         await connection.ExecuteAsync(sql, new
         {
             SessionId = session.Id.Value,
             UserId = session.UserId.Value,
-            CurrentAuthTokenHash = session.AccessTokenHash,
+            CurrentAccessTokenHash = session.AccessTokenHash,
             CurrentRefreshTokenHash = session.RefreshTokenHash,
         });
     }

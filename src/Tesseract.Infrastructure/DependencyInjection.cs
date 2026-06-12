@@ -23,11 +23,12 @@ public static class DependencyInjection
                 new NpgsqlConnectionFactory(connectionString));
 
             builder.Services.AddScoped<IAccessTokenService, OpaqueTokenService>();
-            builder.Services.AddScoped<IRefreshTokenService, OpaqueTokenService>();
             builder.Services.AddScoped<IHashService, Sha256HashService>();
+            builder.Services.AddScoped<IRefreshTokenService, OpaqueTokenService>();
 
-            builder.Services.AddScoped<IVersionRepository, InMemoryVersionRepository>();
             builder.Services.AddScoped<ISessionRepository, DbSessionRepository>();
+            builder.Services.AddScoped<IUserRepository, DbUserRepository>();
+            builder.Services.AddScoped<IVersionRepository, InMemoryVersionRepository>();
         }
     }
 }
