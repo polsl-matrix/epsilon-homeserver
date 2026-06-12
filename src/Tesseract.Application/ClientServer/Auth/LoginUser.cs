@@ -1,7 +1,7 @@
 using MediatR;
 using Tesseract.Application.ClientServer.Auth.Abstractions;
 using Tesseract.Application.ClientServer.Auth.Exceptions;
-using Tesseract.Domain.Users;
+using Tesseract.Domain.Users.Values;
 
 namespace Tesseract.Application.ClientServer.Auth;
 
@@ -43,9 +43,9 @@ public static class LoginUser
 
             await _sessionRepository.UpsertSessionAsync(session, cancellationToken);
 
-            return new Response(user, accessToken, refreshToken);
+            return new Response(user.Handle, accessToken, refreshToken);
         }
     }
 
-    public record Response(User User, string AccessToken, string RefreshToken); // TODO: Pass user as parts.
+    public record Response(Handle Handle, string AccessToken, string RefreshToken);
 }

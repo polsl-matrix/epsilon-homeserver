@@ -39,7 +39,7 @@ public class LoginUserTests
 
         var result = await _handler.Handle(command, CancellationToken.None);
 
-        result.User.Should().Be(user);
+        result.Handle.Should().Be(user.Handle);
         result.AccessToken.Should().Be("mock-accessToken!1");
         result.RefreshToken.Should().Be("mock-refreshToken@2");
     }
