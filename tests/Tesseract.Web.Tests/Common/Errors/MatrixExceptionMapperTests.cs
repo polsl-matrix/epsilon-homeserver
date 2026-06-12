@@ -1,8 +1,8 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Tesseract.Application.ClientServer.Auth.Exceptions;
+using Tesseract.Web.Common.Errors;
 using Tesseract.Web.Common.Errors.Contracts;
-using Tesseract.Web.Common.Errors.Interfaces;
 
 namespace Tesseract.Web.Tests.Common.Errors;
 

@@ -6,7 +6,7 @@ using Tesseract.Application.ClientServer.Discovery.Abstractions;
 using Tesseract.Infrastructure.ClientServer.Auth;
 using Tesseract.Infrastructure.ClientServer.Discovery;
 using Tesseract.Infrastructure.Common.Database;
-using Tesseract.Infrastructure.Common.Database.Abstractions;
+using Tesseract.Infrastructure.Common.Database.Interfaces;
 
 namespace Tesseract.Infrastructure;
 

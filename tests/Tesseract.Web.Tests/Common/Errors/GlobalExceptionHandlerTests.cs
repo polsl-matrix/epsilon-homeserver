@@ -4,6 +4,7 @@ using NSubstitute;
 using System.Text.Json;
 using Tesseract.Web.Common.Errors;
 using Tesseract.Web.Common.Errors.Contracts;
+using Tesseract.Web.Common.Errors.Interfaces;
 
 namespace Tesseract.Web.Tests.Common.Errors;
 

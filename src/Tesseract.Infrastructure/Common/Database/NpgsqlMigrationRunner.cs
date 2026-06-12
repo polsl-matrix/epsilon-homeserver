@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Tesseract.Infrastructure.Common.Database.Abstractions;
 
 namespace Tesseract.Infrastructure.Common.Database;
 

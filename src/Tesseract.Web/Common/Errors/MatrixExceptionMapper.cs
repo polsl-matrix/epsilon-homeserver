@@ -1,8 +1,9 @@
 using Tesseract.Application.ClientServer.Auth.Exceptions;
 using Tesseract.Web.Common.Errors.Contracts;
+using Tesseract.Web.Common.Errors.Interfaces;
 using static Tesseract.Web.Common.Errors.Contracts.MatrixErrorCodes;
 
-namespace Tesseract.Web.Common.Errors.Interfaces;
+namespace Tesseract.Web.Common.Errors;
 
 using ErrorMapping = (int StatusCode, MatrixErrorResponse ErrorResponse);
 

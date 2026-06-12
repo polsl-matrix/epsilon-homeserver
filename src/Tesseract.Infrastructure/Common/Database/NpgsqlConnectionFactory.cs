@@ -1,7 +1,8 @@
 using Npgsql;
 using System.Data;
+using Tesseract.Infrastructure.Common.Database.Interfaces;
 
-namespace Tesseract.Infrastructure.Common.Database.Abstractions;
+namespace Tesseract.Infrastructure.Common.Database;
 
 public sealed class NpgsqlConnectionFactory : IDbConnectionFactory
 {

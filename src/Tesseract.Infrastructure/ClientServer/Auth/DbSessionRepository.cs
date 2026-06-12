@@ -1,7 +1,7 @@
 using Dapper;
 using Tesseract.Application.ClientServer.Auth.Abstractions;
 using Tesseract.Application.ClientServer.Auth.Models;
-using Tesseract.Infrastructure.Common.Database;
+using Tesseract.Infrastructure.Common.Database.Interfaces;
 
 namespace Tesseract.Infrastructure.ClientServer.Auth;
 
