@@ -5,6 +5,7 @@ using Tesseract.Domain.Users;
 
 namespace Tesseract.Application.ClientServer.Auth;
 
+// TODO: Move this file to UseCases directory.
 public static class LoginUser
 {
     public record Command(string? User, string? Password, string Type) : IRequest<Response>;
@@ -13,16 +14,16 @@ public static class LoginUser
     {
         private readonly Dictionary<string, IAuthenticationFlow> _flows;
 
-        private readonly IAccessTokenService _accessTokenService;
-        private readonly IRefreshTokenService _refreshTokenService;
+        private readonly ISessionFactory _sessionFactory;
+        private readonly ISessionRepository _sessionRepository;
 
         public Handler(IEnumerable<IAuthenticationFlow> flows,
-            IAccessTokenService accessTokenService, IRefreshTokenService refreshTokenService)
+            ISessionFactory sessionFactory, ISessionRepository sessionRepository)
         {
             _flows = flows.ToDictionary(flow => flow.Type);
 
-            _accessTokenService = accessTokenService;
-            _refreshTokenService = refreshTokenService;
+            _sessionFactory = sessionFactory;
+            _sessionRepository = sessionRepository;
         }
 
         public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
@@ -37,21 +38,14 @@ public static class LoginUser
                 throw new ForbiddenException();
             }
 
-            var (accessToken, refreshToken) = await CreateTokenPair(cancellationToken);
+            var (session, accessToken, refreshToken) = await _sessionFactory
+                .CreateAsync(user, cancellationToken);
 
-            // TODO: Persist tokens in session (repository).
+            await _sessionRepository.UpsertSessionAsync(session, cancellationToken);
 
             return new Response(user, accessToken, refreshToken);
         }
-
-        private async Task<(string, string)> CreateTokenPair(CancellationToken cancellationToken)
-        {
-            var access = await _accessTokenService.Create(cancellationToken);
-            var refresh = await _refreshTokenService.Create(cancellationToken);
-
-            return (access, refresh);
-        }
     }
 
-    public record Response(User User, string AccessToken, string RefreshToken);
+    public record Response(User User, string AccessToken, string RefreshToken); // TODO: Pass user as parts.
 }
