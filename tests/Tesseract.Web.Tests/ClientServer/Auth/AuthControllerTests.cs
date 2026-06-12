@@ -23,8 +23,8 @@ public class AuthControllerTests
 
     public static TheoryData<User> ValidUsers =>
     [
-        new(Guid.Parse("75bad405-91c3-46bc-b78f-930e35925435"), new Handle("jerry", "example.com")),
-        new(Guid.Parse("831fc713-ab65-4bf5-85de-320968b26eeb"), new Handle("mike", "math.lovers")),
+        new(new UserId(Guid.Parse("75bad405-91c3-46bc-b78f-930e35925435")), new Handle("jerry", "example.com")),
+        new(new UserId(Guid.Parse("831fc713-ab65-4bf5-85de-320968b26eeb")), new Handle("mike", "math.lovers")),
     ];
 
     [Theory]
@@ -133,7 +133,7 @@ public class AuthControllerTests
 
     private static LoginUser.Response CreateEmptyLoginUserResponse()
     {
-        var user = new User(Guid.Empty, new Handle("localpart", "domain"));
+        var user = new User(new UserId(Guid.Empty), new Handle("localpart", "domain"));
         return new LoginUser.Response(user, string.Empty, string.Empty);
     }
 }

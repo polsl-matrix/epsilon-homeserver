@@ -33,7 +33,7 @@ public class LoginUserTests
     public async Task Handle_ValidCredentials_ReturnsUserAndTokens()
     {
         var command = new LoginUser.Command("mike", "password123", _flow.Type);
-        var user = new User(Guid.NewGuid(), new Handle("mike123", "loves.maths"));
+        var user = new User(new UserId(Guid.NewGuid()), new Handle("mike123", "loves.maths"));
 
         _flow.AuthenticateAsync(command.User, command.Password, Arg.Any<CancellationToken>())
             .Returns(user);
@@ -78,7 +78,7 @@ public class LoginUserTests
     public async Task Handle_CancellationTokenProvided_PassesSameTokenDown()
     {
         var command = new LoginUser.Command("colt", "my_happy_password", _flow.Type);
-        var user = new User(Guid.NewGuid(), new Handle("colt", "happi-happi.happi"));
+        var user = new User(new UserId(Guid.NewGuid()), new Handle("colt", "happi-happi.happi"));
 
         var cancellationSource = new CancellationTokenSource();
 

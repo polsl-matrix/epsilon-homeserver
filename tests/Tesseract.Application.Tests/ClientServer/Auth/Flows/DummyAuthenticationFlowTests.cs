@@ -21,7 +21,7 @@ public class DummyAuthenticationFlowTests
         var user = await _flow.AuthenticateAsync(string.Empty, null, CancellationToken.None);
 
         user.Should().NotBeNull();
-        user.Id.Should().Be(Guid.Empty);
+        user.Id.Value.Should().Be(Guid.Empty);
         user.Handle.ToString().Should().ContainEquivalentOf("dummy");
     }
 }
