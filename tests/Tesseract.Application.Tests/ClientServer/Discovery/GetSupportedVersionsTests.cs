@@ -22,7 +22,7 @@ public class GetSupportedVersionsTests
     [InlineData((object)new[] { "r0.0.1", "v1.1", "v.1.18-alpha" })]
     public async Task Handle_RepositoryReturnsVersions_ReturnsResponseWithIdenticalVersions(string[] versions)
     {
-        _repository.GetSupportedVersions(Arg.Any<CancellationToken>())
+        _repository.GetSupportedVersionsAsync(Arg.Any<CancellationToken>())
             .Returns(versions);
 
         var response = await _handler.Handle(new GetSupportedVersions.Query(), CancellationToken.None);
@@ -37,15 +37,15 @@ public class GetSupportedVersionsTests
 
         await _handler.Handle(new GetSupportedVersions.Query(), cancellationSource.Token);
 
-        await _repository.Received().GetSupportedVersions(cancellationSource.Token);
+        await _repository.Received().GetSupportedVersionsAsync(cancellationSource.Token);
     }
 
     [Fact]
-    public async Task Handle_RepositoryThrowsException()
+    public async Task Handle_RepositoryThrowsException_ForwardsSameException()
     {
         var exception = new InvalidOperationException("Something went wrong.");
 
-        _repository.GetSupportedVersions(Arg.Any<CancellationToken>())
+        _repository.GetSupportedVersionsAsync(Arg.Any<CancellationToken>())
             .Throws(exception);
 
         var act = () => _handler.Handle(new GetSupportedVersions.Query(), CancellationToken.None);

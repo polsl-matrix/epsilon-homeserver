@@ -24,7 +24,7 @@ internal sealed class SessionFactory(
     private async Task<(string, byte[])> CreateTokenAsync(
         ITokenService tokenService, CancellationToken cancellationToken)
     {
-        var token = await tokenService.Create(cancellationToken);
+        var token = await tokenService.CreateAsync(cancellationToken);
         var hash = await hashService.HashAsync(token, cancellationToken);
         return (token, hash);
     }

@@ -1,6 +1,6 @@
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Cryptography;
-using Tesseract.Application.ClientServer.Auth;
+using Tesseract.Application.ClientServer.Auth.Abstractions;
 
 namespace Tesseract.Infrastructure.ClientServer.Auth;
 
@@ -8,7 +8,7 @@ public class OpaqueTokenService : IAccessTokenService, IRefreshTokenService
 {
     public const int RawByteCount = 32;
 
-    public Task<string> Create(CancellationToken _)
+    public Task<string> CreateAsync(CancellationToken _)
     {
         var token = RandomNumberGenerator.GetBytes(RawByteCount);
 

@@ -20,9 +20,7 @@ public class GlobalExceptionHandlerTests
 
     public static TheoryData<Exception, int, MatrixErrorResponse> ValidMappings => new()
     {
-        // @formatter:off
         { new Exception(), StatusCodes.Status500InternalServerError, new MatrixErrorResponse(MatrixErrorCodes.Unknown, "An unknown error has occurred.") },
-        // @formatter:on
     };
 
     [Theory]

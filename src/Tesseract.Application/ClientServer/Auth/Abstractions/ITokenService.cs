@@ -1,8 +1,8 @@
-namespace Tesseract.Application.ClientServer.Auth;
+namespace Tesseract.Application.ClientServer.Auth.Abstractions;
 
 public interface ITokenService
 {
-    Task<string> Create(CancellationToken cancellationToken);
+    Task<string> CreateAsync(CancellationToken cancellationToken);
 }
 
 public interface IAccessTokenService : ITokenService;

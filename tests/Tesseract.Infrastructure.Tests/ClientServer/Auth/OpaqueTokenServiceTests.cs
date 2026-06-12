@@ -18,7 +18,7 @@ public class OpaqueTokenServiceTests
         var length = GetBase64EncodedLength(OpaqueTokenService.RawByteCount);
 
         // Act
-        var token = await _service.Create(CancellationToken.None);
+        var token = await _service.CreateAsync(CancellationToken.None);
 
         // Assert
         token.Length.Should().Be(length, "{0}-byte Base64 encoded sequence should contain {1} bytes",
@@ -36,8 +36,8 @@ public class OpaqueTokenServiceTests
     [Fact]
     public async Task Create_CalledMultipleTimes_ReturnsUniqueTokens()
     {
-        var a = await _service.Create(CancellationToken.None);
-        var b = await _service.Create(CancellationToken.None);
+        var a = await _service.CreateAsync(CancellationToken.None);
+        var b = await _service.CreateAsync(CancellationToken.None);
 
         a.Should().NotBe(b, "tokens must be unique");
     }

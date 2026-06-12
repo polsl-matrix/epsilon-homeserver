@@ -29,8 +29,8 @@ public class SessionFactoryTests
     {
         var user = new User(UserId.Random(), new Handle("toby", "fi.sh"));
 
-        _accessTokenService.Create(Arg.Any<CancellationToken>()).Returns("mock-accessToken!1");
-        _refreshTokenService.Create(Arg.Any<CancellationToken>()).Returns("mock-refreshToken@2");
+        _accessTokenService.CreateAsync(Arg.Any<CancellationToken>()).Returns("mock-accessToken!1");
+        _refreshTokenService.CreateAsync(Arg.Any<CancellationToken>()).Returns("mock-refreshToken@2");
         _hashService.HashAsync("mock-accessToken!1", Arg.Any<CancellationToken>()).Returns("hash-accessToken#3"u8.ToArray());
         _hashService.HashAsync("mock-refreshToken@2", Arg.Any<CancellationToken>()).Returns("hash-refreshToken$4"u8.ToArray());
 
@@ -60,14 +60,14 @@ public class SessionFactoryTests
         var cancellationSource = new CancellationTokenSource();
 
         var user = new User(UserId.Random(), new Handle("hairy", "be.ar"));
-        _accessTokenService.Create(Arg.Any<CancellationToken>()).Returns("test-accessToken!1");
-        _refreshTokenService.Create(Arg.Any<CancellationToken>()).Returns("test-refreshToken@2");
+        _accessTokenService.CreateAsync(Arg.Any<CancellationToken>()).Returns("test-accessToken!1");
+        _refreshTokenService.CreateAsync(Arg.Any<CancellationToken>()).Returns("test-refreshToken@2");
         _hashService.HashAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns([]);
 
         await _factory.CreateAsync(user, cancellationSource.Token);
 
-        await _accessTokenService.Received().Create(cancellationSource.Token);
-        await _refreshTokenService.Received().Create(cancellationSource.Token);
+        await _accessTokenService.Received().CreateAsync(cancellationSource.Token);
+        await _refreshTokenService.Received().CreateAsync(cancellationSource.Token);
         await _hashService.Received().HashAsync("test-accessToken!1", cancellationSource.Token);
         await _hashService.Received().HashAsync("test-refreshToken@2", cancellationSource.Token);
     }

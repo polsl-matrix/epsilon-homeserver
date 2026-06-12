@@ -15,4 +15,8 @@
         <ProjectReference Include="..\Tesseract.Domain\Tesseract.Domain.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <Folder Include="ClientServer\Auth\UseCases\"/>
+    </ItemGroup>
+
 </Project>
