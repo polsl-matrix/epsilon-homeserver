@@ -1,6 +1,6 @@
 using Tesseract.Domain.Users.Values;
 
-namespace Tesseract.Domain.Users.Entities;
+namespace Tesseract.Domain.Users;
 
 public sealed class User(Guid id, Handle handle)
 {

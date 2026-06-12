@@ -3,7 +3,7 @@ using NSubstitute;
 using Tesseract.Application.ClientServer.Auth;
 using Tesseract.Application.ClientServer.Auth.Abstractions;
 using Tesseract.Application.ClientServer.Auth.Exceptions;
-using Tesseract.Domain.Users.Entities;
+using Tesseract.Domain.Users;
 using Tesseract.Domain.Users.Values;
 
 namespace Tesseract.Application.Tests.ClientServer.Auth;

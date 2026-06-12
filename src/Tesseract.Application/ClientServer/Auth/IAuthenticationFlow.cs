@@ -1,4 +1,4 @@
-using Tesseract.Domain.Users.Entities;
+using Tesseract.Domain.Users;
 
 namespace Tesseract.Application.ClientServer.Auth.Abstractions;
 

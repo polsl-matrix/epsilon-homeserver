@@ -50,8 +50,9 @@ public class HandleTests
         var result = Handle.TryParse(input, out var handle);
 
         result.Should().BeTrue();
-        handle!.Localpart.Value.Should().Be(localpart);
-        handle!.Domain.Value.Should().Be(domain);
+        handle.Should().NotBeNull();
+        handle.Value.Localpart.Value.Should().Be(localpart);
+        handle.Value.Domain.Value.Should().Be(domain);
     }
 
     [Theory]

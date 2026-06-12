@@ -3,7 +3,7 @@ using MediatR;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Tesseract.Application.ClientServer.Auth;
-using Tesseract.Domain.Users.Entities;
+using Tesseract.Domain.Users;
 using Tesseract.Domain.Users.Values;
 using Tesseract.Web.ClientServer.Auth;
 using Tesseract.Web.ClientServer.Auth.Contracts;
