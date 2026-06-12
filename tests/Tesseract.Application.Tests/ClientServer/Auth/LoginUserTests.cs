@@ -1,9 +1,9 @@
 using FluentAssertions;
 using NSubstitute;
-using Tesseract.Application.ClientServer.Auth;
 using Tesseract.Application.ClientServer.Auth.Abstractions;
 using Tesseract.Application.ClientServer.Auth.Exceptions;
 using Tesseract.Application.ClientServer.Auth.Models;
+using Tesseract.Application.ClientServer.Auth.UseCases;
 using Tesseract.Domain.Users;
 using Tesseract.Domain.Users.Values;
 

@@ -2,7 +2,7 @@ using FluentAssertions;
 using MediatR;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using Tesseract.Application.ClientServer.Auth;
+using Tesseract.Application.ClientServer.Auth.UseCases;
 using Tesseract.Domain.Users.Values;
 using Tesseract.Web.ClientServer.Auth;
 using Tesseract.Web.ClientServer.Auth.Contracts;
