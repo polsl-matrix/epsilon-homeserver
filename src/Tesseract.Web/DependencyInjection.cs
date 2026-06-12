@@ -28,6 +28,9 @@ public static class DependencyInjection
 
             services.AddSingleton<IMatrixExceptionMapper, MatrixExceptionMapper>();
 
+            services.AddAuthentication();
+            services.AddAuthorization();
+
             services.AddControllers();
             services.AddOpenApi();
         }
