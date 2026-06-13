@@ -19,8 +19,6 @@ public class OpaqueTokenAuthenticationHandler(
     ISystemClock clock)
     : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder, clock)
 {
-    private const string BearerScheme = "Bearer";
-
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         if (GetToken() is not { } token)
@@ -53,7 +51,7 @@ public class OpaqueTokenAuthenticationHandler(
             return null;
         }
 
-        if (!string.Equals(header.Scheme, BearerScheme, StringComparison.InvariantCultureIgnoreCase))
+        if (!string.Equals(header.Scheme, SchemeNames.Bearer, StringComparison.InvariantCultureIgnoreCase))
         {
             return null;
         }
