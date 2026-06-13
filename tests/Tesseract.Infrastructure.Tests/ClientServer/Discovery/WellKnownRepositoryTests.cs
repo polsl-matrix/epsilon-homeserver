@@ -1,7 +1,6 @@
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Tesseract.Application.ClientServer.Discovery;
-using Tesseract.Domain.Discovery.Values;
 using Tesseract.Infrastructure.ClientServer.Discovery;
 
 namespace Tesseract.Infrastructure.Tests.ClientServer.Discovery;
@@ -13,8 +12,14 @@ public class WellKnownRepositoryTests
     {
         var options = Options.Create(new MatrixOptions
         {
-            Homeserver = new HomeserverOptions { BaseUrl = "https://hs.example.com" },
-            IdentityServer = new IdentityServerOptions { BaseUrl = "https://is.example.com" },
+            Homeserver = new HomeserverOptions
+            {
+                BaseUrl = "https://hs.example.com",
+            },
+            IdentityServer = new IdentityServerOptions
+            {
+                BaseUrl = "https://is.example.com",
+            },
         });
 
         var repository = new WellKnownRepository(options);
@@ -31,7 +36,10 @@ public class WellKnownRepositoryTests
     {
         var options = Options.Create(new MatrixOptions
         {
-            Homeserver = new HomeserverOptions { BaseUrl = "https://hs.example.com" },
+            Homeserver = new HomeserverOptions
+            {
+                BaseUrl = "https://hs.example.com",
+            },
         });
 
         var repository = new WellKnownRepository(options);
@@ -60,7 +68,10 @@ public class WellKnownRepositoryTests
     {
         var options = Options.Create(new MatrixOptions
         {
-            Homeserver = new HomeserverOptions { BaseUrl = "" },
+            Homeserver = new HomeserverOptions
+            {
+                BaseUrl = "",
+            },
         });
 
         var repository = new WellKnownRepository(options);

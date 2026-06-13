@@ -18,7 +18,8 @@ public class WellKnownRepository(IOptions<MatrixOptions> options) : IWellKnownRe
 
         if (matrix.Homeserver is null || string.IsNullOrWhiteSpace(matrix.Homeserver.BaseUrl))
         {
-            throw new InvalidOperationException("Matrix:Homeserver:BaseUrl configuration is required when Matrix section is present.");
+            throw new InvalidOperationException(
+                "Matrix:Homeserver:BaseUrl configuration is required when Matrix section is present.");
         }
 
         string? identityServerBaseUrl = null;

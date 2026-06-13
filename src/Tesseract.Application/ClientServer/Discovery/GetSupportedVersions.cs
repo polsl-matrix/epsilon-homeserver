@@ -12,7 +12,7 @@ public static class GetSupportedVersions
         public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
         {
             var versions = await versionRepository
-                .GetSupportedVersions(cancellationToken);
+                .GetSupportedVersionsAsync(cancellationToken);
 
             return new Response(versions.ToList());
         }

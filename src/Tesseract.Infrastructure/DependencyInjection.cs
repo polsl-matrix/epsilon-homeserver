@@ -1,11 +1,18 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Tesseract.Application.ClientServer.Auth.Abstractions;
 using Tesseract.Application.ClientServer.Discovery;
 using Tesseract.Application.ClientServer.Discovery.Abstractions;
+using Tesseract.Application.ClientServer.Identity.Abstractions;
+using Tesseract.Application.Common.Configuration;
+using Tesseract.Infrastructure.ClientServer.Auth.Repositories;
+using Tesseract.Infrastructure.ClientServer.Auth.Services;
 using Tesseract.Infrastructure.ClientServer.Discovery;
+using Tesseract.Infrastructure.ClientServer.Identity.Repositories;
+using Tesseract.Infrastructure.Common.Configuration;
 using Tesseract.Infrastructure.Common.Database;
-using Tesseract.Infrastructure.Common.Database.Abstractions;
+using Tesseract.Infrastructure.Common.Database.Interfaces;
 
 namespace Tesseract.Infrastructure;
 
@@ -21,10 +28,24 @@ public static class DependencyInjection
             builder.Services.AddSingleton<IDbConnectionFactory>(_ =>
                 new NpgsqlConnectionFactory(connectionString));
 
+            builder.Services.AddOptions<MatrixConfigurationOptions>()
+                .BindConfiguration(MatrixConfigurationOptions.SectionName)
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
+
             builder.Services.Configure<MatrixOptions>(
                 builder.Configuration.GetSection("Matrix"));
 
-            builder.Services.AddScoped<IVersionRepository, VersionRepository>();
+            builder.Services.AddScoped<IAccessTokenService, OpaqueTokenService>();
+            builder.Services.AddScoped<IHashService, Sha256Hasher>();
+            builder.Services.AddScoped<IPasswordHasher, Argon2PasswordHasher>();
+            builder.Services.AddScoped<IRefreshTokenService, OpaqueTokenService>();
+
+            builder.Services.AddScoped<IMatrixConfigurationRepository, MatrixConfigurationRepository>();
+            builder.Services.AddScoped<IPasswordRepository, DbPasswordRepository>();
+            builder.Services.AddScoped<ISessionRepository, DbSessionRepository>();
+            builder.Services.AddScoped<IUserRepository, DbUserRepository>();
+            builder.Services.AddScoped<IVersionRepository, InMemoryVersionRepository>();
             builder.Services.AddScoped<IWellKnownRepository, WellKnownRepository>();
         }
     }

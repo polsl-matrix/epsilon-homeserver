@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Diagnostics;
+using Tesseract.Web.Common.Errors.Interfaces;
 
 namespace Tesseract.Web.Common.Errors;
 

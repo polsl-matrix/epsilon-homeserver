@@ -4,6 +4,7 @@ using NSubstitute;
 using System.Text.Json;
 using Tesseract.Web.Common.Errors;
 using Tesseract.Web.Common.Errors.Contracts;
+using Tesseract.Web.Common.Errors.Interfaces;
 
 namespace Tesseract.Web.Tests.Common.Errors;
 
@@ -20,9 +21,7 @@ public class GlobalExceptionHandlerTests
 
     public static TheoryData<Exception, int, MatrixErrorResponse> ValidMappings => new()
     {
-        // @formatter:off
         { new Exception(), StatusCodes.Status500InternalServerError, new MatrixErrorResponse(MatrixErrorCodes.Unknown, "An unknown error has occurred.") },
-        // @formatter:on
     };
 
     [Theory]

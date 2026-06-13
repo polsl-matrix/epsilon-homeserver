@@ -1,6 +1,5 @@
 using MediatR;
 using Tesseract.Application.ClientServer.Discovery.Abstractions;
-using Tesseract.Domain.Discovery.Values;
 
 namespace Tesseract.Application.ClientServer.Discovery;
 
