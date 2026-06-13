@@ -20,6 +20,7 @@ public static class DependencyInjection
             });
 
             services.AddScoped<IAuthenticationFlow, DummyAuthenticationFlow>();
+            services.AddScoped<IAuthenticationFlow, PasswordAuthenticationFlow>();
             services.AddScoped<ISessionFactory, SessionFactory>();
         }
     }

@@ -50,8 +50,8 @@ internal class DbUserRepository(IDbConnectionFactory dbConnectionFactory) : IUse
 
         var parameters = new
         {
-            handle.Localpart,
-            handle.Domain,
+            Localpart = handle.Localpart.Value,
+            Domain = handle.Domain.Value,
         };
 
         if (await connection.QuerySingleOrDefaultAsync<UserDao>(sql, parameters) is not { } userDao)
