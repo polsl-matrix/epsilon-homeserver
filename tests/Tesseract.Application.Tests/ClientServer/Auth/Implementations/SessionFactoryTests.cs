@@ -1,11 +1,11 @@
 using FluentAssertions;
 using NSubstitute;
-using Tesseract.Application.ClientServer.Auth;
 using Tesseract.Application.ClientServer.Auth.Abstractions;
+using Tesseract.Application.ClientServer.Auth.Implementations;
 using Tesseract.Domain.Users;
 using Tesseract.Domain.Users.Values;
 
-namespace Tesseract.Application.Tests.ClientServer.Auth;
+namespace Tesseract.Application.Tests.ClientServer.Auth.Implementations;
 
 public class SessionFactoryTests
 {
@@ -27,7 +27,7 @@ public class SessionFactoryTests
     [Fact]
     public async Task CreateAsync_ReturnsValidSessionAndTokens()
     {
-        var user = new User(UserId.Random(), new Handle("toby", "fi.sh"));
+        var user = new User(UserId.Random(), new UserHandle("toby", "fi.sh"));
 
         _accessTokenService.CreateAsync(Arg.Any<CancellationToken>()).Returns("mock-accessToken!1");
         _refreshTokenService.CreateAsync(Arg.Any<CancellationToken>()).Returns("mock-refreshToken@2");
@@ -46,7 +46,7 @@ public class SessionFactoryTests
     [Fact]
     public async Task CreateAsync_GeneratesUniqueSessionIds()
     {
-        var user = new User(UserId.Random(), new Handle("tom", "the.cat"));
+        var user = new User(UserId.Random(), new UserHandle("tom", "the.cat"));
 
         var (a, _, _) = await _factory.CreateAsync(user, CancellationToken.None);
         var (b, _, _) = await _factory.CreateAsync(user, CancellationToken.None);
@@ -59,7 +59,7 @@ public class SessionFactoryTests
     {
         var cancellationSource = new CancellationTokenSource();
 
-        var user = new User(UserId.Random(), new Handle("hairy", "be.ar"));
+        var user = new User(UserId.Random(), new UserHandle("hairy", "be.ar"));
         _accessTokenService.CreateAsync(Arg.Any<CancellationToken>()).Returns("test-accessToken!1");
         _refreshTokenService.CreateAsync(Arg.Any<CancellationToken>()).Returns("test-refreshToken@2");
         _hashService.HashAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns([]);

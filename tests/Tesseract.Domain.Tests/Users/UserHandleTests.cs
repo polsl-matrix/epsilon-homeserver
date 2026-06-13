@@ -3,14 +3,14 @@ using Tesseract.Domain.Users.Values;
 
 namespace Tesseract.Domain.Tests.Users;
 
-public class HandleTests
+public class UserHandleTests
 {
     [Theory]
     [InlineData("jerry.smith", "localhost", "@jerry.smith:localhost")]
     [InlineData("marry/cole", "192.168.15.39:8391", "@marry/cole:192.168.15.39:8391")]
     public void ToString_Always_ReturnsValidTextHandle(string localpart, string domain, string expected)
     {
-        var handle = new Handle(localpart, domain);
+        var handle = new UserHandle(localpart, domain);
 
         var result = handle.ToString();
 
@@ -20,7 +20,7 @@ public class HandleTests
     [Fact]
     public void TryParse_WithEmptyString_ReturnsFalse()
     {
-        var result = Handle.TryParse(string.Empty, out _);
+        var result = UserHandle.TryParse(string.Empty, out _);
 
         result.Should().BeFalse("empty string is not a valid handle");
     }
@@ -28,7 +28,7 @@ public class HandleTests
     [Fact]
     public void TryParse_WithNoAtSign_ReturnsFalse()
     {
-        var result = Handle.TryParse("neo:zeros-n-ones", out _);
+        var result = UserHandle.TryParse("neo:zeros-n-ones", out _);
 
         result.Should().BeFalse("valid handles must contain @ sign");
     }
@@ -36,7 +36,7 @@ public class HandleTests
     [Fact]
     public void TryParse_WithNoSeparator_ReturnsFalse()
     {
-        var result = Handle.TryParse("@neo_zeros-n-ones", out _);
+        var result = UserHandle.TryParse("@neo_zeros-n-ones", out _);
 
         result.Should().BeFalse("valid handles must contain : sign");
     }
@@ -47,7 +47,7 @@ public class HandleTests
     public void TryParse_WithValidHandle_ShouldSplitPartsCorrectlyAndReturnTrue(
         string input, string localpart, string domain)
     {
-        var result = Handle.TryParse(input, out var handle);
+        var result = UserHandle.TryParse(input, out var handle);
 
         result.Should().BeTrue();
         handle.Should().NotBeNull();
@@ -60,7 +60,7 @@ public class HandleTests
     [InlineData("@blobfish:fe80:::3000")]
     public void TryParse_WithInvalidHandle_ReturnsFalse(string input)
     {
-        var result = Handle.TryParse(input, out _);
+        var result = UserHandle.TryParse(input, out _);
 
         result.Should().BeFalse();
     }

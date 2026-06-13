@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Tesseract.Application.ClientServer.Auth;
 using Tesseract.Application.ClientServer.Auth.Abstractions;
 using Tesseract.Application.ClientServer.Auth.Flows;
+using Tesseract.Application.ClientServer.Auth.Implementations;
 
 namespace Tesseract.Application;
 

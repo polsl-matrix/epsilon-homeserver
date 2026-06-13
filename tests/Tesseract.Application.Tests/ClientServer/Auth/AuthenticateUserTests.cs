@@ -1,12 +1,12 @@
 using FluentAssertions;
 using NSubstitute;
+using Tesseract.Application.ClientServer.Auth;
 using Tesseract.Application.ClientServer.Auth.Abstractions;
 using Tesseract.Application.ClientServer.Auth.Models;
-using Tesseract.Application.ClientServer.Auth.UseCases;
 using Tesseract.Domain.Users;
 using Tesseract.Domain.Users.Values;
 
-namespace Tesseract.Application.Tests.ClientServer.Auth.UseCases;
+namespace Tesseract.Application.Tests.ClientServer.Auth;
 
 public class AuthenticateUserTests
 {
@@ -32,7 +32,7 @@ public class AuthenticateUserTests
 
         var refreshTokenHash = "hash-accessToken@2"u8.ToArray();
 
-        var user = new User(UserId.Random(), new Handle("harry", "mel.on"));
+        var user = new User(UserId.Random(), new UserHandle("harry", "mel.on"));
         var session = new Session(SessionId.Random(), user.Id, refreshTokenHash, "hash-refreshToken#3"u8.ToArray());
         _hashService.HashAsync("mock-accessToken!1", Arg.Any<CancellationToken>()).Returns(refreshTokenHash);
         _sessionRepository.GetByAccessTokenAsync(refreshTokenHash, Arg.Any<CancellationToken>()).Returns(session);
@@ -64,7 +64,7 @@ public class AuthenticateUserTests
         var command = new AuthenticateUser.Command("mock-accessToken!1");
         var refreshTokenHash = "hash-accessToken@2"u8.ToArray();
 
-        var user = new User(UserId.Random(), new Handle("jake", "smith.ukulele"));
+        var user = new User(UserId.Random(), new UserHandle("jake", "smith.ukulele"));
         var session = new Session(SessionId.Random(), user.Id, refreshTokenHash, "hash-refreshToken#3"u8.ToArray());
         _hashService.HashAsync("mock-accessToken!1", Arg.Any<CancellationToken>()).Returns(refreshTokenHash);
         _sessionRepository.GetByAccessTokenAsync(refreshTokenHash, Arg.Any<CancellationToken>()).Returns(session);

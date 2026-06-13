@@ -26,7 +26,7 @@ public class DbUserRepository(IDbConnectionFactory dbConnectionFactory) : IUserR
         }
 
         var userId = new UserId(dao.UserId);
-        var handle = new Handle(dao.Localpart, dao.Domain);
+        var handle = new UserHandle(dao.Localpart, dao.Domain);
 
         return new User(userId, handle);
     }

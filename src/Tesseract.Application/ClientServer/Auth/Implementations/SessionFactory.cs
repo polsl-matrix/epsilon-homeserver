@@ -2,7 +2,7 @@ using Tesseract.Application.ClientServer.Auth.Abstractions;
 using Tesseract.Application.ClientServer.Auth.Models;
 using Tesseract.Domain.Users;
 
-namespace Tesseract.Application.ClientServer.Auth;
+namespace Tesseract.Application.ClientServer.Auth.Implementations;
 
 internal sealed class SessionFactory(
     IHashService hashService,

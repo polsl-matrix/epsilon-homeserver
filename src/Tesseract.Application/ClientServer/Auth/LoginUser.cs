@@ -3,7 +3,7 @@ using Tesseract.Application.ClientServer.Auth.Abstractions;
 using Tesseract.Application.ClientServer.Auth.Exceptions;
 using Tesseract.Domain.Users.Values;
 
-namespace Tesseract.Application.ClientServer.Auth.UseCases;
+namespace Tesseract.Application.ClientServer.Auth;
 
 // TODO: Move this file to UseCases directory.
 public static class LoginUser
@@ -47,5 +47,5 @@ public static class LoginUser
         }
     }
 
-    public record Response(Handle Handle, string AccessToken, string RefreshToken);
+    public record Response(UserHandle Handle, string AccessToken, string RefreshToken);
 }

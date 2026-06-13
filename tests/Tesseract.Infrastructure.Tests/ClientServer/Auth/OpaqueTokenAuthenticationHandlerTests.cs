@@ -8,7 +8,7 @@ using Microsoft.Net.Http.Headers;
 using NSubstitute;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
-using Tesseract.Application.ClientServer.Auth.UseCases;
+using Tesseract.Application.ClientServer.Auth;
 using Tesseract.Domain.Users;
 using Tesseract.Domain.Users.Values;
 using Tesseract.Infrastructure.ClientServer.Auth;
@@ -118,7 +118,7 @@ public class OpaqueTokenAuthenticationHandlerTests
         var scheme = new AuthenticationScheme("scheme-name#1", "Scheme Name #1", typeof(OpaqueTokenAuthenticationHandler));
         await _handler.InitializeAsync(scheme, _httpContext);
 
-        var user = new User(UserId.Random(), new Handle("jack", "black.cherry"));
+        var user = new User(UserId.Random(), new UserHandle("jack", "black.cherry"));
         _mediator.Send(Arg.Any<AuthenticateUser.Command>(), Arg.Any<CancellationToken>())
             .Returns(new AuthenticateUser.Response(user));
 
@@ -140,7 +140,7 @@ public class OpaqueTokenAuthenticationHandlerTests
         var scheme = new AuthenticationScheme("Bearer", "Bearer", typeof(OpaqueTokenAuthenticationHandler));
         await _handler.InitializeAsync(scheme, _httpContext);
 
-        var user = new User(UserId.Random(), new Handle("6fire7", "water.flows"));
+        var user = new User(UserId.Random(), new UserHandle("6fire7", "water.flows"));
         _mediator
             .Send(Arg.Any<AuthenticateUser.Command>(), Arg.Any<CancellationToken>())
             .Returns(new AuthenticateUser.Response(user));

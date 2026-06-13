@@ -1,13 +1,13 @@
 using FluentAssertions;
 using NSubstitute;
+using Tesseract.Application.ClientServer.Auth;
 using Tesseract.Application.ClientServer.Auth.Abstractions;
 using Tesseract.Application.ClientServer.Auth.Exceptions;
 using Tesseract.Application.ClientServer.Auth.Models;
-using Tesseract.Application.ClientServer.Auth.UseCases;
 using Tesseract.Domain.Users;
 using Tesseract.Domain.Users.Values;
 
-namespace Tesseract.Application.Tests.ClientServer.Auth.UseCases;
+namespace Tesseract.Application.Tests.ClientServer.Auth;
 
 public class LoginUserTests
 {
@@ -32,7 +32,7 @@ public class LoginUserTests
     {
         var command = new LoginUser.Command("tom", "paws%", _flow.Type);
 
-        var user = new User(UserId.Random(), new Handle("tom", "whiskers.meow"));
+        var user = new User(UserId.Random(), new UserHandle("tom", "whiskers.meow"));
         var session = new Session(SessionId.Random(), user.Id, "hash-accessToken#3"u8.ToArray(), "hash-refreshToken$4"u8.ToArray());
         _flow.AuthenticateAsync(command.User, command.Password, Arg.Any<CancellationToken>()).Returns(user);
         _sessionFactory.CreateAsync(user, Arg.Any<CancellationToken>()).Returns((session, "mock-accessToken!1", "mock-refreshToken@2"));
@@ -75,7 +75,7 @@ public class LoginUserTests
         var cancellationSource = new CancellationTokenSource();
 
         var command = new LoginUser.Command("colt", "my_happy_password", _flow.Type);
-        var user = new User(UserId.Random(), new Handle("colt", "happi-happi.happi"));
+        var user = new User(UserId.Random(), new UserHandle("colt", "happi-happi.happi"));
         _flow.AuthenticateAsync(command.User, command.Password, cancellationSource.Token)
             .Returns(user);
 

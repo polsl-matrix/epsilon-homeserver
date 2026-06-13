@@ -2,7 +2,7 @@ using FluentAssertions;
 using MediatR;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using Tesseract.Application.ClientServer.Auth.UseCases;
+using Tesseract.Application.ClientServer.Auth;
 using Tesseract.Domain.Users.Values;
 using Tesseract.Web.ClientServer.Auth;
 using Tesseract.Web.ClientServer.Auth.Contracts;
@@ -20,7 +20,7 @@ public class AuthControllerTests
         _controller = new AuthController(_mediator);
     }
 
-    public static TheoryData<Handle> ValidHandles =>
+    public static TheoryData<UserHandle> ValidUserHandles =>
     [
         new("jerry", "example.com"),
         new("mike", "math.lovers"),
@@ -65,8 +65,8 @@ public class AuthControllerTests
     }
 
     [Theory]
-    [MemberData(nameof(ValidHandles))]
-    public async Task AuthenticateUser_MediatorReturnsResponse_MapsValuesCorrectly(Handle handle)
+    [MemberData(nameof(ValidUserHandles))]
+    public async Task AuthenticateUser_MediatorReturnsResponse_MapsValuesCorrectly(UserHandle handle)
     {
         var request = CreateEmptyAuthenticateUserRequest();
         var response = new LoginUser.Response(handle, string.Empty, string.Empty);
@@ -119,7 +119,7 @@ public class AuthControllerTests
     };
 
     private static LoginUser.Response CreateEmptyLoginUserResponse() => new(
-        new Handle("localpart", "domain"),
+        new UserHandle("localpart", "domain"),
         string.Empty, string.Empty
     );
 }

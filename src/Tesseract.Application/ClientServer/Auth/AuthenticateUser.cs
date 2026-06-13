@@ -2,7 +2,7 @@ using MediatR;
 using Tesseract.Application.ClientServer.Auth.Abstractions;
 using Tesseract.Domain.Users;
 
-namespace Tesseract.Application.ClientServer.Auth.UseCases;
+namespace Tesseract.Application.ClientServer.Auth;
 
 public static class AuthenticateUser
 {

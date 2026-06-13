@@ -3,9 +3,9 @@ using Tesseract.Domain.Common.Exceptions;
 
 namespace Tesseract.Domain.Users.Values;
 
-public readonly record struct Handle
+public readonly record struct UserHandle
 {
-    public Handle(string localpart, string domain)
+    public UserHandle(string localpart, string domain)
     {
         Localpart = localpart;
         Domain = domain;
@@ -16,7 +16,7 @@ public readonly record struct Handle
 
     public override string ToString() => $"@{Localpart}:{Domain}";
 
-    public static bool TryParse(string? value, [NotNullWhen(true)] out Handle? handle)
+    public static bool TryParse(string? value, [NotNullWhen(true)] out UserHandle? handle)
     {
         handle = null;
 
@@ -44,7 +44,7 @@ public readonly record struct Handle
 
         try
         {
-            handle = new Handle(localpart, domain);
+            handle = new UserHandle(localpart, domain);
             return true;
         }
         catch (ValidationException)

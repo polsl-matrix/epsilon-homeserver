@@ -10,7 +10,7 @@ public class DummyAuthenticationFlow : IAuthenticationFlow
 
     public Task<User?> AuthenticateAsync(string? login, string? password, CancellationToken cancellationToken)
     {
-        var handle = new Handle("dummy", "domain");
+        var handle = new UserHandle("dummy", "domain");
         var user = new User(new UserId(Guid.Empty), handle);
 
         return Task.FromResult<User?>(user);

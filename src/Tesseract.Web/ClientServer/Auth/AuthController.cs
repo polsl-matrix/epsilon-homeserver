@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Tesseract.Application.ClientServer.Auth.UseCases;
+using Tesseract.Application.ClientServer.Auth;
 using Tesseract.Web.ClientServer.Auth.Contracts;
 
 namespace Tesseract.Web.ClientServer.Auth;
