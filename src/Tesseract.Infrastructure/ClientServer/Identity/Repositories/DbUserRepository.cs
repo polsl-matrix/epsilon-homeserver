@@ -2,7 +2,7 @@ using Dapper;
 using Tesseract.Application.ClientServer.Identity.Abstractions;
 using Tesseract.Domain.Users;
 using Tesseract.Domain.Users.Values;
-using Tesseract.Infrastructure.ClientServer.Auth.Dao;
+using Tesseract.Infrastructure.ClientServer.Identity.Dao;
 using Tesseract.Infrastructure.Common.Database.Interfaces;
 
 namespace Tesseract.Infrastructure.ClientServer.Identity;

@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Tesseract.Domain.Users;
 using Tesseract.Domain.Users.Values;
-using Tesseract.Infrastructure.ClientServer.Auth.Dao;
+using Tesseract.Infrastructure.ClientServer.Identity.Dao;
 using Tesseract.Infrastructure.ClientServer.Identity.Mappers;
 
 namespace Tesseract.Infrastructure.Tests.ClientServer.Identity.Mappers;

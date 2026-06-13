@@ -1,6 +1,6 @@
 using Tesseract.Domain.Users;
 using Tesseract.Domain.Users.Values;
-using Tesseract.Infrastructure.ClientServer.Auth.Dao;
+using Tesseract.Infrastructure.ClientServer.Identity.Dao;
 
 namespace Tesseract.Infrastructure.ClientServer.Identity.Mappers;
 

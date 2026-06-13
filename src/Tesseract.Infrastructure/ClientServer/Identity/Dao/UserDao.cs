@@ -1,4 +1,4 @@
-namespace Tesseract.Infrastructure.ClientServer.Auth.Dao;
+namespace Tesseract.Infrastructure.ClientServer.Identity.Dao;
 
 internal sealed class UserDao
 {
