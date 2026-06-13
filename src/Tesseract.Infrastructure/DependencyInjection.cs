@@ -33,10 +33,12 @@ public static class DependencyInjection
                 .ValidateOnStart();
 
             builder.Services.AddScoped<IAccessTokenService, OpaqueTokenService>();
-            builder.Services.AddScoped<IHashService, Sha256HashService>();
+            builder.Services.AddScoped<IHashService, Sha256Hasher>();
+            builder.Services.AddScoped<IPasswordHasher, Argon2PasswordHasher>();
             builder.Services.AddScoped<IRefreshTokenService, OpaqueTokenService>();
 
             builder.Services.AddScoped<IMatrixConfigurationRepository, MatrixConfigurationRepository>();
+            builder.Services.AddScoped<IPasswordRepository, DbPasswordRepository>();
             builder.Services.AddScoped<ISessionRepository, DbSessionRepository>();
             builder.Services.AddScoped<IUserRepository, DbUserRepository>();
             builder.Services.AddScoped<IVersionRepository, InMemoryVersionRepository>();

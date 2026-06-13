@@ -3,9 +3,9 @@ using Tesseract.Infrastructure.ClientServer.Auth.Services;
 
 namespace Tesseract.Infrastructure.Tests.ClientServer.Auth.Services;
 
-public class Sha256HashServiceTests
+public class Sha256HasherTests
 {
-    private readonly Sha256HashService _service = new();
+    private readonly Sha256Hasher _service = new();
 
     [Fact]
     public async Task HashAsync_ReturnsValidSha256()

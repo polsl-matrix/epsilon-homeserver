@@ -7,23 +7,24 @@ using Tesseract.Domain.Users.Values;
 namespace Tesseract.Application.ClientServer.Auth.Flows;
 
 public class PasswordAuthenticationFlow(
+    IPasswordHasher passwordHasher,
     IUserRepository userRepository,
+    IPasswordRepository passwordRepository,
     IMatrixConfigurationRepository matrixConfigurationRepository)
     : IAuthenticationFlow
 {
     public string Type => "m.login.password";
 
-    public async Task<User?> AuthenticateAsync(string? login, string? password, CancellationToken cancellationToken)
+    public async Task<User?> AuthenticateAsync(string? login, string? passwordRaw, CancellationToken cancellationToken)
     {
-        if (await GetUserHandleAsync(login, cancellationToken) is not { } handle)
+        // FIXME: This implementation is vulnerable to timing attacks.
+        if (await GetUserHandleAsync(login, cancellationToken) is not { } handle
+            || await userRepository.GetByHandleAsync(handle, cancellationToken) is not { } user
+            || await passwordRepository.GetHashAsync(user.Id, cancellationToken) is not { } password
+            || !await passwordHasher.VerifyAsync(passwordRaw ?? string.Empty, password.Hash, cancellationToken))
         {
             return null;
         }
-
-        var user = await userRepository.GetByHandleAsync(handle, cancellationToken);
-
-        // TODO: Check password hash.
-        // TODO: Return user if correct.
 
         return user;
     }

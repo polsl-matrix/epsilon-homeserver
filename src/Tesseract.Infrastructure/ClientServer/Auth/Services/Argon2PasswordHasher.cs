@@ -4,7 +4,7 @@ using Tesseract.Application.ClientServer.Auth.Abstractions;
 
 namespace Tesseract.Infrastructure.ClientServer.Auth.Services;
 
-public class ArgonPasswordHasher : IPasswordHasher
+public class Argon2PasswordHasher : IPasswordHasher
 {
     public Task<byte[]> HashAsync(string input, CancellationToken cancellationToken)
     {
@@ -16,7 +16,7 @@ public class ArgonPasswordHasher : IPasswordHasher
 
     public Task<bool> VerifyAsync(string input, byte[] hash, CancellationToken cancellationToken)
     {
-        var encoded = hash.ToString();
+        var encoded = Encoding.UTF8.GetString(hash);
         var success = Argon2.Verify(encoded, input);
 
         return Task.FromResult(success);
