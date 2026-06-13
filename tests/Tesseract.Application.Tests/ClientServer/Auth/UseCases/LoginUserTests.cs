@@ -7,7 +7,7 @@ using Tesseract.Application.ClientServer.Auth.UseCases;
 using Tesseract.Domain.Users;
 using Tesseract.Domain.Users.Values;
 
-namespace Tesseract.Application.Tests.ClientServer.Auth;
+namespace Tesseract.Application.Tests.ClientServer.Auth.UseCases;
 
 public class LoginUserTests
 {
