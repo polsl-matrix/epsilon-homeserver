@@ -7,7 +7,7 @@ using Tesseract.Infrastructure.Common.Database.Interfaces;
 
 namespace Tesseract.Infrastructure.ClientServer.Auth;
 
-public class DbUserRepository(IDbConnectionFactory dbConnectionFactory) : IUserRepository
+internal class DbUserRepository(IDbConnectionFactory dbConnectionFactory) : IUserRepository
 {
     public async Task<User?> GetByIdAsync(UserId id, CancellationToken cancellationToken)
     {

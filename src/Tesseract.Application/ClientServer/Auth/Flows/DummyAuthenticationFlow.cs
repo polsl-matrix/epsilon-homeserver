@@ -4,7 +4,7 @@ using Tesseract.Domain.Users.Values;
 
 namespace Tesseract.Application.ClientServer.Auth.Flows;
 
-public class DummyAuthenticationFlow : IAuthenticationFlow
+internal class DummyAuthenticationFlow : IAuthenticationFlow
 {
     public string Type => "m.login.dummy";
 

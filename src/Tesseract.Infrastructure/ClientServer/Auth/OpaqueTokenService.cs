@@ -4,7 +4,7 @@ using Tesseract.Application.ClientServer.Auth.Abstractions;
 
 namespace Tesseract.Infrastructure.ClientServer.Auth;
 
-public class OpaqueTokenService : IAccessTokenService, IRefreshTokenService
+internal class OpaqueTokenService : IAccessTokenService, IRefreshTokenService
 {
     public const int RawByteCount = 32;
 

@@ -7,7 +7,7 @@ using Tesseract.Infrastructure.Common.Database.Interfaces;
 
 namespace Tesseract.Infrastructure.ClientServer.Auth;
 
-public class DbSessionRepository(IDbConnectionFactory dbConnectionFactory) : ISessionRepository
+internal class DbSessionRepository(IDbConnectionFactory dbConnectionFactory) : ISessionRepository
 {
     public async Task<Session?> GetByAccessTokenAsync(byte[] accessTokenHash, CancellationToken cancellationToken)
     {

@@ -5,7 +5,6 @@ using Tesseract.Domain.Users.Values;
 
 namespace Tesseract.Application.ClientServer.Auth;
 
-// TODO: Move this file to UseCases directory.
 public static class LoginUser
 {
     public record Command(string? User, string? Password, string Type) : IRequest<Response>;

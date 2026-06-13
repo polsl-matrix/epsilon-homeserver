@@ -37,10 +37,8 @@ public static class DependencyInjection
         {
             var services = builder.Services;
 
-            const string opaqueTokenAuthScheme = "opaque-token";
-
-            services.AddAuthentication(opaqueTokenAuthScheme)
-                .AddOpaqueToken(opaqueTokenAuthScheme);
+            services.AddAuthentication("AccessToken")
+                .AddOpaqueToken("AccessToken");
             services.AddAuthorization();
         }
     }

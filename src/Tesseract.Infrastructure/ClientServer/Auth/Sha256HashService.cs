@@ -4,7 +4,7 @@ using Tesseract.Application.ClientServer.Auth.Abstractions;
 
 namespace Tesseract.Infrastructure.ClientServer.Auth;
 
-public class Sha256HashService : IHashService
+internal class Sha256HashService : IHashService
 {
     public Task<byte[]> HashAsync(string input, CancellationToken cancellationToken)
     {
