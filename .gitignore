@@ -3,3 +3,16 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+.env
+.DS_Store
+.idea/.idea.Tesseract/.idea/*
+!.idea/.idea.Tesseract/.idea/vcs.xml
+!.idea/.idea.Tesseract/.idea/indexLayout.xml
+!.idea/.idea.Tesseract/.idea/.gitignore
+
+# Slop
+.agents
+AGENTS.md
+skills-lock.json
+# Slop resources
+matrix-docs.md

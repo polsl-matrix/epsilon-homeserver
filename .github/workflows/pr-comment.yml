@@ -1,0 +1,77 @@
+name: Pull request validation comment
+
+on:
+  workflow_run:
+    workflows:
+      - Pull request validation
+    types:
+      - completed
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: write
+
+jobs:
+  comment:
+    if: ${{ github.event.workflow_run.event == 'pull_request' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download summary artifact from workflow run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "Downloading artifact from workflow run ${{ github.event.workflow_run.id }}"
+          gh run download ${{ github.event.workflow_run.id }} --name pr-summary --dir pr-summary --repo ${{ github.repository }}
+          echo "Downloaded files:"
+          ls -la pr-summary/
+
+      - name: Upsert pull request comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const marker = '<!-- pr-validation-status -->';
+            const body = fs.readFileSync('pr-summary/pr-summary.md', 'utf8');
+
+            const prNumberMatch = body.match(/<!-- pr-number:(\d+) -->/);
+            if (!prNumberMatch) {
+              throw new Error('Could not find PR number marker in pr-summary.md');
+            }
+            const issue_number = Number(prNumberMatch[1]);
+            const { owner, repo } = context.repo;
+
+            console.log(`Looking for existing comments on PR #${issue_number}`);
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number,
+              per_page: 100,
+            });
+
+            const existing = comments.find((comment) =>
+              comment.user?.login === 'github-actions[bot]' && comment.body?.includes(marker),
+            );
+
+            if (existing) {
+              console.log(`Updating existing comment ${existing.id}`);
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existing.id,
+                body,
+              });
+              console.log('Comment updated successfully');
+              return;
+            }
+
+            console.log('Creating new comment');
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number,
+              body,
+            });
+            console.log('Comment created successfully');

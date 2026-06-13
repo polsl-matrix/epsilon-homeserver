@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Tesseract.Application.ClientServer.Auth.Abstractions;
+using Tesseract.Application.ClientServer.Discovery;
 using Tesseract.Application.ClientServer.Discovery.Abstractions;
 using Tesseract.Application.ClientServer.Identity.Abstractions;
 using Tesseract.Application.Common.Configuration;
@@ -32,6 +33,9 @@ public static class DependencyInjection
                 .ValidateDataAnnotations()
                 .ValidateOnStart();
 
+            builder.Services.Configure<MatrixOptions>(
+                builder.Configuration.GetSection("Matrix"));
+
             builder.Services.AddScoped<IAccessTokenService, OpaqueTokenService>();
             builder.Services.AddScoped<IHashService, Sha256Hasher>();
             builder.Services.AddScoped<IPasswordHasher, Argon2PasswordHasher>();
@@ -42,6 +46,7 @@ public static class DependencyInjection
             builder.Services.AddScoped<ISessionRepository, DbSessionRepository>();
             builder.Services.AddScoped<IUserRepository, DbUserRepository>();
             builder.Services.AddScoped<IVersionRepository, InMemoryVersionRepository>();
+            builder.Services.AddScoped<IWellKnownRepository, WellKnownRepository>();
         }
     }
 }
