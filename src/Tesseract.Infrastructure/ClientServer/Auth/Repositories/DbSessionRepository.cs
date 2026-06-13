@@ -1,8 +1,8 @@
 using Dapper;
 using Tesseract.Application.ClientServer.Auth.Abstractions;
 using Tesseract.Application.ClientServer.Auth.Models;
-using Tesseract.Domain.Users;
 using Tesseract.Infrastructure.ClientServer.Auth.Dao;
+using Tesseract.Infrastructure.ClientServer.Auth.Mappers;
 using Tesseract.Infrastructure.Common.Database.Interfaces;
 
 namespace Tesseract.Infrastructure.ClientServer.Auth.Repositories;
@@ -14,9 +14,9 @@ internal class DbSessionRepository(IDbConnectionFactory dbConnectionFactory) : I
         using var connection = dbConnectionFactory.CreateConnection();
 
         const string sql = $"""
-                            SELECT session_id {nameof(SessionDao.SessionId)},
-                                   user_id {nameof(SessionDao.UserId)},
-                                   current_access_token_hash {nameof(SessionDao.CurrentAccessTokenHash)},
+                            SELECT session_id                 {nameof(SessionDao.SessionId)},
+                                   user_id                    {nameof(SessionDao.UserId)},
+                                   current_access_token_hash  {nameof(SessionDao.CurrentAccessTokenHash)},
                                    current_refresh_token_hash {nameof(SessionDao.CurrentRefreshTokenHash)}
                             FROM auth.sessions
                             WHERE current_access_token_hash = @AccessTokenHash;
@@ -27,15 +27,12 @@ internal class DbSessionRepository(IDbConnectionFactory dbConnectionFactory) : I
             AccessTokenHash = accessTokenHash,
         };
 
-        if (await connection.QuerySingleOrDefaultAsync<SessionDao>(sql, parameters) is not { } dao)
+        if (await connection.QuerySingleOrDefaultAsync<SessionDao>(sql, parameters) is not { } sessionDao)
         {
             return null;
         }
 
-        var sessionId = new SessionId(dao.SessionId);
-        var userId = new UserId(dao.UserId);
-
-        return new Session(sessionId, userId, dao.CurrentAccessTokenHash, dao.CurrentRefreshTokenHash);
+        return sessionDao.ToDomain();
     }
 
     public async Task UpsertAsync(Session session, CancellationToken cancellationToken)
