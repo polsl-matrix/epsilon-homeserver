@@ -17,10 +17,16 @@ internal class DbUserRepository(IDbConnectionFactory dbConnectionFactory) : IUse
                             SELECT user_id {nameof(UserDao.UserId)},
                                    localpart {nameof(UserDao.Localpart)},
                                    domain {nameof(UserDao.Domain)}
-                            FROM identity.users;
+                            FROM identity.users
+                            WHERE user_id = @UserId;
                             """;
 
-        if (await connection.QuerySingleOrDefaultAsync<UserDao>(sql) is not { } dao)
+        var parameters = new
+        {
+            UserId = id.Value,
+        };
+
+        if (await connection.QuerySingleOrDefaultAsync<UserDao>(sql, parameters) is not { } dao)
         {
             return null;
         }
