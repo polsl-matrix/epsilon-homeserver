@@ -12,3 +12,11 @@ CREATE TABLE IF NOT EXISTS auth.sessions
     PRIMARY KEY (session_id),
     FOREIGN KEY (user_id) REFERENCES identity.users (user_id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS auth.passwords
+(
+    user_id       UUID  NOT NULL UNIQUE,
+    password_hash BYTEA NOT NULL,
+
+    FOREIGN KEY (user_id) REFERENCES identity.users (user_id) ON DELETE CASCADE
+);
