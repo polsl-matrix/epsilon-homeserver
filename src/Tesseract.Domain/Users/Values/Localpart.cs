@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
+using Tesseract.Domain.Common.Constants;
 using Tesseract.Domain.Common.Exceptions;
 
 namespace Tesseract.Domain.Users.Values;
@@ -20,7 +21,7 @@ public partial record Localpart
 
     public string Value { get; }
 
-    [GeneratedRegex(@"^[0-9a-z\-.=_/+]{1,255}$")]
+    [GeneratedRegex(Patterns.Localpart)]
     private static partial Regex LocalpartRegex { get; }
 
     private static bool IsValidLocalpart(string value)
