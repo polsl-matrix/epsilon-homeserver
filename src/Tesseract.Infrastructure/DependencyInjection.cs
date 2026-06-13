@@ -7,7 +7,7 @@ using Tesseract.Application.ClientServer.Identity.Abstractions;
 using Tesseract.Infrastructure.ClientServer.Auth.Repositories;
 using Tesseract.Infrastructure.ClientServer.Auth.Services;
 using Tesseract.Infrastructure.ClientServer.Discovery;
-using Tesseract.Infrastructure.ClientServer.Identity;
+using Tesseract.Infrastructure.ClientServer.Identity.Repositories;
 using Tesseract.Infrastructure.Common.Database;
 using Tesseract.Infrastructure.Common.Database.Interfaces;
 
