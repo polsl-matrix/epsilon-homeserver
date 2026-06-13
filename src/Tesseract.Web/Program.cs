@@ -12,6 +12,7 @@ builder.Host.AddLogging();
 builder.AddApplication();
 builder.AddInfrastructure();
 builder.AddWeb();
+builder.AddAuth();
 
 builder.AddOpenTelemetry();
 

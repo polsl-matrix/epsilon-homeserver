@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Tesseract.Infrastructure.ClientServer.Auth.Extensions;
 using Tesseract.Web.Common.Errors;
 using Tesseract.Web.Common.Errors.Interfaces;
 
@@ -28,11 +29,19 @@ public static class DependencyInjection
 
             services.AddSingleton<IMatrixExceptionMapper, MatrixExceptionMapper>();
 
-            services.AddAuthentication();
-            services.AddAuthorization();
-
             services.AddControllers();
             services.AddOpenApi();
+        }
+
+        public void AddAuth()
+        {
+            var services = builder.Services;
+
+            const string opaqueTokenAuthScheme = "opaque-token";
+
+            services.AddAuthentication(opaqueTokenAuthScheme)
+                .AddOpaqueToken(opaqueTokenAuthScheme);
+            services.AddAuthorization();
         }
     }
 }
