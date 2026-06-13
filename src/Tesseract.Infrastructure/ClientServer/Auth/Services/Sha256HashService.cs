@@ -2,7 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Tesseract.Application.ClientServer.Auth.Abstractions;
 
-namespace Tesseract.Infrastructure.ClientServer.Auth;
+namespace Tesseract.Infrastructure.ClientServer.Auth.Services;
 
 internal class Sha256HashService : IHashService
 {

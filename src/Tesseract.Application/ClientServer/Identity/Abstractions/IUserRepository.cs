@@ -1,6 +1,6 @@
 using Tesseract.Domain.Users;
 
-namespace Tesseract.Application.ClientServer.Auth.Abstractions;
+namespace Tesseract.Application.ClientServer.Identity.Abstractions;
 
 public interface IUserRepository
 {

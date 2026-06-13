@@ -3,8 +3,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Tesseract.Application.ClientServer.Auth.Abstractions;
 using Tesseract.Application.ClientServer.Discovery.Abstractions;
-using Tesseract.Infrastructure.ClientServer.Auth;
+using Tesseract.Application.ClientServer.Identity.Abstractions;
+using Tesseract.Infrastructure.ClientServer.Auth.Repositories;
+using Tesseract.Infrastructure.ClientServer.Auth.Services;
 using Tesseract.Infrastructure.ClientServer.Discovery;
+using Tesseract.Infrastructure.ClientServer.Identity;
 using Tesseract.Infrastructure.Common.Database;
 using Tesseract.Infrastructure.Common.Database.Interfaces;
 

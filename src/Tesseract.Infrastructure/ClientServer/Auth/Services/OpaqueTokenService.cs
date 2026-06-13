@@ -2,7 +2,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Cryptography;
 using Tesseract.Application.ClientServer.Auth.Abstractions;
 
-namespace Tesseract.Infrastructure.ClientServer.Auth;
+namespace Tesseract.Infrastructure.ClientServer.Auth.Services;
 
 internal class OpaqueTokenService : IAccessTokenService, IRefreshTokenService
 {

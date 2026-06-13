@@ -1,7 +1,7 @@
 using FluentAssertions;
-using Tesseract.Infrastructure.ClientServer.Auth;
+using Tesseract.Infrastructure.ClientServer.Auth.Services;
 
-namespace Tesseract.Infrastructure.Tests.ClientServer.Auth;
+namespace Tesseract.Infrastructure.Tests.ClientServer.Auth.Services;
 
 public class OpaqueTokenServiceTests
 {

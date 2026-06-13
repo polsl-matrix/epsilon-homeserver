@@ -5,7 +5,7 @@ using Tesseract.Domain.Users;
 using Tesseract.Infrastructure.ClientServer.Auth.Dao;
 using Tesseract.Infrastructure.Common.Database.Interfaces;
 
-namespace Tesseract.Infrastructure.ClientServer.Auth;
+namespace Tesseract.Infrastructure.ClientServer.Auth.Repositories;
 
 internal class DbSessionRepository(IDbConnectionFactory dbConnectionFactory) : ISessionRepository
 {

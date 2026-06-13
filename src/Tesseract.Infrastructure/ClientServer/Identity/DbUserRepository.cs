@@ -1,11 +1,11 @@
 using Dapper;
-using Tesseract.Application.ClientServer.Auth.Abstractions;
+using Tesseract.Application.ClientServer.Identity.Abstractions;
 using Tesseract.Domain.Users;
 using Tesseract.Domain.Users.Values;
 using Tesseract.Infrastructure.ClientServer.Auth.Dao;
 using Tesseract.Infrastructure.Common.Database.Interfaces;
 
-namespace Tesseract.Infrastructure.ClientServer.Auth;
+namespace Tesseract.Infrastructure.ClientServer.Identity;
 
 internal class DbUserRepository(IDbConnectionFactory dbConnectionFactory) : IUserRepository
 {
