@@ -3,7 +3,7 @@ using Tesseract.Domain.Common.Exceptions;
 
 namespace Tesseract.Domain.Users.Values;
 
-public readonly partial record struct Domain
+public partial record Domain
 {
     public Domain(string value)
     {

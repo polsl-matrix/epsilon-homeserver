@@ -3,7 +3,7 @@ using Tesseract.Domain.Common.Exceptions;
 
 namespace Tesseract.Domain.Users.Values;
 
-public readonly record struct UserHandle
+public record UserHandle
 {
     public UserHandle(string localpart, string domain)
     {

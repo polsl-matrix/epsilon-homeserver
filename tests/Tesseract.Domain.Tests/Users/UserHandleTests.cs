@@ -51,8 +51,8 @@ public class UserHandleTests
 
         result.Should().BeTrue();
         handle.Should().NotBeNull();
-        handle.Value.Localpart.Value.Should().Be(localpart);
-        handle.Value.Domain.Value.Should().Be(domain);
+        handle.Localpart.Value.Should().Be(localpart);
+        handle.Domain.Value.Should().Be(domain);
     }
 
     [Theory]
