@@ -83,6 +83,6 @@ public class LoginUserTests
 
         await _flow.Received().AuthenticateAsync(Arg.Any<string>(), Arg.Any<string>(), cancellationSource.Token);
         await _sessionFactory.Received().CreateAsync(Arg.Any<User>(), cancellationSource.Token);
-        await _sessionRepository.Received().UpsertSessionAsync(Arg.Any<Session>(), cancellationSource.Token);
+        await _sessionRepository.Received().UpsertAsync(Arg.Any<Session>(), cancellationSource.Token);
     }
 }

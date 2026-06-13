@@ -4,5 +4,5 @@ namespace Tesseract.Application.ClientServer.Auth.Abstractions;
 
 public interface ISessionRepository
 {
-    Task UpsertSessionAsync(Session session, CancellationToken cancellationToken);
+    Task UpsertAsync(Session session, CancellationToken cancellationToken);
 }

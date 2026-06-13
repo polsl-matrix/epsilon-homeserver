@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS auth.sessions
 
     user_id                    UUID  NOT NULL,
 
-    current_auth_token_hash    BYTEA NOT NULL,
+    current_access_token_hash BYTEA NOT NULL,
     current_refresh_token_hash BYTEA NOT NULL,
 
     PRIMARY KEY (session_id),

@@ -41,7 +41,7 @@ public static class LoginUser
             var (session, accessToken, refreshToken) = await _sessionFactory
                 .CreateAsync(user, cancellationToken);
 
-            await _sessionRepository.UpsertSessionAsync(session, cancellationToken);
+            await _sessionRepository.UpsertAsync(session, cancellationToken);
 
             return new Response(user.Handle, accessToken, refreshToken);
         }
