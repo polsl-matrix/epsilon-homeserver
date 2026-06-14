@@ -13,6 +13,8 @@ internal class MatrixExceptionMapper : IMatrixExceptionMapper
     {
         BadLoginTypeException => MapBadLoginType(),
         ForbiddenException => MapForbidden(),
+        InvalidUsernameException => MapInvalidUsername(),
+        UsernameTakenException => MapUsernameTaken(),
         _ => MapUnknown(),
     };
 
@@ -21,6 +23,12 @@ internal class MatrixExceptionMapper : IMatrixExceptionMapper
 
     private static ErrorMapping MapForbidden() => (StatusCodes.Status403Forbidden,
         new MatrixErrorResponse(Forbidden));
+
+    private static ErrorMapping MapInvalidUsername() => (StatusCodes.Status400BadRequest,
+        new MatrixErrorResponse(InvalidUsername, "Provided username is not valid."));
+
+    private static ErrorMapping MapUsernameTaken() => (StatusCodes.Status400BadRequest,
+        new MatrixErrorResponse(UserInUse, "Provided username is already taken."));
 
     private static ErrorMapping MapUnknown() => (StatusCodes.Status500InternalServerError,
         new MatrixErrorResponse(Unknown, "An unknown error has occurred."));

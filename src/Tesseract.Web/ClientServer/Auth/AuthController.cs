@@ -53,4 +53,23 @@ public class AuthController(IMediator mediator)
             RefreshToken = result.RefreshToken,
         };
     }
+
+    [HttpPost("v3/register")]
+    [AllowAnonymous]
+    public async Task<RegisterAccountResponse> RegisterAccount(
+        RegisterAccountRequest request, CancellationToken cancellationToken)
+    {
+        var command = new RegisterAccount.Command(
+            request.Username,
+            request.Password);
+
+        var result = await mediator.Send(command, cancellationToken);
+
+        return new RegisterAccountResponse
+        {
+            UserId = result.Handle.ToString(),
+            AccessToken = result.AccessToken,
+            RefreshToken = result.RefreshToken,
+        };
+    }
 }

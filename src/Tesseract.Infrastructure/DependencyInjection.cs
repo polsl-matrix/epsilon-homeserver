@@ -45,6 +45,7 @@ public static class DependencyInjection
 
             builder.Services.AddScoped<IMatrixConfigurationRepository, MatrixConfigurationRepository>();
             builder.Services.AddScoped<IPasswordRepository, DbPasswordRepository>();
+            builder.Services.AddScoped<IProfileRepository, DbProfileRepository>();
             builder.Services.AddScoped<ISessionRepository, DbSessionRepository>();
             builder.Services.AddScoped<IUserRepository, DbUserRepository>();
             builder.Services.AddScoped<IVersionRepository, InMemoryVersionRepository>();

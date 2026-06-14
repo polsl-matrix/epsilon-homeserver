@@ -15,6 +15,8 @@ public class MatrixExceptionMapperTests
         // @formatter:off
         { new BadLoginTypeException("m.test.unknown"), StatusCodes.Status400BadRequest, MatrixErrorCodes.Unknown, "bad login" },
         { new ForbiddenException(), StatusCodes.Status403Forbidden, MatrixErrorCodes.Forbidden, null },
+        { new InvalidUsernameException("UppercaseName"), StatusCodes.Status400BadRequest, MatrixErrorCodes.InvalidUsername, "not valid" },
+        { new UsernameTakenException("@alice:example.com"), StatusCodes.Status400BadRequest, MatrixErrorCodes.UserInUse, "already taken" },
         // @formatter:on
     };
 
@@ -26,8 +28,9 @@ public class MatrixExceptionMapperTests
         var (httpStatus, response) = _exceptionMapper.Map(exception);
 
         httpStatus.Should().Be(StatusCodes.Status500InternalServerError);
-        response.Code.Should().Be(MatrixErrorCodes.Unknown);
-        response.Message.Should().ContainEquivalentOf("unknown error");
+        var errorResponse = response.Should().BeOfType<MatrixErrorResponse>().Subject;
+        errorResponse.Code.Should().Be(MatrixErrorCodes.Unknown);
+        errorResponse.Message.Should().ContainEquivalentOf("unknown error");
     }
 
     [Theory]
@@ -37,11 +40,12 @@ public class MatrixExceptionMapperTests
         var (httpStatus, response) = _exceptionMapper.Map(exception);
 
         httpStatus.Should().Be(status);
-        response.Code.Should().Be(code);
+        var errorResponse = response.Should().BeOfType<MatrixErrorResponse>().Subject;
+        errorResponse.Code.Should().Be(code);
 
         if (message is not null)
         {
-            response.Message.Should().ContainEquivalentOf(message);
+            errorResponse.Message.Should().ContainEquivalentOf(message);
         }
     }
 

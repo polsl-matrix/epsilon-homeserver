@@ -167,4 +167,60 @@ public class AuthControllerTests
 
         await _mediator.Received().Send(Arg.Any<GetSupportedAuthenticationFlows.Query>(), cancellationToken);
     }
+
+    [Fact]
+    public async Task RegisterAccount_RequestContainsData_PassesSameDataToMediator()
+    {
+        var request = new RegisterAccountRequest
+        {
+            Username = "puffin",
+            Password = "penguin1",
+        };
+
+        RegisterAccount.Command? calledCommand = null;
+        _mediator.Send(Arg.Any<RegisterAccount.Command>(), Arg.Any<CancellationToken>())
+            .Returns(new RegisterAccount.Response(new UserHandle("puffin", "north.pole"), string.Empty, string.Empty))
+            .AndDoes(call => calledCommand = call.Arg<RegisterAccount.Command>());
+
+        await _controller.RegisterAccount(request, CancellationToken.None);
+
+        calledCommand.Should().NotBeNull();
+        calledCommand.Username.Should().Be("puffin");
+        calledCommand.Password.Should().Be("penguin1");
+    }
+
+    [Fact]
+    public async Task RegisterAccount_MediatorReturnsResponse_MapsValuesCorrectly()
+    {
+        var request = new RegisterAccountRequest
+        {
+            Username = "le_fish",
+            Password = "monsieur",
+        };
+        _mediator.Send(Arg.Any<RegisterAccount.Command>(), Arg.Any<CancellationToken>())
+            .Returns(new RegisterAccount.Response(new UserHandle("le_fish", "baguette.muah"), "mock-accessToken!1", "mock-refreshToken@2"));
+
+        var result = await _controller.RegisterAccount(request, CancellationToken.None);
+
+        result.UserId.Should().Be("@le_fish:baguette.muah");
+        result.AccessToken.Should().Be("mock-accessToken!1");
+        result.RefreshToken.Should().Be("mock-refreshToken@2");
+    }
+
+    [Fact]
+    public async Task RegisterAccount_CancellationTokenProvided_PassesSameTokenToMediator()
+    {
+        var cancellationToken = new CancellationTokenSource().Token;
+        var request = new RegisterAccountRequest
+        {
+            Username = "wastebin",
+            Password = "tr@sh",
+        };
+        _mediator.Send(Arg.Any<RegisterAccount.Command>(), cancellationToken)
+            .Returns(new RegisterAccount.Response(new UserHandle("wastebin", "messy.streets"), string.Empty, string.Empty));
+
+        await _controller.RegisterAccount(request, cancellationToken);
+
+        await _mediator.Received().Send(Arg.Any<RegisterAccount.Command>(), cancellationToken);
+    }
 }

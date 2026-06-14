@@ -20,7 +20,7 @@ public class PasswordAuthenticationFlow(
         // FIXME: This implementation is vulnerable to timing attacks.
         if (await GetUserHandleAsync(login, cancellationToken) is not { } handle
             || await userRepository.GetByHandleAsync(handle, cancellationToken) is not { } user
-            || await passwordRepository.GetHashAsync(user.Id, cancellationToken) is not { } password
+            || await passwordRepository.GetAsync(user.Id, cancellationToken) is not { } password
             || !await passwordHasher.VerifyAsync(passwordRaw ?? string.Empty, password.Hash, cancellationToken))
         {
             return null;

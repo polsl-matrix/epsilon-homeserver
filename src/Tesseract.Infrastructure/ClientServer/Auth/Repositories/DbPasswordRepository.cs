@@ -10,7 +10,25 @@ namespace Tesseract.Infrastructure.ClientServer.Auth.Repositories;
 
 public class DbPasswordRepository(IDbConnectionFactory dbConnectionFactory) : IPasswordRepository
 {
-    public async Task<Password?> GetHashAsync(UserId userId, CancellationToken cancellationToken)
+    public async Task InsertAsync(Password password, CancellationToken cancellationToken)
+    {
+        using var connection = dbConnectionFactory.CreateConnection();
+
+        const string sql = """
+                           INSERT INTO auth.passwords(user_id, password_hash)
+                           VALUES (@UserId, @PasswordHash);
+                           """;
+
+        var parameters = new
+        {
+            UserId = password.UserId.Value,
+            PasswordHash = password.Hash,
+        };
+
+        await connection.ExecuteAsync(sql, parameters);
+    }
+
+    public async Task<Password?> GetAsync(UserId userId, CancellationToken cancellationToken)
     {
         using var connection = dbConnectionFactory.CreateConnection();
 
