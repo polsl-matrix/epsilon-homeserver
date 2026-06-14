@@ -2,10 +2,11 @@ using Tesseract.Domain.Users;
 
 namespace Tesseract.Application.ClientServer.Auth.Models;
 
-public sealed class Session(SessionId id, UserId userId, byte[] accessTokenHash, byte[] refreshTokenHash)
+public sealed record Session(
+    SessionId Id,
+    UserId UserId,
+    byte[] AccessTokenHash,
+    byte[] RefreshTokenHash,
+    string? DeviceId = null)
 {
-    public SessionId Id { get; } = id;
-    public UserId UserId { get; } = userId;
-    public byte[] AccessTokenHash { get; set; } = accessTokenHash;
-    public byte[] RefreshTokenHash { get; set; } = refreshTokenHash;
 }

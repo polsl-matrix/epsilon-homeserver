@@ -167,4 +167,74 @@ public class AuthControllerTests
 
         await _mediator.Received().Send(Arg.Any<GetSupportedAuthenticationFlows.Query>(), cancellationToken);
     }
+
+    [Fact]
+    public async Task RegisterAccount_RequestContainsData_PassesSameDataToMediator()
+    {
+        var request = new RegisterAccountRequest
+        {
+            Username = "alice",
+            Password = "secure",
+            Auth = new RegisterAccountRequest.AuthenticationData
+            {
+                Type = "m.login.dummy",
+                Session = "session-id",
+            },
+            DeviceId = "DEVICE",
+            InitialDeviceDisplayName = "Alice's Phone",
+            InhibitLogin = true,
+            RefreshToken = true,
+        };
+
+        RegisterAccount.Command? calledCommand = null;
+        _mediator.Send(Arg.Any<RegisterAccount.Command>(), Arg.Any<CancellationToken>())
+            .Returns(new RegisterAccount.Response(new UserHandle("alice", "example.com"), null, null, null))
+            .AndDoes(call => calledCommand = call.Arg<RegisterAccount.Command>());
+
+        await _controller.RegisterAccount("user", request, CancellationToken.None);
+
+        calledCommand.Should().NotBeNull();
+        calledCommand.Kind.Should().Be("user");
+        calledCommand.Username.Should().Be("alice");
+        calledCommand.Password.Should().Be("secure");
+        calledCommand.Auth.Should().NotBeNull();
+        calledCommand.Auth!.Type.Should().Be("m.login.dummy");
+        calledCommand.Auth.Session.Should().Be("session-id");
+        calledCommand.DeviceId.Should().Be("DEVICE");
+        calledCommand.InitialDeviceDisplayName.Should().Be("Alice's Phone");
+        calledCommand.InhibitLogin.Should().BeTrue();
+        calledCommand.RefreshToken.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task RegisterAccount_MediatorReturnsResponse_MapsValuesCorrectly()
+    {
+        var request = new RegisterAccountRequest();
+        _mediator.Send(Arg.Any<RegisterAccount.Command>(), Arg.Any<CancellationToken>())
+            .Returns(new RegisterAccount.Response(
+                new UserHandle("alice", "example.com"),
+                "access-token",
+                "DEVICE",
+                "refresh-token"));
+
+        var result = await _controller.RegisterAccount(null, request, CancellationToken.None);
+
+        result.UserId.Should().Be("@alice:example.com");
+        result.AccessToken.Should().Be("access-token");
+        result.DeviceId.Should().Be("DEVICE");
+        result.RefreshToken.Should().Be("refresh-token");
+    }
+
+    [Fact]
+    public async Task RegisterAccount_CancellationTokenProvided_PassesSameTokenToMediator()
+    {
+        var cancellationToken = new CancellationTokenSource().Token;
+        var request = new RegisterAccountRequest();
+        _mediator.Send(Arg.Any<RegisterAccount.Command>(), cancellationToken)
+            .Returns(new RegisterAccount.Response(new UserHandle("alice", "example.com"), null, null, null));
+
+        await _controller.RegisterAccount(null, request, cancellationToken);
+
+        await _mediator.Received().Send(Arg.Any<RegisterAccount.Command>(), cancellationToken);
+    }
 }

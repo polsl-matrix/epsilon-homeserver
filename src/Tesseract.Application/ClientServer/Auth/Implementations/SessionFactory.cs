@@ -10,7 +10,7 @@ internal sealed class SessionFactory(
     IRefreshTokenService refreshTokenService)
     : ISessionFactory
 {
-    public async Task<(Session, string AccessToken, string RefreshToken)> CreateAsync(
+    public async Task<(Session Session, string AccessToken, string RefreshToken)> CreateAsync(
         User user, CancellationToken cancellationToken)
     {
         var (accessTokenRaw, accessTokenHash) = await CreateTokenAsync(accessTokenService, cancellationToken);

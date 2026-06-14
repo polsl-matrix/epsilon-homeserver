@@ -45,8 +45,11 @@ public static class DependencyInjection
 
             builder.Services.AddScoped<IMatrixConfigurationRepository, MatrixConfigurationRepository>();
             builder.Services.AddScoped<IPasswordRepository, DbPasswordRepository>();
+            builder.Services.AddScoped<IAccountRegistrationRepository, DbAccountRegistrationRepository>();
             builder.Services.AddScoped<ISessionRepository, DbSessionRepository>();
             builder.Services.AddScoped<IUserRepository, DbUserRepository>();
+            builder.Services.AddScoped<IDeviceIdGenerator, RandomDeviceIdGenerator>();
+            builder.Services.AddScoped<ILocalpartGenerator, RandomLocalpartGenerator>();
             builder.Services.AddScoped<IVersionRepository, InMemoryVersionRepository>();
             builder.Services.AddScoped<IWellKnownRepository, WellKnownRepository>();
         }

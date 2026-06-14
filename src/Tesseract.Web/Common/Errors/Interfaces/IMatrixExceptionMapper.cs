@@ -2,7 +2,7 @@ using Tesseract.Web.Common.Errors.Contracts;
 
 namespace Tesseract.Web.Common.Errors.Interfaces;
 
-using ErrorMapping = (int StatusCode, MatrixErrorResponse ErrorResponse);
+using ErrorMapping = (int StatusCode, object ErrorResponse);
 
 public interface IMatrixExceptionMapper
 {

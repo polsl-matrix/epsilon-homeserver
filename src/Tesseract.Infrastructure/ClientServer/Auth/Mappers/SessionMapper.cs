@@ -11,6 +11,6 @@ internal static class SessionMapper
         var sessionId = new SessionId(dao.SessionId);
         var userId = new UserId(dao.UserId);
 
-        return new Session(sessionId, userId, dao.CurrentAccessTokenHash, dao.CurrentRefreshTokenHash);
+        return new Session(sessionId, userId, dao.CurrentAccessTokenHash, dao.CurrentRefreshTokenHash, dao.DeviceId);
     }
 }
