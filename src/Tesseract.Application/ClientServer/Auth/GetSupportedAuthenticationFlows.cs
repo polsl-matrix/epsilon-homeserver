@@ -13,7 +13,7 @@ public static class GetSupportedAuthenticationFlows
         public Task<Response> Handle(Query request, CancellationToken cancellationToken)
         {
             var types = flows.Select(it => new LoginFlow(it.Type));
-            return Task.FromResult(new Response([..types]));
+            return Task.FromResult(new Response([.. types]));
         }
     }
 
