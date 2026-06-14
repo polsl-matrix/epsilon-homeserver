@@ -22,12 +22,12 @@ public class GetDomainDiscoveryTests
     public async Task Handle_RepositoryReturnsInfo_ReturnsResponseWithSameData()
     {
         _repository.GetDiscoveryInfo(Arg.Any<CancellationToken>())
-            .Returns(new DiscoveryInfo("https://hs.example.com", "https://is.example.com"));
+            .Returns(new DiscoveryInfo(new Uri("https://hs.example.com/"), new Uri("https://is.example.com/")));
 
         var response = await _handler.Handle(new GetDomainDiscovery.Query(), CancellationToken.None);
 
-        response.HomeserverBaseUrl.Should().Be("https://hs.example.com");
-        response.IdentityServerBaseUrl.Should().Be("https://is.example.com");
+        response.HomeserverBaseUrl.Should().Be("https://hs.example.com/");
+        response.IdentityServerBaseUrl.Should().Be("https://is.example.com/");
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public class GetDomainDiscoveryTests
     public async Task Handle_RepositoryReturnsInfoWithoutIdentityServer_ResponseHasNullIdentityServer()
     {
         _repository.GetDiscoveryInfo(Arg.Any<CancellationToken>())
-            .Returns(new DiscoveryInfo("https://hs.example.com", null));
+            .Returns(new DiscoveryInfo(new Uri("https://hs.example.com/"), null));
 
         var response = await _handler.Handle(new GetDomainDiscovery.Query(), CancellationToken.None);
 
@@ -58,7 +58,7 @@ public class GetDomainDiscoveryTests
         var cancellationSource = new CancellationTokenSource();
 
         _repository.GetDiscoveryInfo(Arg.Any<CancellationToken>())
-            .Returns(new DiscoveryInfo("https://hs.example.com", null));
+            .Returns(new DiscoveryInfo(new Uri("https://hs.example.com/"), null));
 
         await _handler.Handle(new GetDomainDiscovery.Query(), cancellationSource.Token);
 

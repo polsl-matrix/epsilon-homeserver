@@ -18,7 +18,10 @@ public static class GetDomainDiscovery
                 throw new InvalidOperationException("Discovery information is not configured.");
             }
 
-            return new Response(info.HomeserverBaseUrl, info.IdentityServerBaseUrl);
+            var homeserverBaseUrl = info.HomeserverBaseUrl.ToString();
+            var identityServerBaseUrl = info.IdentityServerBaseUrl?.ToString();
+
+            return new Response(homeserverBaseUrl, identityServerBaseUrl);
         }
     }
 
