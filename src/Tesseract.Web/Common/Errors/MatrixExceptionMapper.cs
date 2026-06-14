@@ -5,7 +5,7 @@ using static Tesseract.Web.Common.Errors.Contracts.MatrixErrorCodes;
 
 namespace Tesseract.Web.Common.Errors;
 
-using ErrorMapping = (int StatusCode, object ErrorResponse);
+using ErrorMapping = (int StatusCode, MatrixErrorResponse ErrorResponse);
 
 internal class MatrixExceptionMapper : IMatrixExceptionMapper
 {
