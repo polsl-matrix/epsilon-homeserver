@@ -44,7 +44,7 @@ public static class RegisterAccount
                 throw new RegistrationForbiddenException("This homeserver only supports user registration.");
             }
 
-            if (request.Password is null)
+            if (string.IsNullOrWhiteSpace(request.Password))
             {
                 throw new MissingParameterException("password");
             }
