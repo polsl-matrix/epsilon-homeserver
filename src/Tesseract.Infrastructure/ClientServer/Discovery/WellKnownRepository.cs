@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Options;
 using Tesseract.Application.ClientServer.Discovery.Abstractions;
-using Tesseract.Domain.Discovery.Values;
+using Tesseract.Application.ClientServer.Discovery.Models;
 using Tesseract.Infrastructure.ClientServer.Discovery.Configuration;
 
 namespace Tesseract.Infrastructure.ClientServer.Discovery;

@@ -3,7 +3,7 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Tesseract.Application.ClientServer.Discovery;
 using Tesseract.Application.ClientServer.Discovery.Abstractions;
-using Tesseract.Domain.Discovery.Values;
+using Tesseract.Application.ClientServer.Discovery.Models;
 
 namespace Tesseract.Application.Tests.ClientServer.Discovery;
 

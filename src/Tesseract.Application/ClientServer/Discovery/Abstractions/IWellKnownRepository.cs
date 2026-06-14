@@ -1,4 +1,4 @@
-using Tesseract.Domain.Discovery.Values;
+using Tesseract.Application.ClientServer.Discovery.Models;
 
 namespace Tesseract.Application.ClientServer.Discovery.Abstractions;
 
