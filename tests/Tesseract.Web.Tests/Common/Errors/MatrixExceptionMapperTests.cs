@@ -15,6 +15,7 @@ public class MatrixExceptionMapperTests
         // @formatter:off
         { new BadLoginTypeException("m.test.unknown"), StatusCodes.Status400BadRequest, MatrixErrorCodes.Unknown, "bad login" },
         { new ForbiddenException(), StatusCodes.Status403Forbidden, MatrixErrorCodes.Forbidden, null },
+        { new UnknownTokenException(), StatusCodes.Status401Unauthorized, MatrixErrorCodes.UnknownToken, "unknown token" },
         // @formatter:on
     };
 

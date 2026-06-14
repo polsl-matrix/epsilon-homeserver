@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 using Tesseract.Infrastructure.ClientServer.Auth.Extensions;
 using Tesseract.Web.Common.Errors;
 using Tesseract.Web.Common.Errors.Interfaces;
@@ -25,6 +27,18 @@ public static class DependencyInjection
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(DefaultCorsPolicy);
+            });
+
+            services.AddRateLimiter(options =>
+            {
+                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+                options.AddFixedWindowLimiter("auth", limiterOptions =>
+                {
+                    limiterOptions.PermitLimit = 20;
+                    limiterOptions.Window = TimeSpan.FromMinutes(1);
+                    limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                    limiterOptions.QueueLimit = 0;
+                });
             });
 
             services.AddSingleton<IMatrixExceptionMapper, MatrixExceptionMapper>();

@@ -13,6 +13,7 @@ internal class MatrixExceptionMapper : IMatrixExceptionMapper
     {
         BadLoginTypeException => MapBadLoginType(),
         ForbiddenException => MapForbidden(),
+        UnknownTokenException => MapUnknownToken(),
         _ => MapUnknown(),
     };
 
@@ -21,6 +22,9 @@ internal class MatrixExceptionMapper : IMatrixExceptionMapper
 
     private static ErrorMapping MapForbidden() => (StatusCodes.Status403Forbidden,
         new MatrixErrorResponse(Forbidden));
+
+    private static ErrorMapping MapUnknownToken() => (StatusCodes.Status401Unauthorized,
+        new MatrixErrorResponse(UnknownToken, "Unknown token."));
 
     private static ErrorMapping MapUnknown() => (StatusCodes.Status500InternalServerError,
         new MatrixErrorResponse(Unknown, "An unknown error has occurred."));

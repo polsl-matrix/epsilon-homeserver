@@ -27,22 +27,57 @@ public class AuthenticateUserTests
     }
 
     [Fact]
-    public async Task Handle_ValidAccessToken_ReturnsUser()
+    public async Task Handle_CurrentAccessToken_ReturnsUserWithoutUpdatingSession()
     {
         var command = new AuthenticateUser.Command("mock-accessToken!1");
 
-        var refreshTokenHash = "hash-accessToken@2"u8.ToArray();
+        var accessTokenHash = "hash-accessToken@2"u8.ToArray();
 
         var user = new User(UserId.Random(), new UserHandle("harry", "mel.on"));
-        var session = new Session(SessionId.Random(), user.Id, refreshTokenHash, "hash-refreshToken#3"u8.ToArray());
-        _hashService.HashAsync("mock-accessToken!1", Arg.Any<CancellationToken>()).Returns(refreshTokenHash);
-        _sessionRepository.GetByAccessTokenAsync(refreshTokenHash, Arg.Any<CancellationToken>()).Returns(session);
+        var session = new Session(SessionId.Random(), user.Id, accessTokenHash, "hash-refreshToken#3"u8.ToArray());
+        _hashService.HashAsync("mock-accessToken!1", Arg.Any<CancellationToken>()).Returns(accessTokenHash);
+        _sessionRepository.GetByAccessTokenAsync(accessTokenHash, Arg.Any<CancellationToken>()).Returns(session);
         _userRepository.GetByIdAsync(user.Id, Arg.Any<CancellationToken>()).Returns(user);
 
         var result = await _handler.Handle(command, CancellationToken.None);
 
         result.User.Should().NotBeNull();
         result.User.Should().BeSameAs(user);
+        await _sessionRepository.DidNotReceive().UpsertAsync(Arg.Any<Session>(), Arg.Any<CancellationToken>());
+        await _sessionRepository.DidNotReceive()
+            .PromotePendingTokensByAccessTokenAsync(Arg.Any<byte[]>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Handle_PendingAccessToken_PromotesPendingTokensAndReturnsUser()
+    {
+        var command = new AuthenticateUser.Command("mock-pendingAccessToken!1");
+
+        var pendingAccessTokenHash = "hash-pendingAccessToken@2"u8.ToArray();
+        var pendingRefreshTokenHash = "hash-pendingRefreshToken#3"u8.ToArray();
+
+        var user = new User(UserId.Random(), new UserHandle("harry", "mel.on"));
+        var session = new Session(
+            SessionId.Random(),
+            user.Id,
+            "hash-currentAccessToken$4"u8.ToArray(),
+            "hash-currentRefreshToken%5"u8.ToArray(),
+            pendingAccessTokenHash,
+            pendingRefreshTokenHash);
+        _hashService.HashAsync("mock-pendingAccessToken!1", Arg.Any<CancellationToken>()).Returns(pendingAccessTokenHash);
+        _sessionRepository.GetByAccessTokenAsync(pendingAccessTokenHash, Arg.Any<CancellationToken>()).Returns(session);
+        _sessionRepository.PromotePendingTokensByAccessTokenAsync(pendingAccessTokenHash, Arg.Any<CancellationToken>())
+            .Returns(true);
+        _userRepository.GetByIdAsync(user.Id, Arg.Any<CancellationToken>()).Returns(user);
+
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        result.User.Should().BeSameAs(user);
+        session.CurrentAccessTokenHash.Should().NotBeSameAs(pendingAccessTokenHash);
+        session.CurrentRefreshTokenHash.Should().NotBeSameAs(pendingRefreshTokenHash);
+        await _sessionRepository.Received()
+            .PromotePendingTokensByAccessTokenAsync(pendingAccessTokenHash, Arg.Any<CancellationToken>());
+        await _sessionRepository.DidNotReceive().UpsertAsync(Arg.Any<Session>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -55,6 +90,10 @@ public class AuthenticateUserTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         result.User.Should().BeNull();
+        await _userRepository.DidNotReceive().GetByIdAsync(Arg.Any<UserId>(), Arg.Any<CancellationToken>());
+        await _sessionRepository.DidNotReceive().UpsertAsync(Arg.Any<Session>(), Arg.Any<CancellationToken>());
+        await _sessionRepository.DidNotReceive()
+            .PromotePendingTokensByAccessTokenAsync(Arg.Any<byte[]>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -63,18 +102,47 @@ public class AuthenticateUserTests
         var cancellationSource = new CancellationTokenSource();
 
         var command = new AuthenticateUser.Command("mock-accessToken!1");
-        var refreshTokenHash = "hash-accessToken@2"u8.ToArray();
+        var accessTokenHash = "hash-accessToken@2"u8.ToArray();
 
         var user = new User(UserId.Random(), new UserHandle("jake", "smith.ukulele"));
-        var session = new Session(SessionId.Random(), user.Id, refreshTokenHash, "hash-refreshToken#3"u8.ToArray());
-        _hashService.HashAsync("mock-accessToken!1", Arg.Any<CancellationToken>()).Returns(refreshTokenHash);
-        _sessionRepository.GetByAccessTokenAsync(refreshTokenHash, Arg.Any<CancellationToken>()).Returns(session);
+        var session = new Session(SessionId.Random(), user.Id, accessTokenHash, "hash-refreshToken#3"u8.ToArray());
+        _hashService.HashAsync("mock-accessToken!1", Arg.Any<CancellationToken>()).Returns(accessTokenHash);
+        _sessionRepository.GetByAccessTokenAsync(accessTokenHash, Arg.Any<CancellationToken>()).Returns(session);
         _userRepository.GetByIdAsync(user.Id, Arg.Any<CancellationToken>()).Returns(user);
 
         await _handler.Handle(command, cancellationSource.Token);
 
         await _hashService.Received().HashAsync(Arg.Any<string>(), cancellationSource.Token);
         await _sessionRepository.Received().GetByAccessTokenAsync(Arg.Any<byte[]>(), cancellationSource.Token);
+        await _userRepository.Received().GetByIdAsync(Arg.Any<UserId>(), cancellationSource.Token);
+    }
+
+    [Fact]
+    public async Task Handle_PendingAccessToken_CancellationTokenProvided_PassesSameTokenDown()
+    {
+        var cancellationSource = new CancellationTokenSource();
+
+        var command = new AuthenticateUser.Command("mock-pendingAccessToken!1");
+        var pendingAccessTokenHash = "hash-pendingAccessToken@2"u8.ToArray();
+        var user = new User(UserId.Random(), new UserHandle("jake", "smith.ukulele"));
+        var session = new Session(
+            SessionId.Random(),
+            user.Id,
+            "hash-currentAccessToken#3"u8.ToArray(),
+            "hash-currentRefreshToken$4"u8.ToArray(),
+            pendingAccessTokenHash,
+            "hash-pendingRefreshToken%5"u8.ToArray());
+        _hashService.HashAsync("mock-pendingAccessToken!1", Arg.Any<CancellationToken>()).Returns(pendingAccessTokenHash);
+        _sessionRepository.GetByAccessTokenAsync(pendingAccessTokenHash, Arg.Any<CancellationToken>()).Returns(session);
+        _sessionRepository.PromotePendingTokensByAccessTokenAsync(pendingAccessTokenHash, Arg.Any<CancellationToken>())
+            .Returns(true);
+        _userRepository.GetByIdAsync(user.Id, Arg.Any<CancellationToken>()).Returns(user);
+
+        await _handler.Handle(command, cancellationSource.Token);
+
+        await _hashService.Received().HashAsync(Arg.Any<string>(), cancellationSource.Token);
+        await _sessionRepository.Received().GetByAccessTokenAsync(Arg.Any<byte[]>(), cancellationSource.Token);
+        await _sessionRepository.Received().PromotePendingTokensByAccessTokenAsync(pendingAccessTokenHash, cancellationSource.Token);
         await _userRepository.Received().GetByIdAsync(Arg.Any<UserId>(), cancellationSource.Token);
     }
 }

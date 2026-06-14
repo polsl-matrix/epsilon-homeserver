@@ -37,8 +37,8 @@ public class SessionFactoryTests
         var (session, accessToken, refreshToken) = await _factory.CreateAsync(user, CancellationToken.None);
 
         session.UserId.Value.Should().Be(user.Id.Value);
-        session.AccessTokenHash.Should().BeEqualTo("hash-accessToken#3"u8.ToArray());
-        session.RefreshTokenHash.Should().BeEqualTo("hash-refreshToken$4"u8.ToArray());
+        session.CurrentAccessTokenHash.Should().BeEqualTo("hash-accessToken#3"u8.ToArray());
+        session.CurrentRefreshTokenHash.Should().BeEqualTo("hash-refreshToken$4"u8.ToArray());
         accessToken.Should().Be("mock-accessToken!1");
         refreshToken.Should().Be("mock-refreshToken@2");
     }

@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Tesseract.Application.ClientServer.Auth;
 using Tesseract.Web.ClientServer.Auth.Contracts;
 
@@ -8,7 +9,7 @@ namespace Tesseract.Web.ClientServer.Auth;
 
 [ApiController]
 [Route("_matrix/client")]
-// TODO: Add rate limiter.
+[EnableRateLimiting("auth")]
 public class AuthController(IMediator mediator)
 {
     [HttpGet("v3/login")]
@@ -49,6 +50,22 @@ public class AuthController(IMediator mediator)
         return new AuthenticateUserResponse
         {
             Handle = result.Handle.ToString(),
+            AccessToken = result.AccessToken,
+            RefreshToken = result.RefreshToken,
+        };
+    }
+
+    [HttpPost("v3/refresh")]
+    [AllowAnonymous]
+    public async Task<RefreshAccessTokenResponse> RefreshAccessToken(
+        RefreshAccessTokenRequest request, CancellationToken cancellationToken)
+    {
+        var command = new RefreshAccessToken.Command(request.RefreshToken);
+
+        var result = await mediator.Send(command, cancellationToken);
+
+        return new RefreshAccessTokenResponse
+        {
             AccessToken = result.AccessToken,
             RefreshToken = result.RefreshToken,
         };
