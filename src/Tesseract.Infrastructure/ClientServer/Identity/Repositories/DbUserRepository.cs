@@ -10,6 +10,25 @@ namespace Tesseract.Infrastructure.ClientServer.Identity.Repositories;
 
 internal class DbUserRepository(IDbConnectionFactory dbConnectionFactory) : IUserRepository
 {
+    public async Task InsertAsync(User user, CancellationToken cancellationToken)
+    {
+        using var connection = dbConnectionFactory.CreateConnection();
+
+        const string sql = """
+                           INSERT INTO identity.users(user_id, localpart, domain)
+                           VALUES (@UserId, @Localpart, @Domain);
+                           """;
+
+        var parameters = new
+        {
+            UserId = user.Id.Value,
+            Localpart = user.Handle.Localpart.Value,
+            Domain = user.Handle.Domain.Value,
+        };
+
+        await connection.ExecuteAsync(sql, parameters);
+    }
+
     public async Task<User?> GetByIdAsync(UserId id, CancellationToken cancellationToken)
     {
         using var connection = dbConnectionFactory.CreateConnection();

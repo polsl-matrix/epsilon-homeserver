@@ -57,21 +57,11 @@ public class AuthController(IMediator mediator)
     [HttpPost("v3/register")]
     [AllowAnonymous]
     public async Task<RegisterAccountResponse> RegisterAccount(
-        [FromQuery] string? kind,
-        RegisterAccountRequest request,
-        CancellationToken cancellationToken)
+        RegisterAccountRequest request, CancellationToken cancellationToken)
     {
         var command = new RegisterAccount.Command(
-            kind,
             request.Username,
-            request.Password,
-            request.Auth is null
-                ? null
-                : new RegisterAccount.AuthenticationData(request.Auth.Type, request.Auth.Session),
-            request.DeviceId,
-            request.InitialDeviceDisplayName,
-            request.InhibitLogin,
-            request.RefreshToken);
+            request.Password);
 
         var result = await mediator.Send(command, cancellationToken);
 
@@ -79,7 +69,6 @@ public class AuthController(IMediator mediator)
         {
             UserId = result.Handle.ToString(),
             AccessToken = result.AccessToken,
-            DeviceId = result.DeviceId,
             RefreshToken = result.RefreshToken,
         };
     }

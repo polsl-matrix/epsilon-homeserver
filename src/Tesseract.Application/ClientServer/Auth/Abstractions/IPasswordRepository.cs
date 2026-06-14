@@ -5,5 +5,6 @@ namespace Tesseract.Application.ClientServer.Auth.Abstractions;
 
 public interface IPasswordRepository
 {
-    Task<Password?> GetHashAsync(UserId userId, CancellationToken cancellationToken);
+    Task InsertAsync(Password password, CancellationToken cancellationToken);
+    Task<Password?> GetAsync(UserId userId, CancellationToken cancellationToken);
 }

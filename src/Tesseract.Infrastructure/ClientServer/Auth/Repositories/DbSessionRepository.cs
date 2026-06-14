@@ -16,7 +16,6 @@ internal class DbSessionRepository(IDbConnectionFactory dbConnectionFactory) : I
         const string sql = $"""
                             SELECT session_id                 {nameof(SessionDao.SessionId)},
                                    user_id                    {nameof(SessionDao.UserId)},
-                                   device_id                  {nameof(SessionDao.DeviceId)},
                                    current_access_token_hash  {nameof(SessionDao.CurrentAccessTokenHash)},
                                    current_refresh_token_hash {nameof(SessionDao.CurrentRefreshTokenHash)}
                             FROM auth.sessions
@@ -41,15 +40,14 @@ internal class DbSessionRepository(IDbConnectionFactory dbConnectionFactory) : I
         using var connection = dbConnectionFactory.CreateConnection();
 
         const string sql = """
-                           INSERT INTO auth.sessions(session_id, user_id, device_id, current_access_token_hash, current_refresh_token_hash)
-                           VALUES (@SessionId, @UserId, @DeviceId, @CurrentAccessTokenHash, @CurrentRefreshTokenHash);
+                           INSERT INTO auth.sessions(session_id, user_id, current_access_token_hash, current_refresh_token_hash)
+                           VALUES (@SessionId, @UserId, @CurrentAccessTokenHash, @CurrentRefreshTokenHash);
                            """;
 
         await connection.ExecuteAsync(sql, new
         {
             SessionId = session.Id.Value,
             UserId = session.UserId.Value,
-            session.DeviceId,
             CurrentAccessTokenHash = session.AccessTokenHash,
             CurrentRefreshTokenHash = session.RefreshTokenHash,
         });

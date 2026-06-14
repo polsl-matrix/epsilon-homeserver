@@ -11,121 +11,64 @@ namespace Tesseract.Application.ClientServer.Auth;
 
 public static class RegisterAccount
 {
-    private const string UserKind = "user";
-    private const string DummyAuthType = "m.login.dummy";
-
-    public sealed record AuthenticationData(string? Type, string? Session);
-
-    public sealed record Command(
-        string? Kind,
-        string? Username,
-        string? Password,
-        AuthenticationData? Auth,
-        string? DeviceId,
-        string? InitialDeviceDisplayName,
-        bool InhibitLogin,
-        bool RefreshToken)
-        : IRequest<Response>;
+    public sealed record Command(string Username, string Password) : IRequest<Response>;
 
     internal sealed class Handler(
-        IMatrixConfigurationRepository matrixConfigurationRepository,
-        IUserRepository userRepository,
         IPasswordHasher passwordHasher,
+        IMatrixConfigurationRepository configurationRepository,
+        IPasswordRepository passwordRepository,
+        IProfileRepository profileRepository,
         ISessionFactory sessionFactory,
-        IAccountRegistrationRepository accountRegistrationRepository,
-        ILocalpartGenerator localpartGenerator,
-        IDeviceIdGenerator deviceIdGenerator)
+        ISessionRepository sessionRepository,
+        IUserRepository userRepository)
         : IRequestHandler<Command, Response>
     {
         public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
         {
-            if (!string.IsNullOrWhiteSpace(request.Kind) && request.Kind != UserKind)
-            {
-                throw new RegistrationForbiddenException("This homeserver only supports user registration.");
-            }
+            var domain = await configurationRepository
+                .GetDomainAsync(cancellationToken);
 
-            if (string.IsNullOrWhiteSpace(request.Password))
-            {
-                throw new MissingParameterException("password");
-            }
+            var handle = new UserHandle(request.Username, domain.Value);
 
-            var domain = await matrixConfigurationRepository.GetDomainAsync(cancellationToken);
-            var localpart = GetLocalpart(request.Username);
-            var handle = new UserHandle(localpart.Value, domain.Value);
-
-            await EnsureUserIsAvailableAsync(handle, cancellationToken);
-
-            if (request.Auth?.Type != DummyAuthType || string.IsNullOrWhiteSpace(request.Auth.Session))
-            {
-                throw CreateAuthenticationRequiredException(request.Auth?.Type);
-            }
-
-            await EnsureUserIsAvailableAsync(handle, cancellationToken);
+            await EnsureUsernameNotTakenAsync(handle, cancellationToken);
 
             var user = new User(UserId.Random(), handle);
-            var profile = new Profile(user.Id, null, null);
-            var passwordHash = await passwordHasher.HashAsync(request.Password, cancellationToken);
+            var profile = Profile.Empty(user.Id);
 
-            Device? device = null;
-            Session? session = null;
-            string? accessToken = null;
-            string? refreshToken = null;
+            var password = await HashPassword(user.Id, request.Password, cancellationToken);
 
-            if (!request.InhibitLogin)
-            {
-                var deviceId = string.IsNullOrWhiteSpace(request.DeviceId)
-                    ? deviceIdGenerator.Create()
-                    : request.DeviceId;
+            // TODO: Handle transactions properly.
+            await userRepository.InsertAsync(user, cancellationToken);
+            await profileRepository.InsertAsync(profile, cancellationToken);
+            await passwordRepository.InsertAsync(password, cancellationToken);
 
-                device = new Device(user.Id, deviceId, request.InitialDeviceDisplayName);
-                var createdSession = await sessionFactory.CreateAsync(user, cancellationToken);
+            var (session, accessToken, refreshToken) = await sessionFactory
+                .CreateAsync(user, cancellationToken);
 
-                session = createdSession.Session with { DeviceId = deviceId };
-                accessToken = createdSession.AccessToken;
-                refreshToken = request.RefreshToken ? createdSession.RefreshToken : null;
-            }
+            await sessionRepository.UpsertAsync(session, cancellationToken);
 
-            var registration = new AccountRegistration(user, profile, passwordHash, device, session);
-            await accountRegistrationRepository.CreateAsync(registration, cancellationToken);
-
-            return new Response(handle, accessToken, device?.Id, refreshToken);
+            return new Response(user.Handle, accessToken, refreshToken);
         }
 
-        private Localpart GetLocalpart(string? username)
+        private async Task EnsureUsernameNotTakenAsync(UserHandle handle, CancellationToken cancellationToken)
         {
-            if (username is null)
-            {
-                return localpartGenerator.Create();
-            }
+            var user = await userRepository.GetByHandleAsync(handle, cancellationToken);
 
-            if (!Localpart.TryParse(username, out var localpart))
+            if (user is not null)
             {
-                throw new InvalidUsernameException(username);
-            }
-
-            return localpart;
-        }
-
-        private async Task EnsureUserIsAvailableAsync(UserHandle handle, CancellationToken cancellationToken)
-        {
-            if (await userRepository.GetByHandleAsync(handle, cancellationToken) is not null)
-            {
-                throw new UserInUseException(handle.ToString());
+                throw new UsernameTakenException(handle.Localpart.Value);
             }
         }
 
-        private UserInteractiveAuthenticationRequiredException CreateAuthenticationRequiredException(string? authType)
+        private async Task<Password> HashPassword(
+            UserId userId, string password, CancellationToken cancellationToken)
         {
-            var errorCode = authType is null ? null : "M_FORBIDDEN";
-            var error = authType is null ? null : "Unsupported authentication type.";
+            var hash = await passwordHasher
+                .HashAsync(password, cancellationToken);
 
-            return new UserInteractiveAuthenticationRequiredException(
-                [[DummyAuthType]],
-                Guid.NewGuid().ToString("N"),
-                errorCode: errorCode,
-                error: error);
+            return new Password(userId, hash);
         }
     }
 
-    public sealed record Response(UserHandle Handle, string? AccessToken, string? DeviceId, string? RefreshToken);
+    public sealed record Response(UserHandle Handle, string AccessToken, string RefreshToken);
 }
