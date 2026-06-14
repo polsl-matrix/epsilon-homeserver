@@ -6,6 +6,7 @@ using Tesseract.Application.ClientServer.Auth;
 using Tesseract.Domain.Users.Values;
 using Tesseract.Web.ClientServer.Auth;
 using Tesseract.Web.ClientServer.Auth.Contracts;
+using LoginFlow = Tesseract.Application.ClientServer.Auth.Models.LoginFlow;
 
 namespace Tesseract.Web.Tests.ClientServer.Auth;
 
@@ -122,4 +123,48 @@ public class AuthControllerTests
         new UserHandle("localpart", "domain"),
         string.Empty, string.Empty
     );
+
+    [Fact]
+    public async Task GetSupportedAuthenticationFlows_MediatorReturnsFlows_MapsValuesCorrectly()
+    {
+        var applicationFlows = new List<LoginFlow>
+        {
+            new("m.login.password"),
+            new("m.login.sso"),
+        };
+        _mediator.Send(Arg.Any<GetSupportedAuthenticationFlows.Query>(), Arg.Any<CancellationToken>())
+            .Returns(new GetSupportedAuthenticationFlows.Response(applicationFlows));
+
+        var result = await _controller.GetSupportedAuthenticationFlows(CancellationToken.None);
+
+        result.Flows.Should().HaveCount(2);
+        result.Flows[0].Type.Should().Be("m.login.password");
+        result.Flows[1].Type.Should().Be("m.login.sso");
+    }
+
+    [Fact]
+    public async Task GetSupportedAuthenticationFlows_MediatorReturnsNoFlows_ReturnsEmptyFlowsList()
+    {
+        var mediatorResponse = new GetSupportedAuthenticationFlows.Response([]);
+        _mediator.Send(Arg.Any<GetSupportedAuthenticationFlows.Query>(), Arg.Any<CancellationToken>())
+            .Returns(mediatorResponse);
+
+        var result = await _controller.GetSupportedAuthenticationFlows(CancellationToken.None);
+
+        result.Flows.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetSupportedAuthenticationFlows_CancellationTokenProvided_PassesSameTokenToMediator()
+    {
+        var cancellationToken = new CancellationTokenSource().Token;
+
+        var mediatorResponse = new GetSupportedAuthenticationFlows.Response([]);
+        _mediator.Send(Arg.Any<GetSupportedAuthenticationFlows.Query>(), cancellationToken)
+            .Returns(mediatorResponse);
+
+        await _controller.GetSupportedAuthenticationFlows(cancellationToken);
+
+        await _mediator.Received().Send(Arg.Any<GetSupportedAuthenticationFlows.Query>(), cancellationToken);
+    }
 }

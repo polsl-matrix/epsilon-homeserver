@@ -11,6 +11,28 @@ namespace Tesseract.Web.ClientServer.Auth;
 // TODO: Add rate limiter.
 public class AuthController(IMediator mediator)
 {
+    [HttpGet("v3/login")]
+    [AllowAnonymous]
+    public async Task<GetSupportedAuthenticationFlowsResponse> GetSupportedAuthenticationFlows(
+        CancellationToken cancellationToken)
+    {
+        var query = new GetSupportedAuthenticationFlows.Query();
+
+        var result = await mediator.Send(query, cancellationToken);
+
+        var flows = result.Flows
+            .Select(flow => new LoginFlow
+            {
+                Type = flow.Type,
+            })
+            .ToList();
+
+        return new GetSupportedAuthenticationFlowsResponse
+        {
+            Flows = flows,
+        };
+    }
+
     [HttpPost("v3/login")]
     [AllowAnonymous]
     public async Task<AuthenticateUserResponse> AuthenticateUser(
