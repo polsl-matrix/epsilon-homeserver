@@ -110,6 +110,76 @@ public class AuthControllerTests
         thrown.Which.Should().BeSameAs(exception);
     }
 
+    [Fact]
+    public async Task RefreshAccessToken_RequestContainsData_PassesSameDataToMediator()
+    {
+        var request = new RefreshAccessTokenRequest
+        {
+            RefreshToken = "mock-refreshToken!1",
+        };
+        var response = new RefreshAccessToken.Response(string.Empty, string.Empty);
+        RefreshAccessToken.Command? calledCommand = null;
+
+        _mediator.Send(Arg.Any<RefreshAccessToken.Command>(), Arg.Any<CancellationToken>())
+            .Returns(response)
+            .AndDoes(call => calledCommand = call.Arg<RefreshAccessToken.Command>());
+
+        await _controller.RefreshAccessToken(request, CancellationToken.None);
+
+        await _mediator.Received().Send(Arg.Any<RefreshAccessToken.Command>(), Arg.Any<CancellationToken>());
+        calledCommand.Should().NotBeNull();
+        calledCommand.RefreshToken.Should().Be("mock-refreshToken!1");
+    }
+
+    [Fact]
+    public async Task RefreshAccessToken_MediatorReturnsResponse_MapsValuesCorrectly()
+    {
+        var request = new RefreshAccessTokenRequest
+        {
+            RefreshToken = "mock-refreshToken!1",
+        };
+        _mediator.Send(Arg.Any<RefreshAccessToken.Command>(), Arg.Any<CancellationToken>())
+            .Returns(new RefreshAccessToken.Response("mock-accessToken@2", "mock-newRefreshToken#3"));
+
+        var result = await _controller.RefreshAccessToken(request, CancellationToken.None);
+
+        result.AccessToken.Should().Be("mock-accessToken@2");
+        result.RefreshToken.Should().Be("mock-newRefreshToken#3");
+    }
+
+    [Fact]
+    public async Task RefreshAccessToken_CancellationTokenProvided_PassesSameTokenToMediator()
+    {
+        var cancellationToken = new CancellationTokenSource().Token;
+        var request = new RefreshAccessTokenRequest
+        {
+            RefreshToken = "mock-refreshToken!1",
+        };
+        _mediator.Send(Arg.Any<RefreshAccessToken.Command>(), cancellationToken)
+            .Returns(new RefreshAccessToken.Response(string.Empty, string.Empty));
+
+        await _controller.RefreshAccessToken(request, cancellationToken);
+
+        await _mediator.Received().Send(Arg.Any<RefreshAccessToken.Command>(), cancellationToken);
+    }
+
+    [Fact]
+    public async Task RefreshAccessToken_MediatorThrowsException_PropagatesException()
+    {
+        var exception = new InvalidOperationException("Something went wrong.");
+        var request = new RefreshAccessTokenRequest
+        {
+            RefreshToken = "mock-refreshToken!1",
+        };
+        _mediator.Send(Arg.Any<RefreshAccessToken.Command>(), Arg.Any<CancellationToken>())
+            .Throws(exception);
+
+        var act = async () => await _controller.RefreshAccessToken(request, CancellationToken.None);
+
+        var thrown = await act.Should().ThrowAsync<InvalidOperationException>();
+        thrown.Which.Should().BeSameAs(exception);
+    }
+
     private static AuthenticateUserRequest CreateEmptyAuthenticateUserRequest() => new()
     {
         Identifier = new AuthenticateUserRequest.UserIdentifier

@@ -24,6 +24,22 @@ public static class AuthenticateUser
                 return new Response(null);
             }
 
+            if (session.PendingAccessTokenHash is not null
+                && session.PendingRefreshTokenHash is not null
+                && session.PendingAccessTokenHash.SequenceEqual(accessTokenHash))
+            {
+                var promoted = await sessionRepository.PromotePendingTokensAsync(
+                    session.Id,
+                    session.PendingAccessTokenHash,
+                    session.PendingRefreshTokenHash,
+                    cancellationToken);
+
+                if (!promoted)
+                {
+                    return new Response(null);
+                }
+            }
+
             var user = await userRepository.GetByIdAsync(session.UserId, cancellationToken);
 
             return new Response(user);

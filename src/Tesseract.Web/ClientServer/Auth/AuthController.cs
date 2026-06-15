@@ -72,4 +72,20 @@ public class AuthController(IMediator mediator)
             RefreshToken = result.RefreshToken,
         };
     }
+
+    [HttpPost("v3/refresh")]
+    [AllowAnonymous]
+    public async Task<RefreshAccessTokenResponse> RefreshAccessToken(
+        RefreshAccessTokenRequest request, CancellationToken cancellationToken)
+    {
+        var command = new RefreshAccessToken.Command(request.RefreshToken);
+
+        var result = await mediator.Send(command, cancellationToken);
+
+        return new RefreshAccessTokenResponse
+        {
+            AccessToken = result.AccessToken,
+            RefreshToken = result.RefreshToken,
+        };
+    }
 }
