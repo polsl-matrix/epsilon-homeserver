@@ -62,10 +62,12 @@ public class OpaqueTokenAuthenticationHandler(
     private static IReadOnlyList<Claim> MapUserToClaims(User user)
     {
         var userId = user.Id.Value.ToString();
+        var userHandle = user.Handle.ToString();
 
         return
         [
             new Claim(ClaimTypes.NameIdentifier, userId),
+            new Claim(ClaimTypes.Name, userHandle),
         ];
     }
 }

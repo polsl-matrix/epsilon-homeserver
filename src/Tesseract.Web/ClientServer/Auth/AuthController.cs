@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using Tesseract.Application.ClientServer.Auth;
 using Tesseract.Web.ClientServer.Auth.Contracts;
 
@@ -9,7 +10,7 @@ namespace Tesseract.Web.ClientServer.Auth;
 [ApiController]
 [Route("_matrix/client")]
 // TODO: Add rate limiter.
-public class AuthController(IMediator mediator)
+public class AuthController(IMediator mediator) : ControllerBase
 {
     [HttpGet("v3/login")]
     [AllowAnonymous]
@@ -71,5 +72,22 @@ public class AuthController(IMediator mediator)
             AccessToken = result.AccessToken,
             RefreshToken = result.RefreshToken,
         };
+    }
+
+    [HttpGet("v3/account/whoami")]
+    [Authorize]
+    public ActionResult<WhoAmIResponse> WhoAmI()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.Name);
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized();
+        }
+
+        return Ok(new WhoAmIResponse
+        {
+            UserId = userId,
+        });
     }
 }

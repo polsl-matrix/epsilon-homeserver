@@ -151,7 +151,10 @@ public class OpaqueTokenAuthenticationHandlerTests
         // Assert
         var principal = result.Ticket.Principal;
         var nameIdentifierClaim = principal.FindFirst(ClaimTypes.NameIdentifier);
+        var nameClaim = principal.FindFirst(ClaimTypes.Name);
         nameIdentifierClaim.Should().NotBeNull();
         nameIdentifierClaim!.Value.Should().Be(user.Id.Value.ToString());
+        nameClaim.Should().NotBeNull();
+        nameClaim!.Value.Should().Be(user.Handle.ToString());
     }
 }

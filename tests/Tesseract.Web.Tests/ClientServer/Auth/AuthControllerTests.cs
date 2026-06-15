@@ -1,7 +1,12 @@
 using FluentAssertions;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using System.Reflection;
+using System.Security.Claims;
 using Tesseract.Application.ClientServer.Auth;
 using Tesseract.Domain.Users.Values;
 using Tesseract.Web.ClientServer.Auth;
@@ -222,5 +227,57 @@ public class AuthControllerTests
         await _controller.RegisterAccount(request, cancellationToken);
 
         await _mediator.Received().Send(Arg.Any<RegisterAccount.Command>(), cancellationToken);
+    }
+
+    [Fact]
+    public void WhoAmI_AuthenticatedUser_ReturnsUserId()
+    {
+        _controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(new ClaimsIdentity(
+                    [new Claim(ClaimTypes.Name, "@jerry:example.com")],
+                    "test")),
+            },
+        };
+
+        var result = _controller.WhoAmI();
+
+        var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
+        var response = okResult.Value.Should().BeOfType<WhoAmIResponse>().Subject;
+        response.UserId.Should().Be("@jerry:example.com");
+    }
+
+    [Fact]
+    public void WhoAmI_RequiresAuthorization()
+    {
+        var method = typeof(AuthController).GetMethod(nameof(AuthController.WhoAmI), BindingFlags.Instance | BindingFlags.Public);
+
+        method.Should().NotBeNull();
+        method!.GetCustomAttribute<AuthorizeAttribute>().Should().NotBeNull();
+        method!.GetCustomAttribute<AllowAnonymousAttribute>().Should().BeNull();
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public void WhoAmI_MissingNameClaim_ReturnsUnauthorized(string? claimValue)
+    {
+        var claims = claimValue is null
+            ? Array.Empty<Claim>()
+            : [new Claim(ClaimTypes.Name, claimValue)];
+
+        _controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(new ClaimsIdentity(claims, "test")),
+            },
+        };
+
+        var result = _controller.WhoAmI();
+
+        result.Result.Should().BeOfType<UnauthorizedResult>();
     }
 }
