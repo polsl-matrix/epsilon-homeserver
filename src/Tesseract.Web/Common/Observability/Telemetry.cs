@@ -1,4 +1,3 @@
-using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 
@@ -6,13 +5,6 @@ namespace Tesseract.Web.Common.Observability;
 
 internal static class Telemetry
 {
-    private static void DefaultLoggingOptions(OpenTelemetryLoggerOptions logger)
-    {
-        logger.IncludeScopes = true;
-        logger.IncludeFormattedMessage = true;
-        logger.AddOtlpExporter();
-    }
-
     private static void DefaultRuntimeMetrics(MeterProviderBuilder options)
     {
         options.AddAspNetCoreInstrumentation()
@@ -36,8 +28,6 @@ internal static class Telemetry
     {
         public void AddOpenTelemetry()
         {
-            builder.Logging.AddOpenTelemetry(DefaultLoggingOptions);
-
             builder.Services.AddOpenTelemetry()
                 .WithMetrics(DefaultRuntimeMetrics)
                 .WithTracing(options => DefaultRuntimeTracing(builder, options));
