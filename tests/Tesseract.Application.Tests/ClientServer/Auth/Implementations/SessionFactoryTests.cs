@@ -3,7 +3,6 @@ using NSubstitute;
 using Tesseract.Application.ClientServer.Auth.Abstractions;
 using Tesseract.Application.ClientServer.Auth.Implementations;
 using Tesseract.Domain.Users;
-using Tesseract.Domain.Users.Values;
 
 namespace Tesseract.Application.Tests.ClientServer.Auth.Implementations;
 

@@ -10,7 +10,6 @@ using System.Security.Claims;
 using System.Text.Encodings.Web;
 using Tesseract.Application.ClientServer.Auth;
 using Tesseract.Domain.Users;
-using Tesseract.Domain.Users.Values;
 using Tesseract.Infrastructure.ClientServer.Auth;
 
 namespace Tesseract.Infrastructure.Tests.ClientServer.Auth;
