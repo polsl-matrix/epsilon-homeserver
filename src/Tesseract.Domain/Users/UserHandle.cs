@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Tesseract.Domain.Common.Exceptions;
 using Tesseract.Domain.Common.Values;
+using VDomain = Tesseract.Domain.Common.Values.Domain;
 
 namespace Tesseract.Domain.Users;
 
@@ -13,7 +14,7 @@ public record UserHandle
     }
 
     public Localpart Localpart { get; }
-    public Common.Values.Domain Domain { get; }
+    public VDomain Domain { get; }
 
     public override string ToString() => $"@{Localpart}:{Domain}";
 
