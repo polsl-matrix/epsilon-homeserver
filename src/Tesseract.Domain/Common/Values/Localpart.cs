@@ -1,7 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using Tesseract.Domain.Common.Constants;
 using Tesseract.Domain.Common.Exceptions;
+using static Tesseract.Domain.Common.Constants.Sequences;
 
 namespace Tesseract.Domain.Common.Values;
 
@@ -52,5 +54,13 @@ public partial record Localpart
         {
             return false;
         }
+    }
+
+    public static Localpart Create(int length)
+    {
+        const string choices = $"{Letter}{Digit}{Symbol}";
+        var localpart = RandomNumberGenerator.GetString(choices, length);
+
+        return new Localpart(localpart);
     }
 }

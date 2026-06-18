@@ -3,16 +3,18 @@ using VDomain = Tesseract.Domain.Common.Values.Domain;
 
 namespace Tesseract.Domain.Rooms;
 
-public class RoomHandle
+public class RoomHandle(string localpart, string domain)
 {
-    public RoomHandle(string localpart, string domain)
-    {
-        Localpart = localpart;
-        Domain = domain;
-    }
-
-    public Localpart Localpart { get; }
-    public VDomain Domain { get; }
+    public Localpart Localpart { get; } = localpart;
+    public VDomain Domain { get; } = domain;
 
     public override string ToString() => $"!{Localpart}:{Domain}";
+
+    public static RoomHandle Random(string domain)
+    {
+        const int length = 32;
+
+        var localpart = Localpart.Create(length);
+        return new RoomHandle(localpart.Value, domain);
+    }
 }
