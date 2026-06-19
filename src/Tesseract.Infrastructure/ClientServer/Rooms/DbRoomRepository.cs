@@ -1,4 +1,5 @@
 using Dapper;
+using Tesseract.Application.ClientServer.Rooms;
 using Tesseract.Domain.Rooms;
 using Tesseract.Infrastructure.Common.Database.Interfaces;
 
