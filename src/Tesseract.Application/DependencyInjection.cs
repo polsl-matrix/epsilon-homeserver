@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Tesseract.Application.ClientServer.Auth.Abstractions;
 using Tesseract.Application.ClientServer.Auth.Flows;
 using Tesseract.Application.ClientServer.Auth.Implementations;
+using Tesseract.Application.Common.Transactions;
 
 namespace Tesseract.Application;
 
@@ -17,6 +18,7 @@ public static class DependencyInjection
             services.AddMediatR(options =>
             {
                 options.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);
+                options.AddOpenBehavior(typeof(TransactionBehavior<,>));
             });
 
             services.AddScoped<IAuthenticationFlow, DummyAuthenticationFlow>();

@@ -1,8 +1,8 @@
-using System.Data;
+using System.Data.Common;
 
 namespace Tesseract.Infrastructure.Common.Database.Interfaces;
 
 public interface IDbConnectionFactory
 {
-    IDbConnection CreateConnection();
+    DbConnection CreateConnection();
 }
