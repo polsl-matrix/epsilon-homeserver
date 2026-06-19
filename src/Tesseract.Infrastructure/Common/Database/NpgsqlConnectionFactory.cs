@@ -1,5 +1,5 @@
 using Npgsql;
-using System.Data;
+using System.Data.Common;
 using Tesseract.Infrastructure.Common.Database.Interfaces;
 
 namespace Tesseract.Infrastructure.Common.Database;
@@ -14,6 +14,6 @@ public sealed class NpgsqlConnectionFactory : IDbConnectionFactory
         _connectionString = connectionString;
     }
 
-    public IDbConnection CreateConnection() =>
+    public DbConnection CreateConnection() =>
         new NpgsqlConnection(_connectionString);
 }

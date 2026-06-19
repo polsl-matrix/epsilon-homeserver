@@ -4,13 +4,14 @@ using Tesseract.Application.ClientServer.Auth.Exceptions;
 using Tesseract.Application.ClientServer.Auth.Models;
 using Tesseract.Application.ClientServer.Identity.Abstractions;
 using Tesseract.Application.Common.Configuration;
+using Tesseract.Application.Common.Transactions;
 using Tesseract.Domain.Users;
 
 namespace Tesseract.Application.ClientServer.Auth;
 
 public static class RegisterAccount
 {
-    public sealed record Command(string Username, string Password) : IRequest<Response>;
+    public sealed record Command(string Username, string Password) : IRequest<Response>, ITransactional;
 
     internal sealed class Handler(
         IPasswordHasher passwordHasher,
@@ -36,7 +37,6 @@ public static class RegisterAccount
 
             var password = await HashPassword(user.Id, request.Password, cancellationToken);
 
-            // TODO: Handle transactions properly.
             await userRepository.InsertAsync(user, cancellationToken);
             await profileRepository.InsertAsync(profile, cancellationToken);
             await passwordRepository.InsertAsync(password, cancellationToken);
