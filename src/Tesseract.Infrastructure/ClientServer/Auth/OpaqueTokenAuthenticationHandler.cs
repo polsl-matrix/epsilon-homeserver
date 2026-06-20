@@ -1,11 +1,14 @@
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Tesseract.Application.ClientServer.Auth;
 using Tesseract.Domain.Users;
 
@@ -42,6 +45,33 @@ public class OpaqueTokenAuthenticationHandler(
         return AuthenticateResult.Success(ticket);
     }
 
+    protected override async Task HandleChallengeAsync(AuthenticationProperties properties)
+    {
+        Response.StatusCode = StatusCodes.Status401Unauthorized;
+
+        var hasAuthorizationHeader = Request.Headers.ContainsKey(HeaderNames.Authorization);
+        var response = hasAuthorizationHeader
+            ? new MatrixAuthErrorResponse("M_UNKNOWN_TOKEN", "Unrecognised access token.")
+            : new MatrixAuthErrorResponse("M_MISSING_TOKEN", "Missing access token.");
+
+        await WriteMatrixErrorAsync(response);
+    }
+
+    protected override async Task HandleForbiddenAsync(AuthenticationProperties properties)
+    {
+        Response.StatusCode = StatusCodes.Status403Forbidden;
+
+        await WriteMatrixErrorAsync(new MatrixAuthErrorResponse("M_FORBIDDEN"));
+    }
+
+    private async Task WriteMatrixErrorAsync(MatrixAuthErrorResponse response)
+    {
+        Response.ContentType = "application/json";
+        var body = JsonSerializer.Serialize(response);
+
+        await Response.WriteAsync(body);
+    }
+
     private string? GetToken()
     {
         var authorizationHeaderName = Request.Headers[HeaderNames.Authorization];
@@ -68,4 +98,11 @@ public class OpaqueTokenAuthenticationHandler(
             new Claim(ClaimTypes.NameIdentifier, userId),
         ];
     }
+
+    private sealed record MatrixAuthErrorResponse(
+        [property: JsonPropertyName("errcode")]
+        string Code,
+        [property: JsonPropertyName("error")]
+        [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        string? Message = null);
 }

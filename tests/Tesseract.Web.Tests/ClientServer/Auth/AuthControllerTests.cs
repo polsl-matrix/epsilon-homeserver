@@ -223,4 +223,43 @@ public class AuthControllerTests
 
         await _mediator.Received().Send(Arg.Any<RegisterAccount.Command>(), cancellationToken);
     }
+
+    [Fact]
+    public async Task GetCurrentUserDetails_AuthorizationHeaderProvided_PassesBearerTokenToMediator()
+    {
+        GetCurrentUserDetails.Query? calledQuery = null;
+        _mediator.Send(Arg.Any<GetCurrentUserDetails.Query>(), Arg.Any<CancellationToken>())
+            .Returns(new GetCurrentUserDetails.Response(new UserHandle("berry", "pie.zone")))
+            .AndDoes(call => calledQuery = call.Arg<GetCurrentUserDetails.Query>());
+
+        await _controller.GetCurrentUserDetails("Bearer mock-accessToken!1", CancellationToken.None);
+
+        calledQuery.Should().NotBeNull();
+        calledQuery.AccessToken.Should().Be("mock-accessToken!1");
+    }
+
+    [Fact]
+    public async Task GetCurrentUserDetails_MediatorReturnsResponse_MapsValuesCorrectly()
+    {
+        _mediator.Send(Arg.Any<GetCurrentUserDetails.Query>(), Arg.Any<CancellationToken>())
+            .Returns(new GetCurrentUserDetails.Response(new UserHandle("ferret", "burrow.home")));
+
+        var result = await _controller.GetCurrentUserDetails("Bearer access-token", CancellationToken.None);
+
+        result.UserId.Should().Be("@ferret:burrow.home");
+        result.DeviceId.Should().BeNull();
+        result.IsGuest.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task GetCurrentUserDetails_CancellationTokenProvided_PassesSameTokenToMediator()
+    {
+        var cancellationToken = new CancellationTokenSource().Token;
+        _mediator.Send(Arg.Any<GetCurrentUserDetails.Query>(), cancellationToken)
+            .Returns(new GetCurrentUserDetails.Response(new UserHandle("clock", "tower.time")));
+
+        await _controller.GetCurrentUserDetails("Bearer access-token", cancellationToken);
+
+        await _mediator.Received().Send(Arg.Any<GetCurrentUserDetails.Query>(), cancellationToken);
+    }
 }

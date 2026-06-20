@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Http.Headers;
 using Tesseract.Application.ClientServer.Auth;
 using Tesseract.Web.ClientServer.Auth.Contracts;
 
@@ -71,5 +72,29 @@ public class AuthController(IMediator mediator)
             AccessToken = result.AccessToken,
             RefreshToken = result.RefreshToken,
         };
+    }
+
+    [HttpGet("v3/account/whoami")]
+    [Authorize]
+    public async Task<GetCurrentUserDetailsResponse> GetCurrentUserDetails(
+        [FromHeader(Name = "Authorization")] string authorization,
+        CancellationToken cancellationToken)
+    {
+        var accessToken = GetBearerToken(authorization);
+        var query = new GetCurrentUserDetails.Query(accessToken);
+
+        var result = await mediator.Send(query, cancellationToken);
+
+        return new GetCurrentUserDetailsResponse
+        {
+            UserId = result.UserId.ToString(),
+        };
+    }
+
+    private static string GetBearerToken(string authorization)
+    {
+        return AuthenticationHeaderValue.TryParse(authorization, out var header)
+            ? header.Parameter ?? string.Empty
+            : string.Empty;
     }
 }
