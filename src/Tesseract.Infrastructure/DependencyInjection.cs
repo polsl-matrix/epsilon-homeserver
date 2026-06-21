@@ -10,6 +10,8 @@ using Tesseract.Infrastructure.ClientServer.Auth.Repositories;
 using Tesseract.Infrastructure.ClientServer.Auth.Services;
 using Tesseract.Infrastructure.ClientServer.Discovery;
 using Tesseract.Infrastructure.ClientServer.Discovery.Configuration;
+using Tesseract.Infrastructure.ClientServer.Events;
+using Tesseract.Infrastructure.ClientServer.Events.Mappers;
 using Tesseract.Infrastructure.ClientServer.Identity.Repositories;
 using Tesseract.Infrastructure.ClientServer.Rooms;
 using Tesseract.Infrastructure.Common.Configuration;
@@ -47,6 +49,9 @@ public static class DependencyInjection
             services.AddScoped<IPasswordHasher, Argon2PasswordHasher>();
             services.AddScoped<IRefreshTokenService, OpaqueTokenService>();
 
+            services.AddScoped<IEventRepository, DbEventRepository>();
+            services.AddScoped<IEventMapper, CreateRoomEventMapper>();
+
             services.AddScoped<IMatrixConfigurationRepository, MatrixConfigurationRepository>();
             services.AddScoped<IPasswordRepository, DbPasswordRepository>();
             services.AddScoped<IProfileRepository, DbProfileRepository>();
@@ -55,8 +60,6 @@ public static class DependencyInjection
             services.AddScoped<IUserRepository, DbUserRepository>();
             services.AddScoped<IVersionRepository, InMemoryVersionRepository>();
             services.AddScoped<IWellKnownRepository, WellKnownRepository>();
-
-            services.AddScoped<IEventRepository, DbEventRepository>();
         }
     }
 }

@@ -1,17 +1,25 @@
 using MediatR;
+using System.Diagnostics.CodeAnalysis;
 using Tesseract.Domain.Events;
 using Tesseract.Domain.Rooms;
 using Tesseract.Domain.Users;
 
 namespace Tesseract.Domain;
 
-public class Event : INotification
+public class Event(EventId id, string type, RoomId roomId, UserId senderId, DateTime timestamp, string? stateKey)
+    : INotification
 {
-    public EventId Id { get; } = EventId.Random();
-    public required string Type { get; init; }
-    public required RoomId RoomId { get; init; }
-    public required UserId SenderId { get; init; }
-    public DateTime Timestamp { get; init; } = DateTime.Now;
+    [SetsRequiredMembers]
+    protected Event(string type, RoomId roomId, UserId senderId, string? stateKey)
+        : this(EventId.Random(), type, roomId, senderId, DateTime.Now, stateKey)
+    {
+    }
 
-    public string? StateKey { get; init; }
+    public EventId Id { get; } = id;
+    public required string Type { get; init; } = type;
+    public required RoomId RoomId { get; init; } = roomId;
+    public required UserId SenderId { get; init; } = senderId;
+    public DateTime Timestamp { get; init; } = timestamp;
+
+    public string? StateKey { get; init; } = stateKey;
 }

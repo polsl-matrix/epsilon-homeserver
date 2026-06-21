@@ -1,8 +1,10 @@
 using System.Text.Json.Serialization;
+using Tesseract.Domain.Events;
 
 namespace Tesseract.Infrastructure.ClientServer.Events.Dao;
 
 [JsonPolymorphic(TypeDiscriminatorPropertyName = "type")]
+[JsonDerivedType(typeof(CreateRoomEventDao), EventTypes.CreateRoom)]
 public class EventDao
 {
     [JsonPropertyName("event_id")]

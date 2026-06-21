@@ -9,14 +9,14 @@ namespace Tesseract.Infrastructure.ClientServer.Rooms;
 
 internal class DbEventRepository : IEventRepository
 {
-    private readonly Dictionary<string, IEventMapper> _roomEventMappers;
+    private readonly Dictionary<string, IEventMapper> _eventMappers;
 
     private readonly IDbConnectionFactory _dbConnectionFactory;
 
-    public DbEventRepository(IEnumerable<IEventMapper> roomEventMappers,
+    public DbEventRepository(IEnumerable<IEventMapper> eventMappers,
         IDbConnectionFactory dbConnectionFactory)
     {
-        _roomEventMappers = roomEventMappers.ToDictionary(mapper => mapper.Type);
+        _eventMappers = eventMappers.ToDictionary(mapper => mapper.Type);
         _dbConnectionFactory = dbConnectionFactory;
     }
 
@@ -42,12 +42,12 @@ internal class DbEventRepository : IEventRepository
 
     private string SerializePayload(Event @event)
     {
-        if (!_roomEventMappers.TryGetValue(@event.Type, out var roomEventMapper))
+        if (!_eventMappers.TryGetValue(@event.Type, out var eventMapper))
         {
             throw new ArgumentException(@event.Type);
         }
 
-        var payload = roomEventMapper.ToDao(@event);
+        var payload = eventMapper.ToDao(@event);
         return JsonSerializer.Serialize(payload);
     }
 }
