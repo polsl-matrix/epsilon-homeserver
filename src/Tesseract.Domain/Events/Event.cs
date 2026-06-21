@@ -6,19 +6,19 @@ using Tesseract.Domain.Users;
 namespace Tesseract.Domain.Events;
 
 [method: SetsRequiredMembers]
-public class Event(EventId id, string type, RoomId roomId, UserId senderId, DateTime timestamp, string? stateKey)
+public class Event(EventId id, string type, Room room, User sender, DateTime timestamp, string? stateKey)
     : INotification
 {
     [SetsRequiredMembers]
-    protected Event(string type, RoomId roomId, UserId senderId, string? stateKey)
-        : this(EventId.Random(), type, roomId, senderId, DateTime.Now, stateKey)
+    protected Event(string type, Room room, User sender, string? stateKey)
+        : this(EventId.Random(), type, room, sender, DateTime.Now, stateKey)
     {
     }
 
     public EventId Id { get; } = id;
     public required string Type { get; init; } = type;
-    public required RoomId RoomId { get; init; } = roomId;
-    public required UserId SenderId { get; init; } = senderId;
+    public required Room Room { get; init; } = room;
+    public required User Sender { get; init; } = sender;
     public DateTime Timestamp { get; init; } = timestamp;
 
     public string? StateKey { get; init; } = stateKey;

@@ -31,7 +31,7 @@ internal class DbEventRepository : IEventRepository
         var parameters = new
         {
             EventId = @event.Id.Value,
-            RoomId = @event.RoomId.Value,
+            RoomId = @event.Room.Id.Value,
             Timestamp = @event.Timestamp,
             Payload = SerializePayload(@event),
         };

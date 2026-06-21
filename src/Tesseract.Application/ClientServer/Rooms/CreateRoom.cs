@@ -1,4 +1,6 @@
 using MediatR;
+using Tesseract.Application.ClientServer.Auth.Exceptions;
+using Tesseract.Application.ClientServer.Identity.Abstractions;
 using Tesseract.Application.ClientServer.Rooms.Abstractions;
 using Tesseract.Application.Common.Configuration;
 using Tesseract.Domain.Rooms;
@@ -12,15 +14,23 @@ public static class CreateRoom
 
     internal sealed class Handler(
         IPublisher publisher,
+        IEventRepository eventRepository,
         IMatrixConfigurationRepository configurationRepository,
         IRoomRepository roomRepository,
-        IEventRepository eventRepository)
+        IUserRepository userRepository)
         : IRequestHandler<Command, Response>
     {
         public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
         {
+            var creator = await userRepository.GetByIdAsync(request.CreatorId, cancellationToken);
             var domain = await configurationRepository.GetDomainAsync(cancellationToken);
-            var room = Room.Create(request.CreatorId, domain);
+
+            if (creator is null)
+            {
+                throw new ForbiddenException();
+            }
+
+            var room = Room.Create(creator, domain);
 
             await roomRepository.SaveAsync(room, cancellationToken);
 

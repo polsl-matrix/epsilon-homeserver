@@ -11,10 +11,10 @@ public class EventDao
     public required Guid EventId { get; init; }
 
     [JsonPropertyName("room_id")]
-    public required Guid RoomId { get; init; }
+    public required string RoomHandle { get; init; }
 
-    [JsonPropertyName("sender_id")]
-    public required Guid SenderId { get; init; }
+    [JsonPropertyName("sender")]
+    public required string SenderHandle { get; init; }
 
     [JsonPropertyName("origin_server_ts")]
     public required DateTime Timestamp { get; init; }

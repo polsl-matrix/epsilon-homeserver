@@ -1,4 +1,3 @@
-using Tesseract.Domain;
 using Tesseract.Domain.Events;
 using Tesseract.Infrastructure.ClientServer.Events.Dao;
 
@@ -11,8 +10,8 @@ internal class CreateRoomEventMapper : EventMapper<CreateRoomEvent, CreateRoomEv
     protected override CreateRoomEventDao ToDao(CreateRoomEvent typedEvent) => new()
     {
         EventId = typedEvent.Id.Value,
-        RoomId = typedEvent.RoomId.Value,
-        SenderId = typedEvent.SenderId.Value,
+        RoomHandle = typedEvent.Room.Handle.ToString(),
+        SenderHandle = typedEvent.Sender.Handle.ToString(),
         Timestamp = typedEvent.Timestamp,
         StateKey = typedEvent.StateKey,
         Content = new Content(),
