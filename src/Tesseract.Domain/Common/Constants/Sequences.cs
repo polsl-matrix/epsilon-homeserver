@@ -4,5 +4,4 @@ public static class Sequences
 {
     public const string Letter = "abcdefghijklmnopqrstuvwxyz";
     public const string Digit = "1234567890";
-    public const string Symbol = "-.=_/+";
 }
