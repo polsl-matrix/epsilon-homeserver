@@ -52,4 +52,19 @@ internal class DbSessionRepository(IDbConnectionFactory dbConnectionFactory) : I
             CurrentRefreshTokenHash = session.RefreshTokenHash,
         });
     }
+
+    public async Task DeleteByAccessTokenAsync(byte[] accessTokenHash, CancellationToken cancellationToken)
+    {
+        using var connection = dbConnectionFactory.CreateConnection();
+
+        const string sql = """
+                           DELETE FROM auth.sessions
+                           WHERE current_access_token_hash = @AccessTokenHash;
+                           """;
+
+        await connection.ExecuteAsync(sql, new
+        {
+            AccessTokenHash = accessTokenHash,
+        });
+    }
 }

@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Http.Headers;
 using Tesseract.Application.ClientServer.Auth;
 using Tesseract.Web.ClientServer.Auth.Contracts;
 
@@ -71,5 +72,24 @@ public class AuthController(IMediator mediator)
             AccessToken = result.AccessToken,
             RefreshToken = result.RefreshToken,
         };
+    }
+
+    [HttpPost("v3/logout")]
+    [Authorize]
+    public async Task<LogoutUserResponse> LogoutUser(
+        [FromHeader(Name = "Authorization")] string authorization, CancellationToken cancellationToken)
+    {
+        if (!AuthenticationHeaderValue.TryParse(authorization, out var header) ||
+            !string.Equals(header.Scheme, "Bearer", StringComparison.InvariantCultureIgnoreCase) ||
+            header.Parameter is not { } accessToken)
+        {
+            throw new InvalidOperationException("Authenticated request does not contain a bearer token.");
+        }
+
+        var command = new LogoutUser.Command(accessToken);
+
+        await mediator.Send(command, cancellationToken);
+
+        return new LogoutUserResponse();
     }
 }

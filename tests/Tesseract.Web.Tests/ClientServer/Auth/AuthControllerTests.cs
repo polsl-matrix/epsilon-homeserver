@@ -223,4 +223,54 @@ public class AuthControllerTests
 
         await _mediator.Received().Send(Arg.Any<RegisterAccount.Command>(), cancellationToken);
     }
+
+    [Fact]
+    public async Task LogoutUser_AuthorizationHeaderProvided_PassesBearerTokenToMediator()
+    {
+        LogoutUser.Command? calledCommand = null;
+        _mediator.Send(Arg.Any<LogoutUser.Command>(), Arg.Any<CancellationToken>())
+            .Returns(new LogoutUser.Response())
+            .AndDoes(call => calledCommand = call.Arg<LogoutUser.Command>());
+
+        await _controller.LogoutUser("Bearer mock-accessToken!1", CancellationToken.None);
+
+        calledCommand.Should().NotBeNull();
+        calledCommand.AccessToken.Should().Be("mock-accessToken!1");
+    }
+
+    [Fact]
+    public async Task LogoutUser_CancellationTokenProvided_PassesSameTokenToMediator()
+    {
+        var cancellationToken = new CancellationTokenSource().Token;
+        _mediator.Send(Arg.Any<LogoutUser.Command>(), cancellationToken)
+            .Returns(new LogoutUser.Response());
+
+        await _controller.LogoutUser("Bearer mock-accessToken!1", cancellationToken);
+
+        await _mediator.Received().Send(Arg.Any<LogoutUser.Command>(), cancellationToken);
+    }
+
+    [Fact]
+    public async Task LogoutUser_MediatorReturnsResponse_ReturnsEmptyResponse()
+    {
+        _mediator.Send(Arg.Any<LogoutUser.Command>(), Arg.Any<CancellationToken>())
+            .Returns(new LogoutUser.Response());
+
+        var result = await _controller.LogoutUser("Bearer mock-accessToken!1", CancellationToken.None);
+
+        result.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task LogoutUser_MediatorThrowsException_PropagatesException()
+    {
+        var exception = new InvalidOperationException("Something went wrong.");
+        _mediator.Send(Arg.Any<LogoutUser.Command>(), Arg.Any<CancellationToken>())
+            .Throws(exception);
+
+        var act = async () => await _controller.LogoutUser("Bearer mock-accessToken!1", CancellationToken.None);
+
+        var thrown = await act.Should().ThrowAsync<InvalidOperationException>();
+        thrown.Which.Should().BeSameAs(exception);
+    }
 }
