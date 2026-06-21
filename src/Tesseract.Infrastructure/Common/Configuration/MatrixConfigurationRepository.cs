@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Options;
 using Tesseract.Application.Common.Configuration;
-using VDomain = Tesseract.Domain.Users.Values.Domain;
+using VDomain = Tesseract.Domain.Common.Values.Domain;
 
 namespace Tesseract.Infrastructure.Common.Configuration;
 

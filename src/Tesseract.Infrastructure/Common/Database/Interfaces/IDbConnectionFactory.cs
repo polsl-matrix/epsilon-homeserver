@@ -2,7 +2,7 @@ using System.Data.Common;
 
 namespace Tesseract.Infrastructure.Common.Database.Interfaces;
 
-public interface IDbConnectionFactory
+internal interface IDbConnectionFactory
 {
     DbConnection CreateConnection();
 }

@@ -1,7 +1,6 @@
 using Dapper;
 using Tesseract.Application.ClientServer.Identity.Abstractions;
 using Tesseract.Domain.Users;
-using Tesseract.Domain.Users.Values;
 using Tesseract.Infrastructure.ClientServer.Identity.Dao;
 using Tesseract.Infrastructure.ClientServer.Identity.Mappers;
 using Tesseract.Infrastructure.Common.Database.Interfaces;

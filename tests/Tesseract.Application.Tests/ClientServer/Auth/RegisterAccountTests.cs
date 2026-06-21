@@ -7,7 +7,6 @@ using Tesseract.Application.ClientServer.Auth.Models;
 using Tesseract.Application.ClientServer.Identity.Abstractions;
 using Tesseract.Application.Common.Configuration;
 using Tesseract.Domain.Users;
-using Tesseract.Domain.Users.Values;
 
 namespace Tesseract.Application.Tests.ClientServer.Auth;
 
@@ -48,7 +47,7 @@ public class RegisterAccountTests
     {
         var command = new RegisterAccount.Command("alice", "s3cur3*pass!");
 
-        var domain = new Domain.Users.Values.Domain("wonderland.net");
+        var domain = new Domain.Common.Values.Domain("wonderland.net");
         var session = new Session(SessionId.Random(), UserId.Random(), "hash-accessToken#3"u8.ToArray(), "hash-refreshToken$4"u8.ToArray());
 
         _configurationRepository.GetDomainAsync(Arg.Any<CancellationToken>()).Returns(domain);
@@ -69,7 +68,7 @@ public class RegisterAccountTests
     {
         var command = new RegisterAccount.Command("bob", "password#99");
 
-        var domain = new Domain.Users.Values.Domain("matrix.org");
+        var domain = new Domain.Common.Values.Domain("matrix.org");
         var existingUser = new User(UserId.Random(), new UserHandle("bob", domain.Value));
 
         _configurationRepository.GetDomainAsync(Arg.Any<CancellationToken>()).Returns(domain);
@@ -88,7 +87,7 @@ public class RegisterAccountTests
         var cancellationSource = new CancellationTokenSource();
 
         var command = new RegisterAccount.Command("carol", "my_safe_pass1");
-        var domain = new Domain.Users.Values.Domain("test.server");
+        var domain = new Domain.Common.Values.Domain("test.server");
         var session = new Session(SessionId.Random(), UserId.Random(), [], []);
 
         _configurationRepository.GetDomainAsync(Arg.Any<CancellationToken>()).Returns(domain);

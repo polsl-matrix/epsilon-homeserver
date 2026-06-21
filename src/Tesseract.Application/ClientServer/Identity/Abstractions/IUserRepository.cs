@@ -1,5 +1,4 @@
 using Tesseract.Domain.Users;
-using Tesseract.Domain.Users.Values;
 
 namespace Tesseract.Application.ClientServer.Identity.Abstractions;
 

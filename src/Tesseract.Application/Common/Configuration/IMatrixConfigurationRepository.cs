@@ -2,5 +2,5 @@ namespace Tesseract.Application.Common.Configuration;
 
 public interface IMatrixConfigurationRepository
 {
-    Task<Domain.Users.Values.Domain> GetDomainAsync(CancellationToken cancellationToken);
+    Task<Domain.Common.Values.Domain> GetDomainAsync(CancellationToken cancellationToken);
 }

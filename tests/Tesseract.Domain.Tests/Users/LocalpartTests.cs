@@ -1,6 +1,6 @@
 using FluentAssertions;
 using Tesseract.Domain.Common.Exceptions;
-using Tesseract.Domain.Users.Values;
+using Localpart = Tesseract.Domain.Common.Values.Localpart;
 
 namespace Tesseract.Domain.Tests.Users;
 

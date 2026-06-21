@@ -6,7 +6,6 @@ using Tesseract.Application.ClientServer.Identity.Abstractions;
 using Tesseract.Application.Common.Configuration;
 using Tesseract.Application.Common.Transactions;
 using Tesseract.Domain.Users;
-using Tesseract.Domain.Users.Values;
 
 namespace Tesseract.Application.ClientServer.Auth;
 
