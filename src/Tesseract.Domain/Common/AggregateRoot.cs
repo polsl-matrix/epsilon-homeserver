@@ -2,7 +2,6 @@ using MediatR;
 
 namespace Tesseract.Domain;
 
-// TODO: Move it to the right folder.
 public abstract class AggregateRoot<TIdentifier, TNotification>(TIdentifier id) where TNotification : INotification
 {
     private readonly List<TNotification> _events = [];
