@@ -1,4 +1,4 @@
-﻿{
+{
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "profiles": {
     "https": {
@@ -12,7 +12,6 @@
         "OTEL_RESOURCE_ATTRIBUTES": "service.instance.id=local",
         "OTEL_EXPORTER_OTLP_ENDPOINT": "http://localhost:4317",
         "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",
-        "Observability__OtlpEndpoint": "http://localhost:4317",
         "ConnectionStrings__Default": ""
       }
     }
