@@ -5,7 +5,7 @@ using Tesseract.Infrastructure.Common.Database.Interfaces;
 
 namespace Tesseract.Infrastructure.ClientServer.Identity.Repositories;
 
-public class DbProfileRepository(IDbConnectionFactory dbConnectionFactory) : IProfileRepository
+internal class DbProfileRepository(IDbConnectionFactory dbConnectionFactory) : IProfileRepository
 {
     public async Task InsertAsync(Profile profile, CancellationToken cancellationToken)
     {

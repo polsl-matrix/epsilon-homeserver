@@ -5,7 +5,7 @@ using Tesseract.Infrastructure.Common.Database.Interfaces;
 
 namespace Tesseract.Infrastructure.ClientServer.Rooms;
 
-public class DbRoomRepository(IDbConnectionFactory dbConnectionFactory) : IRoomRepository
+internal class DbRoomRepository(IDbConnectionFactory dbConnectionFactory) : IRoomRepository
 {
     public async Task InsertAsync(Room room, CancellationToken _)
     {

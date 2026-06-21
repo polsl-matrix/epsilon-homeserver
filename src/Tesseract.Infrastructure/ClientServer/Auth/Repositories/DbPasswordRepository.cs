@@ -8,7 +8,7 @@ using Tesseract.Infrastructure.Common.Database.Interfaces;
 
 namespace Tesseract.Infrastructure.ClientServer.Auth.Repositories;
 
-public class DbPasswordRepository(IDbConnectionFactory dbConnectionFactory) : IPasswordRepository
+internal class DbPasswordRepository(IDbConnectionFactory dbConnectionFactory) : IPasswordRepository
 {
     public async Task InsertAsync(Password password, CancellationToken cancellationToken)
     {

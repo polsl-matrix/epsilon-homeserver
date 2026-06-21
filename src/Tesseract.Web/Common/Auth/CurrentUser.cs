@@ -3,7 +3,7 @@ using Tesseract.Domain.Users;
 
 namespace Tesseract.Web.Common.Auth;
 
-public class CurrentUser(IHttpContextAccessor context) : ICurrentUser
+internal class CurrentUser(IHttpContextAccessor context) : ICurrentUser
 {
     public UserId Id
     {

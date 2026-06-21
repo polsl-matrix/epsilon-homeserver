@@ -3,7 +3,7 @@ using Tesseract.Infrastructure.ClientServer.Events.Dao;
 
 namespace Tesseract.Infrastructure.ClientServer.Events;
 
-public interface IEventMapper
+internal interface IEventMapper
 {
     string Type { get; }
 

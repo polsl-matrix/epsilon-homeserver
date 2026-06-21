@@ -37,7 +37,7 @@ public static class CreateRoom
             var membership = RoomMembership.Create(room, creator);
 
             await roomRepository.InsertAsync(room, cancellationToken);
-            await roomMembershipRepository.SaveAsync(membership, cancellationToken);
+            await roomMembershipRepository.InsertAsync(membership, cancellationToken);
 
             await PublishEventsAsync(room.Events, cancellationToken);
             await PublishEventsAsync(membership.Events, cancellationToken);

@@ -14,7 +14,7 @@ public class RoomHandle(string localpart, string domain)
     {
         const int length = 32;
 
-        var localpart = Localpart.Create(length);
+        var localpart = Localpart.Random(length);
         return new RoomHandle(localpart.Value, domain);
     }
 }

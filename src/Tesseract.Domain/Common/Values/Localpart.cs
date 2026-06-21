@@ -56,7 +56,7 @@ public partial record Localpart
         }
     }
 
-    public static Localpart Create(int length)
+    public static Localpart Random(int length)
     {
         const string choices = $"{Letter}{Digit}{Symbol}";
         var localpart = RandomNumberGenerator.GetString(choices, length);

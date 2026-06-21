@@ -6,7 +6,7 @@ namespace Tesseract.Infrastructure.ClientServer.Rooms;
 
 internal class DbRoomMembershipRepository(IDbConnectionFactory dbConnectionFactory) : IRoomMembershipRepository
 {
-    public async Task SaveAsync(RoomMembership roomMembership, CancellationToken cancellationToken)
+    public async Task InsertAsync(RoomMembership roomMembership, CancellationToken cancellationToken)
     {
         await using var connection = dbConnectionFactory.CreateConnection();
 
