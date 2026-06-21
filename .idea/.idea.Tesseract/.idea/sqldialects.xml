@@ -5,6 +5,7 @@
     <file url="file://$PROJECT_DIR$/src/Tesseract.Infrastructure/Common/Database/Migrations/001_create_identity_schema_and_users_table.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/src/Tesseract.Infrastructure/Common/Database/Migrations/002_create_auth_schema_and_session_tables.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/src/Tesseract.Infrastructure/Common/Database/Migrations/003_create_identity_profiles_table.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/src/Tesseract.Infrastructure/Common/Database/Migrations/005_setup_event_graph.sql" dialect="PostgreSQL" />
     <file url="PROJECT" dialect="PostgreSQL" />
   </component>
 </project>
