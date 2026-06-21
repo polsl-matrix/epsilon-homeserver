@@ -24,35 +24,39 @@ public static class DependencyInjection
     {
         public void AddInfrastructure()
         {
+            var services = builder.Services;
+
             var connectionString = builder.Configuration
                 .GetConnectionString("Default");
 
-            builder.Services.AddSingleton<IDbConnectionFactory>(_ =>
+            services.AddSingleton<IDbConnectionFactory>(_ =>
                 new NpgsqlConnectionFactory(connectionString));
 
-            builder.Services.AddOptions<MatrixConfigurationOptions>()
+            services.AddOptions<MatrixConfigurationOptions>()
                 .BindConfiguration(MatrixConfigurationOptions.SectionName)
                 .ValidateDataAnnotations()
                 .ValidateOnStart();
 
-            builder.Services.AddOptions<DiscoveryOptions>()
+            services.AddOptions<DiscoveryOptions>()
                 .BindConfiguration(DiscoveryOptions.SectionName)
                 .ValidateDataAnnotations()
                 .ValidateOnStart();
 
-            builder.Services.AddScoped<IAccessTokenService, OpaqueTokenService>();
-            builder.Services.AddScoped<IHashService, Sha256Hasher>();
-            builder.Services.AddScoped<IPasswordHasher, Argon2PasswordHasher>();
-            builder.Services.AddScoped<IRefreshTokenService, OpaqueTokenService>();
+            services.AddScoped<IAccessTokenService, OpaqueTokenService>();
+            services.AddScoped<IHashService, Sha256Hasher>();
+            services.AddScoped<IPasswordHasher, Argon2PasswordHasher>();
+            services.AddScoped<IRefreshTokenService, OpaqueTokenService>();
 
-            builder.Services.AddScoped<IMatrixConfigurationRepository, MatrixConfigurationRepository>();
-            builder.Services.AddScoped<IPasswordRepository, DbPasswordRepository>();
-            builder.Services.AddScoped<IProfileRepository, DbProfileRepository>();
-            builder.Services.AddScoped<IRoomRepository, DbRoomRepository>();
-            builder.Services.AddScoped<ISessionRepository, DbSessionRepository>();
-            builder.Services.AddScoped<IUserRepository, DbUserRepository>();
-            builder.Services.AddScoped<IVersionRepository, InMemoryVersionRepository>();
-            builder.Services.AddScoped<IWellKnownRepository, WellKnownRepository>();
+            services.AddScoped<IMatrixConfigurationRepository, MatrixConfigurationRepository>();
+            services.AddScoped<IPasswordRepository, DbPasswordRepository>();
+            services.AddScoped<IProfileRepository, DbProfileRepository>();
+            services.AddScoped<IRoomRepository, DbRoomRepository>();
+            services.AddScoped<ISessionRepository, DbSessionRepository>();
+            services.AddScoped<IUserRepository, DbUserRepository>();
+            services.AddScoped<IVersionRepository, InMemoryVersionRepository>();
+            services.AddScoped<IWellKnownRepository, WellKnownRepository>();
+
+            services.AddScoped<IEventRepository, DbEventRepository>();
         }
     }
 }

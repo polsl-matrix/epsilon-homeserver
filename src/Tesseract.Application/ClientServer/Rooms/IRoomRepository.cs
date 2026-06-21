@@ -4,5 +4,5 @@ namespace Tesseract.Application.ClientServer.Rooms;
 
 public interface IRoomRepository
 {
-    Task Save(Room room);
+    Task SaveAsync(Room room, CancellationToken cancellationToken);
 }

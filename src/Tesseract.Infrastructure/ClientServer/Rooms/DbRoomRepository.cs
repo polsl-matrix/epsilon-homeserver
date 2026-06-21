@@ -7,9 +7,9 @@ namespace Tesseract.Infrastructure.ClientServer.Rooms;
 
 public class DbRoomRepository(IDbConnectionFactory dbConnectionFactory) : IRoomRepository
 {
-    public async Task Save(Room room)
+    public async Task SaveAsync(Room room, CancellationToken _)
     {
-        using var connection = dbConnectionFactory.CreateConnection();
+        await using var connection = dbConnectionFactory.CreateConnection();
 
         const string sql = """
                            INSERT INTO chat.rooms(room_id, localpart, domain)
