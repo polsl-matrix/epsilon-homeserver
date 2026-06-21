@@ -3,7 +3,7 @@ using Tesseract.Infrastructure.ClientServer.Events.Dao;
 
 namespace Tesseract.Infrastructure.ClientServer.Events;
 
-public abstract class EventMapper<TDomain, TDao> : IEventMapper
+internal abstract class EventMapper<TDomain, TDao> : IEventMapper
     where TDomain : Event where TDao : EventDao
 {
     public abstract string Type { get; }

@@ -4,7 +4,7 @@ using Tesseract.Infrastructure.ClientServer.Events.Dao;
 
 namespace Tesseract.Infrastructure.ClientServer.Events.Mappers;
 
-public class CreateRoomEventMapper : EventMapper<CreateRoomEvent, CreateRoomEventDao>
+internal class CreateRoomEventMapper : EventMapper<CreateRoomEvent, CreateRoomEventDao>
 {
     public override string Type => EventTypes.CreateRoom;
 

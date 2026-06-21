@@ -6,6 +6,7 @@ using Tesseract.Domain.Users;
 
 namespace Tesseract.Domain;
 
+[method: SetsRequiredMembers]
 public class Event(EventId id, string type, RoomId roomId, UserId senderId, DateTime timestamp, string? stateKey)
     : INotification
 {
