@@ -7,7 +7,7 @@ namespace Tesseract.Infrastructure.ClientServer.Rooms;
 
 public class DbRoomRepository(IDbConnectionFactory dbConnectionFactory) : IRoomRepository
 {
-    public async Task SaveAsync(Room room, CancellationToken _)
+    public async Task InsertAsync(Room room, CancellationToken _)
     {
         await using var connection = dbConnectionFactory.CreateConnection();
 

@@ -15,7 +15,6 @@ public class Room(RoomId id, RoomHandle handle) : AggregateRoot<RoomId, Event>(i
         var room = new Room(RoomId.Random(), handle);
 
         room.RaiseEvent(new CreateRoomEvent(room, creator));
-        room.RaiseEvent(new MemberRoomEvent(room, creator, creator, Membership.Join));
 
         return room;
     }

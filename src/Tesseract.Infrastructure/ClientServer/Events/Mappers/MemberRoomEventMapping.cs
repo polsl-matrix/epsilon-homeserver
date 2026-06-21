@@ -1,4 +1,5 @@
 using Tesseract.Domain.Events;
+using Tesseract.Domain.Rooms;
 using Tesseract.Infrastructure.ClientServer.Events.Dao;
 
 namespace Tesseract.Infrastructure.ClientServer.Events.Mappers;
@@ -20,9 +21,9 @@ internal class MemberRoomEventMapper : EventMapper<MemberRoomEvent, MemberRoomEv
         },
     };
 
-    private static string GetMembershipText(Membership membership) => membership switch
+    private static string GetMembershipText(RoomMembershipState membership) => membership switch
     {
-        Membership.Join => "join",
+        RoomMembershipState.Join => "join",
         _ => throw new ArgumentException($"Unknown membership: {membership}"),
     };
 }

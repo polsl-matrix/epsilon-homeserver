@@ -6,6 +6,7 @@ using Tesseract.Application.ClientServer.Discovery.Abstractions;
 using Tesseract.Application.ClientServer.Identity.Abstractions;
 using Tesseract.Application.ClientServer.Rooms.Abstractions;
 using Tesseract.Application.Common.Configuration;
+using Tesseract.Domain.Rooms;
 using Tesseract.Infrastructure.ClientServer.Auth.Repositories;
 using Tesseract.Infrastructure.ClientServer.Auth.Services;
 using Tesseract.Infrastructure.ClientServer.Discovery;
@@ -57,6 +58,7 @@ public static class DependencyInjection
             services.AddScoped<IPasswordRepository, DbPasswordRepository>();
             services.AddScoped<IProfileRepository, DbProfileRepository>();
             services.AddScoped<IRoomRepository, DbRoomRepository>();
+            services.AddScoped<IRoomMembershipRepository, DbRoomMembershipRepository>();
             services.AddScoped<ISessionRepository, DbSessionRepository>();
             services.AddScoped<IUserRepository, DbUserRepository>();
             services.AddScoped<IVersionRepository, InMemoryVersionRepository>();

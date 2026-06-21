@@ -4,5 +4,5 @@ namespace Tesseract.Application.ClientServer.Rooms.Abstractions;
 
 public interface IRoomRepository
 {
-    Task SaveAsync(Room room, CancellationToken cancellationToken);
+    Task InsertAsync(Room room, CancellationToken cancellationToken);
 }

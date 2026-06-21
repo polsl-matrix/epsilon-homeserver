@@ -7,7 +7,7 @@ using Tesseract.Web.Common.Auth;
 namespace Tesseract.Web.ClientServer.Rooms;
 
 [ApiController]
-// TODO: Enable rate limiting
+// TODO: Add rate limiter.
 [Route("_matrix/client")]
 public class RoomController(IMediator mediator, ICurrentUser user)
 {

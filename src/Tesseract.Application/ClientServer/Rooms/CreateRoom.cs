@@ -4,6 +4,7 @@ using Tesseract.Application.ClientServer.Identity.Abstractions;
 using Tesseract.Application.ClientServer.Rooms.Abstractions;
 using Tesseract.Application.Common.Configuration;
 using Tesseract.Application.Common.Transactions;
+using Tesseract.Domain.Events;
 using Tesseract.Domain.Rooms;
 using Tesseract.Domain.Users;
 
@@ -17,6 +18,7 @@ public static class CreateRoom
         IPublisher publisher,
         IEventRepository eventRepository,
         IMatrixConfigurationRepository configurationRepository,
+        IRoomMembershipRepository roomMembershipRepository,
         IRoomRepository roomRepository,
         IUserRepository userRepository)
         : IRequestHandler<Command, Response>
@@ -32,17 +34,27 @@ public static class CreateRoom
             }
 
             var room = Room.Create(creator, domain);
+            var membership = RoomMembership.Create(room, creator);
 
-            await roomRepository.SaveAsync(room, cancellationToken);
+            await roomRepository.InsertAsync(room, cancellationToken);
+            await roomMembershipRepository.SaveAsync(membership, cancellationToken);
 
-            foreach (var @event in room.Events)
+            await PublishEventsAsync(room.Events, cancellationToken);
+            await PublishEventsAsync(membership.Events, cancellationToken);
+
+            room.ClearEvents();
+            membership.ClearEvents();
+
+            return new Response(room.Handle);
+        }
+
+        private async Task PublishEventsAsync(IEnumerable<Event> events, CancellationToken cancellationToken)
+        {
+            foreach (var @event in events)
             {
                 await eventRepository.InsertAsync(@event, cancellationToken);
                 await publisher.Publish(@event, cancellationToken);
             }
-
-            room.ClearEvents();
-            return new Response(room.Handle);
         }
     }
 
