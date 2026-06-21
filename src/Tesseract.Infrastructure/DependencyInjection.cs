@@ -4,7 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Tesseract.Application.ClientServer.Auth.Abstractions;
 using Tesseract.Application.ClientServer.Discovery.Abstractions;
 using Tesseract.Application.ClientServer.Identity.Abstractions;
-using Tesseract.Application.ClientServer.Rooms;
+using Tesseract.Application.ClientServer.Rooms.Abstractions;
 using Tesseract.Application.Common.Configuration;
 using Tesseract.Infrastructure.ClientServer.Auth.Repositories;
 using Tesseract.Infrastructure.ClientServer.Auth.Services;

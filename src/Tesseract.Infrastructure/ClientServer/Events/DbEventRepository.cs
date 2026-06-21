@@ -1,11 +1,10 @@
 using Dapper;
 using System.Text.Json;
-using Tesseract.Application.ClientServer.Rooms;
-using Tesseract.Domain;
-using Tesseract.Infrastructure.ClientServer.Events;
+using Tesseract.Application.ClientServer.Rooms.Abstractions;
+using Tesseract.Domain.Events;
 using Tesseract.Infrastructure.Common.Database.Interfaces;
 
-namespace Tesseract.Infrastructure.ClientServer.Rooms;
+namespace Tesseract.Infrastructure.ClientServer.Events;
 
 internal class DbEventRepository : IEventRepository
 {

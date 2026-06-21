@@ -1,4 +1,5 @@
 using MediatR;
+using Tesseract.Application.ClientServer.Rooms.Abstractions;
 using Tesseract.Application.Common.Configuration;
 using Tesseract.Domain.Rooms;
 using Tesseract.Domain.Users;

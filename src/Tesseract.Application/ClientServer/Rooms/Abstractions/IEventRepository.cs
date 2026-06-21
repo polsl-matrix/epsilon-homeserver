@@ -1,6 +1,6 @@
-using Tesseract.Domain;
+using Tesseract.Domain.Events;
 
-namespace Tesseract.Application.ClientServer.Rooms;
+namespace Tesseract.Application.ClientServer.Rooms.Abstractions;
 
 public interface IEventRepository
 {

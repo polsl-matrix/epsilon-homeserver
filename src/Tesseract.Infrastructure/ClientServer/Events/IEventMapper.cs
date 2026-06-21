@@ -1,4 +1,4 @@
-using Tesseract.Domain;
+using Tesseract.Domain.Events;
 using Tesseract.Infrastructure.ClientServer.Events.Dao;
 
 namespace Tesseract.Infrastructure.ClientServer.Events;

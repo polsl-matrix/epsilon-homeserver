@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace Tesseract.Domain;
+namespace Tesseract.Domain.Common;
 
 public abstract class AggregateRoot<TIdentifier, TNotification>(TIdentifier id) where TNotification : INotification
 {

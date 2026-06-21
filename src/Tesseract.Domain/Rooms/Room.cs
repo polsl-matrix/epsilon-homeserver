@@ -1,3 +1,5 @@
+using Tesseract.Domain.Common;
+using Tesseract.Domain.Events;
 using Tesseract.Domain.Users;
 using VDomain = Tesseract.Domain.Common.Values.Domain;
 
