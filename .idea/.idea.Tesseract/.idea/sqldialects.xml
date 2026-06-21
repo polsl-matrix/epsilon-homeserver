@@ -8,6 +8,7 @@
     <file url="file://$PROJECT_DIR$/src/Tesseract.Infrastructure/Common/Database/Migrations/004_create_room_schema_and_table.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/src/Tesseract.Infrastructure/Common/Database/Migrations/005_setup_event_graph.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/src/Tesseract.Infrastructure/Common/Database/Migrations/006_create_room_membership_table.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/src/Tesseract.Infrastructure/Common/Database/Migrations/007_create_misc_schema_and_response_table.sql" dialect="PostgreSQL" />
     <file url="PROJECT" dialect="PostgreSQL" />
   </component>
 </project>
