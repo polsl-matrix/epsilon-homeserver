@@ -14,6 +14,6 @@ internal class CreateRoomEventMapper : EventMapper<CreateRoomEvent, CreateRoomEv
         SenderHandle = typedEvent.Sender.Handle.ToString(),
         Timestamp = typedEvent.Timestamp,
         StateKey = typedEvent.StateKey,
-        Content = new Content(),
+        Content = new CreateRoomContent(),
     };
 }

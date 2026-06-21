@@ -3,6 +3,7 @@ using Tesseract.Application.ClientServer.Auth.Exceptions;
 using Tesseract.Application.ClientServer.Identity.Abstractions;
 using Tesseract.Application.ClientServer.Rooms.Abstractions;
 using Tesseract.Application.Common.Configuration;
+using Tesseract.Application.Common.Transactions;
 using Tesseract.Domain.Rooms;
 using Tesseract.Domain.Users;
 
@@ -10,7 +11,7 @@ namespace Tesseract.Application.ClientServer.Rooms;
 
 public static class CreateRoom
 {
-    public sealed record Command(UserId CreatorId) : IRequest<Response>;
+    public sealed record Command(UserId CreatorId) : IRequest<Response>, ITransactional;
 
     internal sealed class Handler(
         IPublisher publisher,

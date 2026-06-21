@@ -5,6 +5,7 @@ namespace Tesseract.Infrastructure.ClientServer.Events.Dao;
 
 [JsonPolymorphic(TypeDiscriminatorPropertyName = "type")]
 [JsonDerivedType(typeof(CreateRoomEventDao), EventTypes.CreateRoom)]
+[JsonDerivedType(typeof(MemberRoomEventDao), EventTypes.MemberRoom)]
 public class EventDao
 {
     [JsonPropertyName("event_id")]

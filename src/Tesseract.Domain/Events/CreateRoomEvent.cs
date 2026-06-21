@@ -5,5 +5,5 @@ using Tesseract.Domain.Users;
 namespace Tesseract.Domain.Events;
 
 [method: SetsRequiredMembers]
-public class CreateRoomEvent(Room roomId, User creator)
-    : Event(EventTypes.CreateRoom, roomId, creator, string.Empty);
+public class CreateRoomEvent(Room room, User creator)
+    : Event(EventTypes.CreateRoom, room, creator, string.Empty);
