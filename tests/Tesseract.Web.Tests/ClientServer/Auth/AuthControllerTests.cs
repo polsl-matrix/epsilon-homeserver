@@ -223,4 +223,68 @@ public class AuthControllerTests
 
         await _mediator.Received().Send(Arg.Any<RegisterAccount.Command>(), cancellationToken);
     }
+
+    [Fact]
+    public async Task CheckUsernameAvailability_QueryContainsUsername_PassesSameUsernameToMediator()
+    {
+        CheckUsernameAvailability.Query? calledQuery = null;
+        _mediator.Send(Arg.Any<CheckUsernameAvailability.Query>(), Arg.Any<CancellationToken>())
+            .Returns(new CheckUsernameAvailability.Response(true))
+            .AndDoes(call => calledQuery = call.Arg<CheckUsernameAvailability.Query>());
+
+        await _controller.CheckUsernameAvailability("alice", CancellationToken.None);
+
+        calledQuery.Should().NotBeNull();
+        calledQuery.Username.Should().Be("alice");
+    }
+
+    [Fact]
+    public async Task CheckUsernameAvailability_MediatorReturnsResponse_MapsAvailableCorrectly()
+    {
+        _mediator.Send(Arg.Any<CheckUsernameAvailability.Query>(), Arg.Any<CancellationToken>())
+            .Returns(new CheckUsernameAvailability.Response(true));
+
+        var result = await _controller.CheckUsernameAvailability("bob", CancellationToken.None);
+
+        result.Available.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task CheckUsernameAvailability_MissingQuery_PassesNullUsernameToMediator()
+    {
+        CheckUsernameAvailability.Query? calledQuery = null;
+        _mediator.Send(Arg.Any<CheckUsernameAvailability.Query>(), Arg.Any<CancellationToken>())
+            .Returns(new CheckUsernameAvailability.Response(true))
+            .AndDoes(call => calledQuery = call.Arg<CheckUsernameAvailability.Query>());
+
+        await _controller.CheckUsernameAvailability(null, CancellationToken.None);
+
+        calledQuery.Should().NotBeNull();
+        calledQuery.Username.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task CheckUsernameAvailability_CancellationTokenProvided_PassesSameTokenToMediator()
+    {
+        var cancellationToken = new CancellationTokenSource().Token;
+        _mediator.Send(Arg.Any<CheckUsernameAvailability.Query>(), cancellationToken)
+            .Returns(new CheckUsernameAvailability.Response(true));
+
+        await _controller.CheckUsernameAvailability("carol", cancellationToken);
+
+        await _mediator.Received().Send(Arg.Any<CheckUsernameAvailability.Query>(), cancellationToken);
+    }
+
+    [Fact]
+    public async Task CheckUsernameAvailability_MediatorThrowsException_PropagatesException()
+    {
+        var exception = new InvalidOperationException("Something went wrong.");
+        _mediator.Send(Arg.Any<CheckUsernameAvailability.Query>(), Arg.Any<CancellationToken>())
+            .Throws(exception);
+
+        var act = async () => await _controller.CheckUsernameAvailability("dave", CancellationToken.None);
+
+        var thrown = await act.Should().ThrowAsync<InvalidOperationException>();
+        thrown.Which.Should().BeSameAs(exception);
+    }
 }
