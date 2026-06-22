@@ -3,16 +3,17 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Tesseract.Application.ClientServer.Auth;
 using Tesseract.Web.ClientServer.Auth.Contracts;
+using Tesseract.Web.ClientServer.Profile.Contracts;
 using Tesseract.Web.Common.Auth;
 
 namespace Tesseract.Web.ClientServer.Auth;
 
 [ApiController]
-[Route("_matrix/client")]
+[Route("_matrix/client/v3")]
 // TODO: Add rate limiter.
 public class AuthController(IMediator mediator, ICurrentUser user)
 {
-    [HttpPost("v3/register")]
+    [HttpPost("register")]
     [AllowAnonymous]
     public async Task<RegisterAccountResponse> RegisterAccount(
         RegisterAccountRequest request, CancellationToken cancellationToken)
@@ -31,7 +32,7 @@ public class AuthController(IMediator mediator, ICurrentUser user)
         };
     }
 
-    [HttpGet("v3/register/available")]
+    [HttpGet("register/available")]
     [AllowAnonymous]
     public async Task<RegisterAvailableResponse> CheckUsernameAvailability(
         [FromQuery] string username, CancellationToken cancellationToken)
@@ -46,7 +47,7 @@ public class AuthController(IMediator mediator, ICurrentUser user)
         };
     }
 
-    [HttpGet("v3/login")]
+    [HttpGet("login")]
     [AllowAnonymous]
     public async Task<GetSupportedAuthenticationFlowsResponse> GetSupportedAuthenticationFlows(
         CancellationToken cancellationToken)
@@ -68,7 +69,7 @@ public class AuthController(IMediator mediator, ICurrentUser user)
         };
     }
 
-    [HttpPost("v3/login")]
+    [HttpPost("login")]
     [AllowAnonymous]
     public async Task<AuthenticateUserResponse> AuthenticateUser(
         AuthenticateUserRequest request, CancellationToken cancellationToken)
@@ -89,7 +90,7 @@ public class AuthController(IMediator mediator, ICurrentUser user)
         };
     }
 
-    [HttpGet("v3/account/whoami")]
+    [HttpGet("account/whoami")]
     [Authorize]
     public async Task<GetCurrentUserDetailsResponse> GetCurrentUserDetails(CancellationToken cancellationToken)
     {
@@ -100,5 +101,15 @@ public class AuthController(IMediator mediator, ICurrentUser user)
         {
             UserId = result.UserId.ToString(),
         };
+    }
+
+    [HttpPost("logout")]
+    [Authorize]
+    public async Task<LogoutUserResponse> LogoutUser(CancellationToken cancellationToken)
+    {
+        var command = new LogoutUser.Query(user.SessionId);
+        _ = await mediator.Send(command, cancellationToken);
+
+        return new LogoutUserResponse();
     }
 }
