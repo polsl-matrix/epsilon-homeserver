@@ -57,6 +57,23 @@ public class AuthenticateUserTests
     }
 
     [Fact]
+    public async Task Handle_DeactivatedUser_ReturnsNull()
+    {
+        var command = new AuthenticateUser.Command("mock-accessToken!1");
+
+        var accessTokenHash = "hash-accessToken@2"u8.ToArray();
+        var user = new User(UserId.Random(), new UserHandle("harry", "mel.on"), true);
+        var session = new Session(SessionId.Random(), user.Id, accessTokenHash, "hash-refreshToken#3"u8.ToArray());
+        _hashService.HashAsync("mock-accessToken!1", Arg.Any<CancellationToken>()).Returns(accessTokenHash);
+        _sessionRepository.GetByAccessTokenAsync(accessTokenHash, Arg.Any<CancellationToken>()).Returns(session);
+        _userRepository.GetByIdAsync(user.Id, Arg.Any<CancellationToken>()).Returns(user);
+
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        result.User.Should().BeNull();
+    }
+
+    [Fact]
     public async Task Handle_CancellationTokenProvided_PassesSameTokenDown()
     {
         var cancellationSource = new CancellationTokenSource();

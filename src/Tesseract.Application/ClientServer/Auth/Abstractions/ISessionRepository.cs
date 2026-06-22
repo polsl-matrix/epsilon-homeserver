@@ -9,5 +9,5 @@ public interface ISessionRepository
     Task<Session?> GetByAccessTokenAsync(byte[] accessTokenHash, CancellationToken cancellationToken);
     Task UpsertAsync(Session session, CancellationToken cancellationToken);
     Task DeleteByIdAsync(SessionId sessionId, CancellationToken cancellationToken);
-    Task DeleteByUserIdAsync(UserId userId, CancellationToken cancellationToken);
+    Task DeleteAllByUserIdAsync(UserId userId, CancellationToken cancellationToken);
 }

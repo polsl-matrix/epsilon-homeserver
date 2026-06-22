@@ -12,7 +12,7 @@ public static class LogoutAllUserSessions
     {
         public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
         {
-            await sessionRepository.DeleteByUserIdAsync(request.UserId, cancellationToken);
+            await sessionRepository.DeleteAllByUserIdAsync(request.UserId, cancellationToken);
 
             return new Response();
         }

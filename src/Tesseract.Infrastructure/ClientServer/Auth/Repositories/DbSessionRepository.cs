@@ -99,6 +99,21 @@ internal class DbSessionRepository(IDbConnectionFactory dbConnectionFactory) : I
         await connection.ExecuteAsync(sql, parameters);
     }
 
+    public async Task DeleteAllByUserIdAsync(UserId userId, CancellationToken cancellationToken)
+    {
+        using var connection = dbConnectionFactory.CreateConnection();
+
+        const string sql = """
+                           DELETE FROM auth.sessions
+                           WHERE user_id = @UserId;
+                           """;
+
+        await connection.ExecuteAsync(sql, new
+        {
+            UserId = userId.Value,
+        });
+    }
+
     public async Task DeleteByUserIdAsync(UserId userId, CancellationToken cancellationToken)
     {
         await using var connection = dbConnectionFactory.CreateConnection();

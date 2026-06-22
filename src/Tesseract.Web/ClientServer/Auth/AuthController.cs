@@ -122,4 +122,15 @@ public class AuthController(IMediator mediator, ICurrentUser user)
 
         return new LogoutUserResponse();
     }
+
+    [HttpPost("account/deactivate")]
+    [Authorize]
+    public async Task<DeactivateAccountResponse> DeactivateAccount(
+        DeactivateAccountRequest request, CancellationToken cancellationToken)
+    {
+        var command = new DeactivateAccount.Command(user.Id);
+        _ = await mediator.Send(command, cancellationToken);
+
+        return new DeactivateAccountResponse();
+    }
 }

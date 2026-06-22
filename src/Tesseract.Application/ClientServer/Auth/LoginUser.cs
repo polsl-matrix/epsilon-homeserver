@@ -38,6 +38,11 @@ public static class LoginUser
                 throw new ForbiddenException();
             }
 
+            if (user.Deactivated)
+            {
+                throw new ForbiddenException();
+            }
+
             var (session, accessToken, refreshToken) = await _sessionFactory
                 .CreateAsync(user, cancellationToken);
 

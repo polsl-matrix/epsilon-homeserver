@@ -14,14 +14,14 @@ namespace Tesseract.Web.Tests.ClientServer.Auth;
 public class AuthControllerTests
 {
     private readonly IMediator _mediator;
+    private readonly ICurrentUser _currentUser;
     private readonly AuthController _controller;
 
     public AuthControllerTests()
     {
         _mediator = Substitute.For<IMediator>();
-        var user = Substitute.For<ICurrentUser>();
-
-        _controller = new AuthController(_mediator, user);
+        _currentUser = Substitute.For<ICurrentUser>();
+        _controller = new AuthController(_mediator, _currentUser);
     }
 
     public static TheoryData<UserHandle> ValidUserHandles =>
@@ -225,6 +225,49 @@ public class AuthControllerTests
         await _controller.RegisterAccount(request, cancellationToken);
 
         await _mediator.Received().Send(Arg.Any<RegisterAccount.Command>(), cancellationToken);
+    }
+
+    [Fact]
+    public async Task DeactivateAccount_CurrentUserAvailable_PassesUserIdToMediator()
+    {
+        var userId = UserId.Random();
+        DeactivateAccount.Command? calledCommand = null;
+        _currentUser.Id.Returns(userId);
+        _mediator.Send(Arg.Any<DeactivateAccount.Command>(), Arg.Any<CancellationToken>())
+            .Returns(new DeactivateAccount.Response())
+            .AndDoes(call => calledCommand = call.Arg<DeactivateAccount.Command>());
+
+        await _controller.DeactivateAccount(new DeactivateAccountRequest(), CancellationToken.None);
+
+        calledCommand.Should().NotBeNull();
+        calledCommand.UserId.Should().Be(userId);
+    }
+
+    [Fact]
+    public async Task DeactivateAccount_CancellationTokenProvided_PassesSameTokenToMediator()
+    {
+        var cancellationToken = new CancellationTokenSource().Token;
+        _currentUser.Id.Returns(UserId.Random());
+        _mediator.Send(Arg.Any<DeactivateAccount.Command>(), cancellationToken)
+            .Returns(new DeactivateAccount.Response());
+
+        await _controller.DeactivateAccount(new DeactivateAccountRequest(), cancellationToken);
+
+        await _mediator.Received().Send(Arg.Any<DeactivateAccount.Command>(), cancellationToken);
+    }
+
+    [Fact]
+    public async Task DeactivateAccount_MediatorThrowsException_PropagatesException()
+    {
+        var exception = new InvalidOperationException("Something went wrong.");
+        _currentUser.Id.Returns(UserId.Random());
+        _mediator.Send(Arg.Any<DeactivateAccount.Command>(), Arg.Any<CancellationToken>())
+            .Throws(exception);
+
+        var act = async () => await _controller.DeactivateAccount(new DeactivateAccountRequest(), CancellationToken.None);
+
+        var thrown = await act.Should().ThrowAsync<InvalidOperationException>();
+        thrown.Which.Should().BeSameAs(exception);
     }
 
     [Fact]

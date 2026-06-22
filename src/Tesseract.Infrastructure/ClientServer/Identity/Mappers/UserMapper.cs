@@ -10,6 +10,6 @@ internal static class UserMapper
         var userId = new UserId(dao.UserId);
         var handle = new UserHandle(dao.Localpart, dao.Domain);
 
-        return new User(userId, handle);
+        return new User(userId, handle, dao.Deactivated);
     }
 }
