@@ -2,6 +2,7 @@ using Dapper;
 using System.Text.Json;
 using Tesseract.Application.ClientServer.Rooms.Abstractions;
 using Tesseract.Domain.Events;
+using Tesseract.Domain.Rooms;
 using Tesseract.Infrastructure.Common.Database.Interfaces;
 
 namespace Tesseract.Infrastructure.ClientServer.Events;
@@ -37,6 +38,25 @@ internal class DbEventRepository : IEventRepository
         };
 
         await connection.ExecuteAsync(sql, parameters);
+    }
+
+    public async Task<IEnumerable<string>> GetByRoomIdAsync(RoomId roomId, CancellationToken cancellationToken)
+    {
+        await using var connection = _dbConnectionFactory.CreateConnection();
+
+        const string sql = """
+                           SELECT payload
+                           FROM chat.room_events
+                           WHERE room_id = @RoomId
+                           ORDER BY timestamp;
+                           """;
+
+        var parameters = new
+        {
+            RoomId = roomId.Value,
+        };
+
+        return await connection.QueryAsync<string>(sql, parameters);
     }
 
     private string SerializePayload(Event @event)
