@@ -26,6 +26,25 @@ internal class DbProfileRepository(IDbConnectionFactory dbConnectionFactory) : I
         await connection.ExecuteAsync(sql, parameters);
     }
 
+    public async Task UpsertDisplayNameAsync(UserId userId, string displayName, CancellationToken cancellationToken)
+    {
+        await using var connection = dbConnectionFactory.CreateConnection();
+
+        const string sql = """
+                           INSERT INTO identity.profiles(user_id, display_name, avatar_url)
+                           VALUES (@UserId, @DisplayName, NULL)
+                           ON CONFLICT (user_id) DO UPDATE SET display_name = EXCLUDED.display_name;
+                           """;
+
+        var parameters = new
+        {
+            UserId = userId.Value,
+            DisplayName = displayName,
+        };
+
+        await connection.ExecuteAsync(sql, parameters);
+    }
+
     public async Task UpsertAvatarUrlAsync(UserId userId, string avatarUrl, CancellationToken cancellationToken)
     {
         await using var connection = dbConnectionFactory.CreateConnection();

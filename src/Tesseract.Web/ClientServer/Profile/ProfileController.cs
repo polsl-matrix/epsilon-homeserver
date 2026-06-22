@@ -8,10 +8,22 @@ using Tesseract.Web.Common.Auth;
 namespace Tesseract.Web.ClientServer.Profile;
 
 [ApiController]
-[Route("_matrix/client")]
+// TODO: Add rate limiter.
+[Route("_matrix/client/v3/profile/{userHandle}")]
 public sealed class ProfileController(ISender sender, ICurrentUser user) : ControllerBase
 {
-    [HttpPut("v3/profile/{userHandle}/avatar_url")]
+    [Authorize]
+    [HttpPut("displayname")]
+    public async Task<UpdateDisplayNameResponse> UpdateDisplayName(UpdateDisplayNameRequest request, string userHandle,
+        CancellationToken cancellationToken)
+    {
+        var command = new UpdateDisplayName.Command(user.Id, userHandle, request.DisplayName);
+        _ = await sender.Send(command, cancellationToken);
+
+        return new UpdateDisplayNameResponse();
+    }
+
+    [HttpPut("avatar_url")]
     [Authorize]
     public async Task<UpdateAvatarUrlResponse> UpdateAvatarUrl(UpdateAvatarUrlRequest request, string userHandle,
         CancellationToken cancellationToken)
