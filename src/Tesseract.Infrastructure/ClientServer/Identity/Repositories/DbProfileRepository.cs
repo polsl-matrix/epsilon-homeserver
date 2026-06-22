@@ -1,6 +1,8 @@
 using Dapper;
 using Tesseract.Application.ClientServer.Auth.Abstractions;
 using Tesseract.Domain.Users;
+using Tesseract.Infrastructure.ClientServer.Identity.Dao;
+using Tesseract.Infrastructure.ClientServer.Identity.Mappers;
 using Tesseract.Infrastructure.Common.Database.Interfaces;
 
 namespace Tesseract.Infrastructure.ClientServer.Identity.Repositories;
@@ -64,39 +66,28 @@ internal class DbProfileRepository(IDbConnectionFactory dbConnectionFactory) : I
         await connection.ExecuteAsync(sql, parameters);
     }
 
-    public async Task<string?> GetDisplayNameAsync(UserId userId, CancellationToken cancellationToken)
+    public async Task<Profile?> GetByUserIdAsync(UserId userId, CancellationToken cancellationToken)
     {
         await using var connection = dbConnectionFactory.CreateConnection();
 
-        const string sql = """
-                           SELECT p.display_name
-                           FROM identity.profiles p
-                           WHERE p.user_id = @UserId;
-                           """;
+        const string sql = $"""
+                            SELECT user_id      {nameof(ProfileDao.UserId)},
+                                   display_name {nameof(ProfileDao.DisplayName)},
+                                   avatar_url   {nameof(ProfileDao.AvatarUrl)}
+                            FROM identity.profiles
+                            WHERE user_id = @UserId;
+                            """;
 
         var parameters = new
         {
             UserId = userId.Value,
         };
 
-        return await connection.QuerySingleOrDefaultAsync<string?>(sql, parameters);
-    }
-
-    public async Task<string?> GetAvatarUrlAsync(UserId userId, CancellationToken cancellationToken)
-    {
-        await using var connection = dbConnectionFactory.CreateConnection();
-
-        const string sql = """
-                           SELECT p.avatar_url
-                           FROM identity.profiles p
-                           WHERE p.user_id = @UserId;
-                           """;
-
-        var parameters = new
+        if (await connection.QuerySingleOrDefaultAsync<ProfileDao>(sql, parameters) is not { } profileDao)
         {
-            UserId = userId.Value,
-        };
+            return null;
+        }
 
-        return await connection.QuerySingleOrDefaultAsync<string?>(sql, parameters);
+        return profileDao.ToDomain();
     }
 }

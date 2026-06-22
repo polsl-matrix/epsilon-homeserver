@@ -12,6 +12,19 @@ namespace Tesseract.Web.ClientServer.Profile;
 [Route("_matrix/client/v3/profile/{userHandle}")]
 public sealed class ProfileController(IMediator mediator, ICurrentUser user) : ControllerBase
 {
+    [HttpGet]
+    public async Task<GetUserProfileResponse> GetUserProfile(string userHandle, CancellationToken cancellationToken)
+    {
+        var command = new GetUserProfile.Query(userHandle);
+        var response = await mediator.Send(command, cancellationToken);
+
+        return new GetUserProfileResponse
+        {
+            AvatarUrl = response.AvatarUrl,
+            DisplayName = response.DisplayName,
+        };
+    }
+
     [Authorize]
     [HttpPut("displayname")]
     public async Task<UpdateDisplayNameResponse> UpdateDisplayName(UpdateDisplayNameRequest request, string userHandle,
@@ -27,7 +40,7 @@ public sealed class ProfileController(IMediator mediator, ICurrentUser user) : C
     [AllowAnonymous]
     public async Task<GetDisplayNameResponse> GetDisplayName(string userHandle, CancellationToken cancellationToken)
     {
-        var command = new GetDisplayName.Query(userHandle);
+        var command = new GetUserProfile.Query(userHandle);
         var result = await mediator.Send(command, cancellationToken);
 
         return new GetDisplayNameResponse
@@ -51,7 +64,7 @@ public sealed class ProfileController(IMediator mediator, ICurrentUser user) : C
     [AllowAnonymous]
     public async Task<GetAvatarUrlResponse> GetAvatarUrl(string userHandle, CancellationToken cancellationToken)
     {
-        var command = new GetAvatarUrl.Query(userHandle);
+        var command = new GetUserProfile.Query(userHandle);
         var result = await mediator.Send(command, cancellationToken);
 
         return new GetAvatarUrlResponse
