@@ -25,7 +25,7 @@ internal class MatrixExceptionMapper : IMatrixExceptionMapper
         new MatrixErrorResponse(Unknown, "Bad login type."));
 
     private static ErrorMapping MapForbidden() => (StatusCodes.Status403Forbidden,
-        new MatrixErrorResponse(Forbidden));
+        new MatrixErrorResponse(Forbidden, "Forbidden."));
 
     private static ErrorMapping MapInvalidUsername() => (StatusCodes.Status400BadRequest,
         new MatrixErrorResponse(InvalidUsername, "Provided username is not valid."));
@@ -40,5 +40,5 @@ internal class MatrixExceptionMapper : IMatrixExceptionMapper
         new MatrixErrorResponse(NotFound, "Room not found."));
 
     private static ErrorMapping MapUserNotInRoomException() => (StatusCodes.Status400BadRequest,
-        new MatrixErrorResponse(Unauthorized, "User does not participate in the room."));
+        new MatrixErrorResponse(Forbidden, "User does not participate in the room."));
 }
