@@ -55,6 +55,7 @@ public static class DependencyInjection
             services.AddScoped<IEventRepository, DbEventRepository>();
             services.AddScoped<IEventMapper, CreateRoomEventMapper>();
             services.AddScoped<IEventMapper, MemberRoomEventMapper>();
+            services.AddScoped<IEventMapper, MessageRoomEventMapper>();
 
             services.AddScoped<IMatrixConfigurationRepository, MatrixConfigurationRepository>();
             services.AddScoped<IPasswordRepository, DbPasswordRepository>();

@@ -23,6 +23,7 @@ public class Event(
     }
 
     public EventId Id { get; } = id;
+    public EventHandle Handle { get; } = handle;
     public required string Type { get; init; } = type;
     public required Room Room { get; init; } = room;
     public required User Sender { get; init; } = sender;
