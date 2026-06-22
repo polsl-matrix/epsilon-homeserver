@@ -69,6 +69,22 @@ public class LoginUserTests
     }
 
     [Fact]
+    public async Task Handle_DeactivatedUser_ThrowsForbiddenException()
+    {
+        var command = new LoginUser.Command("mike", "correct#password", _flow.Type);
+        var user = new User(UserId.Random(), new UserHandle("mike", "example.com"), true);
+
+        _flow.AuthenticateAsync(command.User, command.Password, CancellationToken.None)
+            .Returns(user);
+
+        var act = () => _handler.Handle(command, CancellationToken.None);
+
+        await act.Should().ThrowAsync<ForbiddenException>();
+        await _sessionFactory.DidNotReceive().CreateAsync(Arg.Any<User>(), Arg.Any<CancellationToken>());
+        await _sessionRepository.DidNotReceive().UpsertAsync(Arg.Any<Session>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task Handle_CancellationTokenProvided_PassesSameTokenDown()
     {
         var cancellationSource = new CancellationTokenSource();
