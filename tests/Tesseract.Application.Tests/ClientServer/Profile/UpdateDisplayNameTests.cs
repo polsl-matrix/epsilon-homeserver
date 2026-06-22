@@ -30,23 +30,8 @@ public sealed class UpdateDisplayNameTests
         await _handler.Handle(command, CancellationToken.None);
 
         await _profileRepository.Received().UpsertDisplayNameAsync(
-            Arg.Is<UserHandle>(handle => handle == user.Handle),
+            Arg.Is<UserId>(id => id == user.Id),
             "Alice",
-            Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task Handle_NullDisplayName_UpsertsNullDisplayName()
-    {
-        var user = CreateUser("alice", "example.com");
-        var command = new UpdateDisplayName.Command(user.Id, user.Handle.ToString(), null);
-        _userRepository.GetByIdAsync(user.Id, Arg.Any<CancellationToken>()).Returns(user);
-
-        await _handler.Handle(command, CancellationToken.None);
-
-        await _profileRepository.Received().UpsertDisplayNameAsync(
-            Arg.Any<UserHandle>(),
-            null,
             Arg.Any<CancellationToken>());
     }
 
@@ -59,11 +44,11 @@ public sealed class UpdateDisplayNameTests
 
         var act = () => _handler.Handle(command, CancellationToken.None);
 
-        var thrown = await act.Should().ThrowAsync<ProfileUpdateForbiddenException>();
+        var thrown = await act.Should().ThrowAsync<CannotUpdateOtherUserProfileException>();
         thrown.Which.AuthenticatedUserId.Should().Be(user.Handle.ToString());
-        thrown.Which.TargetUserId.Should().Be(command.UserId);
+        thrown.Which.TargetUserId.Should().Be(command.UserHandle);
         await _profileRepository.DidNotReceive()
-            .UpsertDisplayNameAsync(Arg.Any<UserHandle>(), Arg.Any<string?>(), Arg.Any<CancellationToken>());
+            .UpsertDisplayNameAsync(Arg.Any<UserId>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -75,9 +60,9 @@ public sealed class UpdateDisplayNameTests
 
         var act = () => _handler.Handle(command, CancellationToken.None);
 
-        await act.Should().ThrowAsync<ProfileUpdateForbiddenException>();
+        await act.Should().ThrowAsync<CannotUpdateOtherUserProfileException>();
         await _profileRepository.DidNotReceive()
-            .UpsertDisplayNameAsync(Arg.Any<UserHandle>(), Arg.Any<string?>(), Arg.Any<CancellationToken>());
+            .UpsertDisplayNameAsync(Arg.Any<UserId>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -91,7 +76,7 @@ public sealed class UpdateDisplayNameTests
 
         await act.Should().ThrowAsync<ForbiddenException>();
         await _profileRepository.DidNotReceive()
-            .UpsertDisplayNameAsync(Arg.Any<UserHandle>(), Arg.Any<string?>(), Arg.Any<CancellationToken>());
+            .UpsertDisplayNameAsync(Arg.Any<UserId>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -106,8 +91,8 @@ public sealed class UpdateDisplayNameTests
 
         await _userRepository.Received().GetByIdAsync(user.Id, cancellationSource.Token);
         await _profileRepository.Received().UpsertDisplayNameAsync(
-            Arg.Any<UserHandle>(),
-            Arg.Any<string?>(),
+            Arg.Any<UserId>(),
+            Arg.Any<string>(),
             cancellationSource.Token);
     }
 

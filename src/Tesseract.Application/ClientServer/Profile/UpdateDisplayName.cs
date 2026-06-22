@@ -9,22 +9,29 @@ namespace Tesseract.Application.ClientServer.Profile;
 
 public static class UpdateDisplayName
 {
-    public sealed record Command(UserId AuthenticatedUserId, string UserId, string? DisplayName) : IRequest;
+    public sealed record Command(UserId UserId, string UserHandle, string DisplayName)
+        : IRequest<Response>;
 
     internal sealed class Handler(IProfileRepository profileRepository, IUserRepository userRepository)
-        : IRequestHandler<Command>
+        : IRequestHandler<Command, Response>
     {
-        public async Task Handle(Command request, CancellationToken cancellationToken)
+        public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
         {
-            var user = await userRepository.GetByIdAsync(request.AuthenticatedUserId, cancellationToken)
-                ?? throw new ForbiddenException();
-
-            if (!UserHandle.TryParse(request.UserId, out var targetHandle) || user.Handle != targetHandle)
+            if (await userRepository.GetByIdAsync(request.UserId, cancellationToken) is not { } user)
             {
-                throw new ProfileUpdateForbiddenException(user.Handle.ToString(), request.UserId);
+                throw new ForbiddenException();
             }
 
-            await profileRepository.UpsertDisplayNameAsync(targetHandle, request.DisplayName, cancellationToken);
+            if (!UserHandle.TryParse(request.UserHandle, out var userHandle) || user.Handle != userHandle)
+            {
+                throw new CannotUpdateOtherUserProfileException(user.Handle.ToString(), request.UserHandle);
+            }
+
+            await profileRepository.UpsertDisplayNameAsync(user.Id, request.DisplayName, cancellationToken);
+
+            return new Response();
         }
     }
+
+    public sealed record Response;
 }

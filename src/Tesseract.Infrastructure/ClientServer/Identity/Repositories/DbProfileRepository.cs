@@ -9,7 +9,7 @@ internal class DbProfileRepository(IDbConnectionFactory dbConnectionFactory) : I
 {
     public async Task InsertAsync(Profile profile, CancellationToken cancellationToken)
     {
-        using var connection = dbConnectionFactory.CreateConnection();
+        await using var connection = dbConnectionFactory.CreateConnection();
 
         const string sql = """
                            INSERT INTO identity.profiles(user_id, display_name, avatar_url)
@@ -26,24 +26,19 @@ internal class DbProfileRepository(IDbConnectionFactory dbConnectionFactory) : I
         await connection.ExecuteAsync(sql, parameters);
     }
 
-    public async Task UpsertDisplayNameAsync(
-        UserHandle handle, string? displayName, CancellationToken cancellationToken)
+    public async Task UpsertDisplayNameAsync(UserId userId, string displayName, CancellationToken cancellationToken)
     {
-        using var connection = dbConnectionFactory.CreateConnection();
+        await using var connection = dbConnectionFactory.CreateConnection();
 
         const string sql = """
                            INSERT INTO identity.profiles(user_id, display_name, avatar_url)
-                           SELECT user_id, @DisplayName, NULL
-                           FROM identity.users
-                           WHERE localpart = @Localpart AND domain = @Domain
-                           ON CONFLICT (user_id)
-                           DO UPDATE SET display_name = EXCLUDED.display_name;
+                           VALUES (@UserId, @DisplayName, NULL)
+                           ON CONFLICT (user_id) DO UPDATE SET display_name = EXCLUDED.display_name;
                            """;
 
         var parameters = new
         {
-            Localpart = handle.Localpart.Value,
-            Domain = handle.Domain.Value,
+            UserId = userId.Value,
             DisplayName = displayName,
         };
 

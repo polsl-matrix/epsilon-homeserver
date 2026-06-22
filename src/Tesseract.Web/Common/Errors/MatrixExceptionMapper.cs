@@ -16,7 +16,7 @@ internal class MatrixExceptionMapper : IMatrixExceptionMapper
         BadLoginTypeException => MapBadLoginType(),
         ForbiddenException => MapForbidden(),
         InvalidUsernameException => MapInvalidUsername(),
-        ProfileUpdateForbiddenException => MapProfileUpdateForbidden(),
+        CannotUpdateOtherUserProfileException => MapProfileUpdateForbidden(),
         UsernameTakenException => MapUsernameTaken(),
         RoomNotFoundException => MapRoomNotFound(),
         UserNotInRoomException => MapUserNotInRoomException(),
