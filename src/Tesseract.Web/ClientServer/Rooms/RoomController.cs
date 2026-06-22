@@ -37,4 +37,17 @@ public class RoomController(IMediator mediator, ICurrentUser user)
             Chunk = result.Events.Select(@event => JsonDocument.Parse(@event)).ToArray(),
         };
     }
+
+    [HttpGet("rooms/{roomHandle}/state")]
+    public async Task<GetStateResponse> GetState(GetStateRequest request, string roomHandle,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetState.Query(roomHandle, user.Id);
+        var result = await mediator.Send(query, cancellationToken);
+
+        return new GetStateResponse
+        {
+            Chunk = result.Events.Select(@event => JsonDocument.Parse(@event)).ToArray(),
+        };
+    }
 }
