@@ -32,13 +32,8 @@ public static class LoginUser
                 throw new BadLoginTypeException(request.Type);
             }
 
-            if (await authenticationFlow
-                    .AuthenticateAsync(request.User, request.Password, cancellationToken) is not { } user)
-            {
-                throw new ForbiddenException();
-            }
-
-            if (user.Deactivated)
+            if (await authenticationFlow.AuthenticateAsync(request.User, request.Password, cancellationToken)
+                is not { Deactivated: false } user)
             {
                 throw new ForbiddenException();
             }
