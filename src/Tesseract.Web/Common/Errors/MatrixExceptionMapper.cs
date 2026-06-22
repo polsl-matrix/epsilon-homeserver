@@ -1,4 +1,5 @@
 using Tesseract.Application.ClientServer.Auth.Exceptions;
+using Tesseract.Application.ClientServer.Profile.Exceptions;
 using Tesseract.Application.ClientServer.Rooms.Exceptions;
 using Tesseract.Web.Common.Errors.Contracts;
 using Tesseract.Web.Common.Errors.Interfaces;
@@ -15,6 +16,7 @@ internal class MatrixExceptionMapper : IMatrixExceptionMapper
         BadLoginTypeException => MapBadLoginType(),
         ForbiddenException => MapForbidden(),
         InvalidUsernameException => MapInvalidUsername(),
+        ProfileUpdateForbiddenException => MapProfileUpdateForbidden(),
         UsernameTakenException => MapUsernameTaken(),
         RoomNotFoundException => MapRoomNotFound(),
         UserNotInRoomException => MapUserNotInRoomException(),
@@ -32,6 +34,9 @@ internal class MatrixExceptionMapper : IMatrixExceptionMapper
 
     private static ErrorMapping MapUsernameTaken() => (StatusCodes.Status400BadRequest,
         new MatrixErrorResponse(UserInUse, "Provided username is already taken."));
+
+    private static ErrorMapping MapProfileUpdateForbidden() => (StatusCodes.Status403Forbidden,
+        new MatrixErrorResponse(Forbidden, "Cannot update another user's profile."));
 
     private static ErrorMapping MapUnknown() => (StatusCodes.Status500InternalServerError,
         new MatrixErrorResponse(Unknown, "An unknown error has occurred."));
