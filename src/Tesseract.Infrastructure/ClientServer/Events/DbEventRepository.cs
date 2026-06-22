@@ -25,15 +25,17 @@ internal class DbEventRepository : IEventRepository
         await using var connection = _dbConnectionFactory.CreateConnection();
 
         const string sql = """
-                           INSERT INTO chat.room_events(event_id, room_id, timestamp, payload)
-                           VALUES (@EventId, @RoomId, @Timestamp, @Payload);
+                           INSERT INTO chat.room_events(event_id, room_id, timestamp, payload, event_type, state_key)
+                           VALUES (@EventId, @RoomId, @Timestamp, @Payload, @EventType, @StateKey);
                            """;
 
         var parameters = new
         {
             EventId = @event.Id.Value,
+            EventType = @event.Type,
             RoomId = @event.Room.Id.Value,
             Timestamp = @event.Timestamp,
+            StateKey = @event.StateKey,
             Payload = SerializePayload(@event),
         };
 
