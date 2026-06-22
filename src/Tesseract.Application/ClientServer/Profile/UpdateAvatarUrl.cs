@@ -9,22 +9,29 @@ namespace Tesseract.Application.ClientServer.Profile;
 
 public static class UpdateAvatarUrl
 {
-    public sealed record Command(UserId AuthenticatedUserId, string UserId, string? AvatarUrl) : IRequest;
+    public sealed record Command(UserId UserId, string UserHandle, string AvatarUrl)
+        : IRequest<Response>;
 
     internal sealed class Handler(IProfileRepository profileRepository, IUserRepository userRepository)
-        : IRequestHandler<Command>
+        : IRequestHandler<Command, Response>
     {
-        public async Task Handle(Command request, CancellationToken cancellationToken)
+        public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
         {
-            var user = await userRepository.GetByIdAsync(request.AuthenticatedUserId, cancellationToken)
-                ?? throw new ForbiddenException();
-
-            if (!UserHandle.TryParse(request.UserId, out var targetHandle) || user.Handle != targetHandle)
+            if (await userRepository.GetByIdAsync(request.UserId, cancellationToken) is not { } user)
             {
-                throw new ProfileUpdateForbiddenException(user.Handle.ToString(), request.UserId);
+                throw new ForbiddenException();
             }
 
-            await profileRepository.UpsertAvatarUrlAsync(targetHandle, request.AvatarUrl, cancellationToken);
+            if (!UserHandle.TryParse(request.UserHandle, out var userHandle) || user.Handle != userHandle)
+            {
+                throw new CannotUpdateOtherUserProfileException(user.Handle.ToString(), request.UserHandle);
+            }
+
+            await profileRepository.UpsertAvatarUrlAsync(request.UserId, request.AvatarUrl, cancellationToken);
+
+            return new Response();
         }
     }
+
+    public sealed record Response;
 }

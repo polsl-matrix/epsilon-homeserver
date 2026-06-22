@@ -5,5 +5,5 @@ namespace Tesseract.Web.ClientServer.Profile.Contracts;
 public sealed class UpdateAvatarUrlRequest
 {
     [JsonPropertyName("avatar_url")]
-    public string? AvatarUrl { get; init; }
+    public required string AvatarUrl { get; init; }
 }

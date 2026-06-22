@@ -9,22 +9,16 @@ namespace Tesseract.Web.ClientServer.Profile;
 
 [ApiController]
 [Route("_matrix/client")]
-public sealed class ProfileController(ISender sender, ICurrentUser currentUser) : ControllerBase
+public sealed class ProfileController(ISender sender, ICurrentUser user) : ControllerBase
 {
-    [HttpPut("v3/profile/{userId}/avatar_url")]
+    [HttpPut("v3/profile/{userHandle}/avatar_url")]
     [Authorize]
-    public async Task<object> UpdateAvatarUrl(
-        string userId,
-        UpdateAvatarUrlRequest request,
+    public async Task<UpdateAvatarUrlResponse> UpdateAvatarUrl(UpdateAvatarUrlRequest request, string userHandle,
         CancellationToken cancellationToken)
     {
-        var command = new UpdateAvatarUrl.Command(
-            currentUser.Id,
-            userId,
-            request.AvatarUrl);
+        var command = new UpdateAvatarUrl.Command(user.Id, userHandle, request.AvatarUrl);
+        _ = await sender.Send(command, cancellationToken);
 
-        await sender.Send(command, cancellationToken);
-
-        return new { };
+        return new UpdateAvatarUrlResponse();
     }
 }

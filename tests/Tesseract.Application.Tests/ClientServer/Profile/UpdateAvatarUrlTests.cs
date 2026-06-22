@@ -30,28 +30,13 @@ public sealed class UpdateAvatarUrlTests
         await _handler.Handle(command, CancellationToken.None);
 
         await _profileRepository.Received().UpsertAvatarUrlAsync(
-            Arg.Is<UserHandle>(handle => handle == user.Handle),
+            Arg.Is<UserId>(id => id == user.Id),
             "mxc://example.com/avatar",
             Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task Handle_NullAvatarUrl_UpsertsNullAvatarUrl()
-    {
-        var user = CreateUser("alice", "example.com");
-        var command = new UpdateAvatarUrl.Command(user.Id, user.Handle.ToString(), null);
-        _userRepository.GetByIdAsync(user.Id, Arg.Any<CancellationToken>()).Returns(user);
-
-        await _handler.Handle(command, CancellationToken.None);
-
-        await _profileRepository.Received().UpsertAvatarUrlAsync(
-            Arg.Any<UserHandle>(),
-            null,
-            Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task Handle_DifferentTargetUser_ThrowsProfileUpdateForbiddenException()
+    public async Task Handle_DifferentTargetUser_ThrowsCannotUpdateOtherUserProfileException()
     {
         var user = CreateUser("alice", "example.com");
         var command = new UpdateAvatarUrl.Command(user.Id, "@bob:example.com", "mxc://example.com/bob");
@@ -59,15 +44,15 @@ public sealed class UpdateAvatarUrlTests
 
         var act = () => _handler.Handle(command, CancellationToken.None);
 
-        var thrown = await act.Should().ThrowAsync<ProfileUpdateForbiddenException>();
+        var thrown = await act.Should().ThrowAsync<CannotUpdateOtherUserProfileException>();
         thrown.Which.AuthenticatedUserId.Should().Be(user.Handle.ToString());
-        thrown.Which.TargetUserId.Should().Be(command.UserId);
+        thrown.Which.TargetUserId.Should().Be(command.UserHandle);
         await _profileRepository.DidNotReceive()
-            .UpsertAvatarUrlAsync(Arg.Any<UserHandle>(), Arg.Any<string?>(), Arg.Any<CancellationToken>());
+            .UpsertAvatarUrlAsync(Arg.Any<UserId>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task Handle_InvalidTargetUser_ThrowsProfileUpdateForbiddenException()
+    public async Task Handle_InvalidTargetUser_ThrowsCannotUpdateOtherUserProfileException()
     {
         var user = CreateUser("alice", "example.com");
         var command = new UpdateAvatarUrl.Command(user.Id, "alice", "mxc://example.com/avatar");
@@ -75,9 +60,9 @@ public sealed class UpdateAvatarUrlTests
 
         var act = () => _handler.Handle(command, CancellationToken.None);
 
-        await act.Should().ThrowAsync<ProfileUpdateForbiddenException>();
+        await act.Should().ThrowAsync<CannotUpdateOtherUserProfileException>();
         await _profileRepository.DidNotReceive()
-            .UpsertAvatarUrlAsync(Arg.Any<UserHandle>(), Arg.Any<string?>(), Arg.Any<CancellationToken>());
+            .UpsertAvatarUrlAsync(Arg.Any<UserId>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -91,7 +76,7 @@ public sealed class UpdateAvatarUrlTests
 
         await act.Should().ThrowAsync<ForbiddenException>();
         await _profileRepository.DidNotReceive()
-            .UpsertAvatarUrlAsync(Arg.Any<UserHandle>(), Arg.Any<string?>(), Arg.Any<CancellationToken>());
+            .UpsertAvatarUrlAsync(Arg.Any<UserId>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -106,8 +91,8 @@ public sealed class UpdateAvatarUrlTests
 
         await _userRepository.Received().GetByIdAsync(user.Id, cancellationSource.Token);
         await _profileRepository.Received().UpsertAvatarUrlAsync(
-            Arg.Any<UserHandle>(),
-            Arg.Any<string?>(),
+            Arg.Any<UserId>(),
+            Arg.Any<string>(),
             cancellationSource.Token);
     }
 
