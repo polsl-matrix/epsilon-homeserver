@@ -17,7 +17,6 @@ internal class MatrixExceptionMapper : IMatrixExceptionMapper
         UnauthorizedAccessException => MapUnauthorized(),
         ForbiddenException => MapForbidden(),
         InvalidUsernameException => MapInvalidUsername(),
-        UnknownAccessTokenException => MapUnknownAccessToken(),
         CannotUpdateOtherUserProfileException => MapProfileUpdateForbidden(),
         UsernameTakenException => MapUsernameTaken(),
         RoomNotFoundException => MapRoomNotFound(),
@@ -36,9 +35,6 @@ internal class MatrixExceptionMapper : IMatrixExceptionMapper
 
     private static ErrorMapping MapInvalidUsername() => (StatusCodes.Status400BadRequest,
         new MatrixErrorResponse(InvalidUsername, "Provided username is not valid."));
-
-    private static ErrorMapping MapUnknownAccessToken() => (StatusCodes.Status401Unauthorized,
-        new MatrixErrorResponse(UnknownToken, "Unrecognised access token."));
 
     private static ErrorMapping MapUsernameTaken() => (StatusCodes.Status400BadRequest,
         new MatrixErrorResponse(UserInUse, "Provided username is already taken."));

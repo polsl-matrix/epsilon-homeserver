@@ -17,7 +17,6 @@ public class MatrixExceptionMapperTests
         { new BadLoginTypeException("m.test.unknown"), StatusCodes.Status400BadRequest, MatrixErrorCodes.Unknown, "bad login" },
         { new ForbiddenException(), StatusCodes.Status403Forbidden, MatrixErrorCodes.Forbidden, null },
         { new InvalidUsernameException("UppercaseName"), StatusCodes.Status400BadRequest, MatrixErrorCodes.InvalidUsername, "not valid" },
-        { new UnknownAccessTokenException(), StatusCodes.Status401Unauthorized, MatrixErrorCodes.UnknownToken, "access token" },
         { new CannotUpdateOtherUserProfileException("@alice:example.com", "@bob:example.com"), StatusCodes.Status403Forbidden, MatrixErrorCodes.Forbidden, "another user's profile" },
         { new UsernameTakenException("@alice:example.com"), StatusCodes.Status400BadRequest, MatrixErrorCodes.UserInUse, "already taken" },
         // @formatter:on

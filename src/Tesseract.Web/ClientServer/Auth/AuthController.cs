@@ -1,16 +1,16 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Http.Headers;
 using Tesseract.Application.ClientServer.Auth;
 using Tesseract.Web.ClientServer.Auth.Contracts;
+using Tesseract.Web.Common.Auth;
 
 namespace Tesseract.Web.ClientServer.Auth;
 
 [ApiController]
 [Route("_matrix/client")]
 // TODO: Add rate limiter.
-public class AuthController(IMediator mediator)
+public class AuthController(IMediator mediator, ICurrentUser user)
 {
     [HttpGet("v3/login")]
     [AllowAnonymous]
@@ -77,7 +77,7 @@ public class AuthController(IMediator mediator)
     [HttpGet("v3/register/available")]
     [AllowAnonymous]
     public async Task<RegisterAvailableResponse> CheckUsernameAvailability(
-        [FromQuery] string? username, CancellationToken cancellationToken)
+        [FromQuery] string username, CancellationToken cancellationToken)
     {
         var query = new CheckUsernameAvailability.Query(username);
 
@@ -92,24 +92,14 @@ public class AuthController(IMediator mediator)
     [HttpGet("v3/account/whoami")]
     [Authorize]
     public async Task<GetCurrentUserDetailsResponse> GetCurrentUserDetails(
-        [FromHeader(Name = "Authorization")] string authorization,
-        CancellationToken cancellationToken)
+        string authorization, CancellationToken cancellationToken)
     {
-        var accessToken = GetBearerToken(authorization);
-        var query = new GetCurrentUserDetails.Query(accessToken);
-
+        var query = new GetCurrentSessionDetails.Query(user.SessionId);
         var result = await mediator.Send(query, cancellationToken);
 
         return new GetCurrentUserDetailsResponse
         {
             UserId = result.UserId.ToString(),
         };
-    }
-
-    private static string GetBearerToken(string authorization)
-    {
-        return AuthenticationHeaderValue.TryParse(authorization, out var header)
-            ? header.Parameter ?? string.Empty
-            : string.Empty;
     }
 }
