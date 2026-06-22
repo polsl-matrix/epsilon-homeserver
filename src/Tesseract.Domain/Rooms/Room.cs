@@ -5,7 +5,7 @@ using VDomain = Tesseract.Domain.Common.Values.Domain;
 
 namespace Tesseract.Domain.Rooms;
 
-public class Room(RoomId id, RoomHandle handle) : AggregateRoot<RoomId, Event>(id)
+public sealed class Room(RoomId id, RoomHandle handle) : AggregateRoot<RoomId, Event>(id)
 {
     public RoomHandle Handle { get; } = handle;
 
@@ -14,7 +14,7 @@ public class Room(RoomId id, RoomHandle handle) : AggregateRoot<RoomId, Event>(i
         var handle = RoomHandle.Random(domain.Value);
         var room = new Room(RoomId.Random(), handle);
 
-        room.RaiseEvent(new CreateRoomEvent(room, creator));
+        room.RaiseEvent(CreateRoomEvent.Create(room, creator, domain));
 
         return room;
     }

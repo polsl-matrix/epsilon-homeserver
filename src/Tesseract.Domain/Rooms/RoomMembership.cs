@@ -13,8 +13,9 @@ public class RoomMembership(RoomId roomId, UserId userId)
     public static RoomMembership Create(Room room, User user)
     {
         var membership = new RoomMembership(room.Id, user.Id);
+        var domain = room.Handle.Domain;
 
-        membership.RaiseEvent(new JoinRoomEvent(room, user));
+        membership.RaiseEvent(JoinRoomEvent.Create(room, user, domain));
 
         return membership;
     }
