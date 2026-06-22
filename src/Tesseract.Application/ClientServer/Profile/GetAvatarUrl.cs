@@ -7,7 +7,7 @@ using Tesseract.Domain.Users;
 
 namespace Tesseract.Application.ClientServer.Profile;
 
-public static class GetDisplayName
+public static class GetAvatarUrl
 {
     public sealed record Query(string UserHandle) : IRequest<Response>;
 
@@ -24,14 +24,14 @@ public static class GetDisplayName
                 throw new UserNotFoundException(request.UserHandle);
             }
 
-            if (await profileRepository.GetDisplayNameAsync(user.Id, cancellationToken) is not { } displayName)
+            if (await profileRepository.GetAvatarUrlAsync(user.Id, cancellationToken) is not { } avatarUrl)
             {
-                throw new ProfileFieldNotFoundException(request.UserHandle, "displayname");
+                throw new ProfileFieldNotFoundException(request.UserHandle, "avatar_url");
             }
 
-            return new Response(displayName);
+            return new Response(avatarUrl);
         }
     }
 
-    public sealed record Response(string DisplayName);
+    public sealed record Response(string AvatarUrl);
 }
