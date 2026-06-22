@@ -9,7 +9,7 @@ namespace Tesseract.Infrastructure.ClientServer.Auth.Repositories;
 
 internal class DbSessionRepository(IDbConnectionFactory dbConnectionFactory) : ISessionRepository
 {
-    public async Task<Session?> GetByIdAsync(SessionId SessionId, CancellationToken cancellationToken)
+    public async Task<Session?> GetByIdAsync(SessionId sessionId, CancellationToken cancellationToken)
     {
         await using var connection = dbConnectionFactory.CreateConnection();
 
@@ -24,7 +24,7 @@ internal class DbSessionRepository(IDbConnectionFactory dbConnectionFactory) : I
 
         var parameters = new
         {
-            SessionId = SessionId.Value,
+            SessionId = sessionId.Value,
         };
 
         if (await connection.QuerySingleOrDefaultAsync<SessionDao>(sql, parameters) is not { } sessionDao)
@@ -70,12 +70,31 @@ internal class DbSessionRepository(IDbConnectionFactory dbConnectionFactory) : I
                            VALUES (@SessionId, @UserId, @CurrentAccessTokenHash, @CurrentRefreshTokenHash);
                            """;
 
-        await connection.ExecuteAsync(sql, new
+        var parameters = new
         {
             SessionId = session.Id.Value,
             UserId = session.UserId.Value,
             CurrentAccessTokenHash = session.AccessTokenHash,
             CurrentRefreshTokenHash = session.RefreshTokenHash,
-        });
+        };
+
+        await connection.ExecuteAsync(sql, parameters);
+    }
+
+    public async Task DeleteByIdAsync(SessionId sessionId, CancellationToken cancellationToken)
+    {
+        await using var connection = dbConnectionFactory.CreateConnection();
+
+        const string sql = """
+                           DELETE FROM auth.sessions
+                           WHERE session_id = @SessionId;
+                           """;
+
+        var parameters = new
+        {
+            SessionId = sessionId.Value,
+        };
+
+        await connection.ExecuteAsync(sql, parameters);
     }
 }
