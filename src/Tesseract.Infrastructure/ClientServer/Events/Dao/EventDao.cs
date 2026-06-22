@@ -10,7 +10,7 @@ namespace Tesseract.Infrastructure.ClientServer.Events.Dao;
 public class EventDao
 {
     [JsonPropertyName("event_id")]
-    public required Guid EventId { get; init; }
+    public required string EventHandle { get; init; }
 
     [JsonPropertyName("room_id")]
     public required string RoomHandle { get; init; }

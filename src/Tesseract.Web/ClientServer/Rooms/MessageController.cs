@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using System.Text.Json;
 using Tesseract.Application.ClientServer.Rooms;
 using Tesseract.Domain.Events;
 using Tesseract.Web.ClientServer.Rooms.Contracts;
@@ -27,6 +28,19 @@ public class MessageController(IMediator mediator, ICurrentUser user)
         return new SendMessageResponse
         {
             EventHandle = result.EventHandle.ToString(),
+        };
+    }
+
+    [HttpGet("messages")]
+    public async Task<GetMessagesResponse> GetMessages(GetMessagesRequest request, string roomHandle,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetMessages.Query(roomHandle, user.Id.Value);
+        var result = await mediator.Send(query, cancellationToken);
+
+        return new GetMessagesResponse
+        {
+            Chunk = result.Events.Select(@event => JsonDocument.Parse(@event)).ToArray(),
         };
     }
 }
