@@ -19,6 +19,7 @@ public class UserMapperTests
             UserId = user.Id.Value,
             Localpart = user.Handle.Localpart.Value,
             Domain = user.Handle.Domain.Value,
+            Deactivated = true,
         };
 
         var result = dao.ToDomain();
@@ -26,5 +27,6 @@ public class UserMapperTests
         result.Id.Value.Should().Be(user.Id.Value);
         result.Handle.Localpart.Value.Should().Be(user.Handle.Localpart.Value);
         result.Handle.Domain.Value.Should().Be(user.Handle.Domain.Value);
+        result.Deactivated.Should().BeTrue();
     }
 }

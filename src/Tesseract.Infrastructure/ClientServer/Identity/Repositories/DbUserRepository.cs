@@ -14,8 +14,8 @@ internal class DbUserRepository(IDbConnectionFactory dbConnectionFactory) : IUse
         using var connection = dbConnectionFactory.CreateConnection();
 
         const string sql = """
-                           INSERT INTO identity.users(user_id, localpart, domain)
-                           VALUES (@UserId, @Localpart, @Domain);
+                           INSERT INTO identity.users(user_id, localpart, domain, deactivated)
+                           VALUES (@UserId, @Localpart, @Domain, @Deactivated);
                            """;
 
         var parameters = new
@@ -23,6 +23,7 @@ internal class DbUserRepository(IDbConnectionFactory dbConnectionFactory) : IUse
             UserId = user.Id.Value,
             Localpart = user.Handle.Localpart.Value,
             Domain = user.Handle.Domain.Value,
+            Deactivated = user.Deactivated,
         };
 
         await connection.ExecuteAsync(sql, parameters);
@@ -35,7 +36,8 @@ internal class DbUserRepository(IDbConnectionFactory dbConnectionFactory) : IUse
         const string sql = $"""
                             SELECT user_id {nameof(UserDao.UserId)},
                                    localpart {nameof(UserDao.Localpart)},
-                                   domain {nameof(UserDao.Domain)}
+                                   domain {nameof(UserDao.Domain)},
+                                   deactivated {nameof(UserDao.Deactivated)}
                             FROM identity.users
                             WHERE user_id = @UserId;
                             """;
@@ -60,7 +62,8 @@ internal class DbUserRepository(IDbConnectionFactory dbConnectionFactory) : IUse
         const string sql = $"""
                             SELECT user_id {nameof(UserDao.UserId)},
                                    localpart {nameof(UserDao.Localpart)},
-                                   domain {nameof(UserDao.Domain)}
+                                   domain {nameof(UserDao.Domain)},
+                                   deactivated {nameof(UserDao.Deactivated)}
                             FROM identity.users
                             WHERE localpart = @Localpart
                               AND domain = @Domain;
@@ -78,5 +81,23 @@ internal class DbUserRepository(IDbConnectionFactory dbConnectionFactory) : IUse
         }
 
         return userDao.ToDomain();
+    }
+
+    public async Task MarkDeactivatedAsync(UserId id, CancellationToken cancellationToken)
+    {
+        using var connection = dbConnectionFactory.CreateConnection();
+
+        const string sql = """
+                           UPDATE identity.users
+                           SET deactivated = TRUE
+                           WHERE user_id = @UserId;
+                           """;
+
+        var parameters = new
+        {
+            UserId = id.Value,
+        };
+
+        await connection.ExecuteAsync(sql, parameters);
     }
 }
