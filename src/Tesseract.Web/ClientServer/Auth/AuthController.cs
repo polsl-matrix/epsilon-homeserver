@@ -72,4 +72,19 @@ public class AuthController(IMediator mediator)
             RefreshToken = result.RefreshToken,
         };
     }
+
+    [HttpGet("v3/register/available")]
+    [AllowAnonymous]
+    public async Task<RegisterAvailableResponse> CheckUsernameAvailability(
+        [FromQuery] string? username, CancellationToken cancellationToken)
+    {
+        var query = new CheckUsernameAvailability.Query(username);
+
+        var result = await mediator.Send(query, cancellationToken);
+
+        return new RegisterAvailableResponse
+        {
+            Available = result.Available,
+        };
+    }
 }
