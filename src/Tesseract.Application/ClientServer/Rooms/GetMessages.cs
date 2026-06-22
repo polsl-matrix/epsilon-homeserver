@@ -10,7 +10,7 @@ namespace Tesseract.Application.ClientServer.Rooms;
 
 public static class GetMessages
 {
-    public sealed record Query(string RoomHandle, Guid UserId) : IRequest<Response>;
+    public sealed record Query(string RoomHandle, UserId UserId) : IRequest<Response>;
 
     internal sealed class Handler(
         IEventRepository eventRepository,
@@ -21,14 +21,12 @@ public static class GetMessages
     {
         public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
         {
-            var senderId = new UserId(request.UserId);
-
             if (await GetRoomByHandleAsync(request.RoomHandle, cancellationToken) is not { } room)
             {
                 throw new RoomNotFoundException(request.RoomHandle);
             }
 
-            if (await userRepository.GetByIdAsync(senderId, cancellationToken) is not { } sender)
+            if (await userRepository.GetByIdAsync(request.UserId, cancellationToken) is not { } sender)
             {
                 throw new ForbiddenException();
             }
