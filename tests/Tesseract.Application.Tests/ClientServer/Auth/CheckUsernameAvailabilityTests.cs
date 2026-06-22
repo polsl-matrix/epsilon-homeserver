@@ -34,17 +34,6 @@ public class CheckUsernameAvailabilityTests
     }
 
     [Fact]
-    public async Task Handle_MissingUsername_ThrowsInvalidUsernameException()
-    {
-        var act = () => _handler.Handle(new CheckUsernameAvailability.Query(null), CancellationToken.None);
-
-        var thrown = await act.Should().ThrowAsync<InvalidUsernameException>();
-        thrown.Which.Username.Should().BeNull();
-        await _configurationRepository.DidNotReceive().GetDomainAsync(Arg.Any<CancellationToken>());
-        await _userRepository.DidNotReceive().GetByHandleAsync(Arg.Any<UserHandle>(), Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
     public async Task Handle_InvalidUsername_ThrowsInvalidUsernameException()
     {
         var act = () => _handler.Handle(new CheckUsernameAvailability.Query("Alice"), CancellationToken.None);

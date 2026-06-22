@@ -9,7 +9,7 @@ namespace Tesseract.Application.ClientServer.Auth;
 
 public static class CheckUsernameAvailability
 {
-    public sealed record Query(string? Username) : IRequest<Response>;
+    public sealed record Query(string Username) : IRequest<Response>;
 
     public sealed record Response(bool Available);
 
