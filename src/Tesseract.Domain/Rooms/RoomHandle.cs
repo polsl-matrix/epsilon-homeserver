@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+using Tesseract.Domain.Common.Exceptions;
 using Tesseract.Domain.Common.Values;
 using VDomain = Tesseract.Domain.Common.Values.Domain;
 
@@ -16,5 +18,42 @@ public class RoomHandle(string localpart, string domain)
 
         var localpart = Localpart.Random(length);
         return new RoomHandle(localpart.Value, domain);
+    }
+
+    public static bool TryParse(string? value, [NotNullWhen(true)] out RoomHandle? handle)
+    {
+        handle = null;
+
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return false;
+        }
+
+        var normalized = value.Trim();
+
+        if (!normalized.StartsWith('!'))
+        {
+            return false;
+        }
+
+        var separatorIndex = normalized.IndexOf(':');
+
+        if (separatorIndex < 1)
+        {
+            return false;
+        }
+
+        var localpart = normalized[1..separatorIndex].Trim();
+        var domain = normalized[(separatorIndex + 1)..].Trim();
+
+        try
+        {
+            handle = new RoomHandle(localpart, domain);
+            return true;
+        }
+        catch (ValidationException)
+        {
+            return false;
+        }
     }
 }
