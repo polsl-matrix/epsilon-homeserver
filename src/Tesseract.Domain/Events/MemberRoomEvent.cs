@@ -1,12 +1,18 @@
-using System.Diagnostics.CodeAnalysis;
 using Tesseract.Domain.Rooms;
 using Tesseract.Domain.Users;
+using VDomain = Tesseract.Domain.Common.Values.Domain;
 
 namespace Tesseract.Domain.Events;
 
-[method: SetsRequiredMembers]
-public class MemberRoomEvent(EventHandle handle, Room room, User target, RoomMembershipState state, User sender)
-    : Event(handle, EventTypes.MemberRoom, room, sender, target.Handle.ToString())
+public class MemberRoomEvent(
+    Room room,
+    User sender,
+    User target,
+    UserHandle targetHandle,
+    RoomMembershipState state,
+    VDomain domain)
+    : Event(EventTypes.MemberRoom, room, sender, targetHandle.ToString(), domain)
 {
-    public required RoomMembershipState Membership { get; init; } = state;
+    public User Target { get; } = target;
+    public RoomMembershipState Membership { get; } = state;
 }

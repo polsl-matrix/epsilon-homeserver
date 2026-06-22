@@ -16,7 +16,7 @@ public class RoomMessage(RoomMessageId id, RoomId roomId, UserId senderId, strin
         var message = new RoomMessage(RoomMessageId.Random(), room.Id, sender.Id, body);
         var domain = room.Handle.Domain;
 
-        message.RaiseEvent(MessageRoomEvent.Create(room, sender, body, domain));
+        message.RaiseEvent(new MessageRoomEvent(room, sender, body, domain));
 
         return message;
     }
