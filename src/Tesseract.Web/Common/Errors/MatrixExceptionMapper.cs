@@ -13,6 +13,7 @@ internal class MatrixExceptionMapper : IMatrixExceptionMapper
     public ErrorMapping Map(Exception exception) => exception switch
     {
         BadLoginTypeException => MapBadLoginType(),
+        UnauthorizedAccessException => MapUnauthorized(),
         ForbiddenException => MapForbidden(),
         InvalidUsernameException => MapInvalidUsername(),
         UsernameTakenException => MapUsernameTaken(),
@@ -20,6 +21,9 @@ internal class MatrixExceptionMapper : IMatrixExceptionMapper
         UserNotInRoomException => MapUserNotInRoomException(),
         _ => MapUnknown(),
     };
+
+    private static ErrorMapping MapUnauthorized() => (StatusCodes.Status401Unauthorized,
+        new MatrixErrorResponse(Unauthorized, "Unauthorized"));
 
     private static ErrorMapping MapBadLoginType() => (StatusCodes.Status400BadRequest,
         new MatrixErrorResponse(Unknown, "Bad login type."));

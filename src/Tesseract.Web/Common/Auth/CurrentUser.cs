@@ -14,12 +14,11 @@ internal class CurrentUser(IHttpContextAccessor context) : ICurrentUser
         }
     }
 
-    private string? FindClaim(string type) =>
-        GetUser().FindFirstValue(type);
+    private string? FindClaim(string type) => GetUser().FindFirstValue(type);
 
     private ClaimsPrincipal GetUser()
     {
-        if (context.HttpContext?.User is not { } user)
+        if (context.HttpContext?.User is not { Identity.IsAuthenticated: true } user)
         {
             throw new UnauthorizedAccessException("User is not logged in.");
         }
