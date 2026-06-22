@@ -107,7 +107,7 @@ public class AuthController(IMediator mediator, ICurrentUser user)
     [Authorize]
     public async Task<LogoutUserResponse> LogoutUser(CancellationToken cancellationToken)
     {
-        var command = new LogoutUser.Query(user.SessionId);
+        var command = new LogoutCurrentUserSession.Query(user.SessionId);
         _ = await mediator.Send(command, cancellationToken);
 
         return new LogoutUserResponse();
