@@ -35,7 +35,7 @@ public class MessageController(IMediator mediator, ICurrentUser user)
     public async Task<GetMessagesResponse> GetMessages(GetMessagesRequest request, string roomHandle,
         CancellationToken cancellationToken)
     {
-        var query = new GetMessages.Query(roomHandle, user.Id.Value);
+        var query = new GetMessages.Query(roomHandle, user.Id);
         var result = await mediator.Send(query, cancellationToken);
 
         return new GetMessagesResponse

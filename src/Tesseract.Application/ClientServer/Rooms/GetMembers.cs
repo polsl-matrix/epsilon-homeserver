@@ -3,12 +3,13 @@ using Tesseract.Application.ClientServer.Auth.Exceptions;
 using Tesseract.Application.ClientServer.Identity.Abstractions;
 using Tesseract.Application.ClientServer.Rooms.Abstractions;
 using Tesseract.Application.ClientServer.Rooms.Exceptions;
+using Tesseract.Domain.Events;
 using Tesseract.Domain.Rooms;
 using Tesseract.Domain.Users;
 
 namespace Tesseract.Application.ClientServer.Rooms;
 
-public static class GetMessages
+public static class GetMembers
 {
     public sealed record Query(string RoomHandle, UserId UserId) : IRequest<Response>;
 
@@ -36,7 +37,8 @@ public static class GetMessages
                 throw new UserNotInRoomException();
             }
 
-            var events = await eventRepository.GetByRoomIdAsync(room.Id, cancellationToken);
+            var events = await eventRepository
+                .GetByTypeAndRoomIdAsync(EventTypes.MemberRoom, room.Id, cancellationToken);
 
             return new Response(events.ToArray());
         }
