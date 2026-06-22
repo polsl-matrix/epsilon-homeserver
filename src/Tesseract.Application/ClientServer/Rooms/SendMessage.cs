@@ -3,6 +3,7 @@ using Tesseract.Application.ClientServer.Auth.Exceptions;
 using Tesseract.Application.ClientServer.Identity.Abstractions;
 using Tesseract.Application.ClientServer.Rooms.Abstractions;
 using Tesseract.Application.ClientServer.Rooms.Exceptions;
+using Tesseract.Application.Common.Transactions;
 using Tesseract.Domain.Events;
 using Tesseract.Domain.Rooms;
 using Tesseract.Domain.Users;
@@ -11,16 +12,15 @@ namespace Tesseract.Application.ClientServer.Rooms;
 
 public static class SendMessage
 {
-    public sealed record Command(string RoomHandle, Guid UserId, string Body) : IRequest<Response>;
+    public sealed record Command(string RoomHandle, Guid UserId, string Body) : IRequest<Response>, ITransactional;
 
     internal sealed class Handler(
         IPublisher publisher,
         IEventRepository eventRepository,
-        IUserRepository userRepository,
         IRoomRepository roomRepository,
         IRoomMembershipRepository roomMembershipRepository,
-        IRoomMessageRepository roomMessageRepository
-    )
+        IRoomMessageRepository roomMessageRepository,
+        IUserRepository userRepository)
         : IRequestHandler<Command, Response>
     {
         public async Task<Response> Handle(Command request, CancellationToken cancellationToken)

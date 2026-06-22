@@ -14,7 +14,7 @@ public sealed class Room(RoomId id, RoomHandle handle) : AggregateRoot<RoomId, E
         var handle = RoomHandle.Random(domain.Value);
         var room = new Room(RoomId.Random(), handle);
 
-        room.RaiseEvent(CreateRoomEvent.Create(room, creator, domain));
+        room.RaiseEvent(new CreateRoomEvent(room, creator, domain));
 
         return room;
     }

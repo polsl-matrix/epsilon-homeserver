@@ -10,9 +10,35 @@ namespace Tesseract.Infrastructure.ClientServer.Auth.Repositories;
 
 internal class DbSessionRepository(IDbConnectionFactory dbConnectionFactory) : ISessionRepository
 {
+    public async Task<Session?> GetByIdAsync(SessionId sessionId, CancellationToken cancellationToken)
+    {
+        await using var connection = dbConnectionFactory.CreateConnection();
+
+        const string sql = $"""
+                            SELECT session_id                 {nameof(SessionDao.SessionId)},
+                                   user_id                    {nameof(SessionDao.UserId)},
+                                   current_access_token_hash  {nameof(SessionDao.CurrentAccessTokenHash)},
+                                   current_refresh_token_hash {nameof(SessionDao.CurrentRefreshTokenHash)}
+                            FROM auth.sessions
+                            WHERE session_id = @SessionId;
+                            """;
+
+        var parameters = new
+        {
+            SessionId = sessionId.Value,
+        };
+
+        if (await connection.QuerySingleOrDefaultAsync<SessionDao>(sql, parameters) is not { } sessionDao)
+        {
+            return null;
+        }
+
+        return sessionDao.ToDomain();
+    }
+
     public async Task<Session?> GetByAccessTokenAsync(byte[] accessTokenHash, CancellationToken cancellationToken)
     {
-        using var connection = dbConnectionFactory.CreateConnection();
+        await using var connection = dbConnectionFactory.CreateConnection();
 
         const string sql = $"""
                             SELECT session_id                 {nameof(SessionDao.SessionId)},
@@ -38,20 +64,39 @@ internal class DbSessionRepository(IDbConnectionFactory dbConnectionFactory) : I
 
     public async Task UpsertAsync(Session session, CancellationToken cancellationToken)
     {
-        using var connection = dbConnectionFactory.CreateConnection();
+        await using var connection = dbConnectionFactory.CreateConnection();
 
         const string sql = """
                            INSERT INTO auth.sessions(session_id, user_id, current_access_token_hash, current_refresh_token_hash)
                            VALUES (@SessionId, @UserId, @CurrentAccessTokenHash, @CurrentRefreshTokenHash);
                            """;
 
-        await connection.ExecuteAsync(sql, new
+        var parameters = new
         {
             SessionId = session.Id.Value,
             UserId = session.UserId.Value,
             CurrentAccessTokenHash = session.AccessTokenHash,
             CurrentRefreshTokenHash = session.RefreshTokenHash,
-        });
+        };
+
+        await connection.ExecuteAsync(sql, parameters);
+    }
+
+    public async Task DeleteByIdAsync(SessionId sessionId, CancellationToken cancellationToken)
+    {
+        await using var connection = dbConnectionFactory.CreateConnection();
+
+        const string sql = """
+                           DELETE FROM auth.sessions
+                           WHERE session_id = @SessionId;
+                           """;
+
+        var parameters = new
+        {
+            SessionId = sessionId.Value,
+        };
+
+        await connection.ExecuteAsync(sql, parameters);
     }
 
     public async Task DeleteAllByUserIdAsync(UserId userId, CancellationToken cancellationToken)
@@ -67,5 +112,22 @@ internal class DbSessionRepository(IDbConnectionFactory dbConnectionFactory) : I
         {
             UserId = userId.Value,
         });
+    }
+
+    public async Task DeleteByUserIdAsync(UserId userId, CancellationToken cancellationToken)
+    {
+        await using var connection = dbConnectionFactory.CreateConnection();
+
+        const string sql = """
+                           DELETE FROM auth.sessions
+                           WHERE user_id = @UserId;
+                           """;
+
+        var parameters = new
+        {
+            UserId = userId.Value,
+        };
+
+        await connection.ExecuteAsync(sql, parameters);
     }
 }

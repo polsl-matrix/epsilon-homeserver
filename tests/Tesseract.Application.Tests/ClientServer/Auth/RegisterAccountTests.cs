@@ -101,7 +101,7 @@ public class RegisterAccountTests
         await _userRepository.Received().GetByHandleAsync(Arg.Any<UserHandle>(), cancellationSource.Token);
         await _passwordHasher.Received().HashAsync(Arg.Any<string>(), cancellationSource.Token);
         await _userRepository.Received().InsertAsync(Arg.Any<User>(), cancellationSource.Token);
-        await _profileRepository.Received().InsertAsync(Arg.Any<Profile>(), cancellationSource.Token);
+        await _profileRepository.Received().InsertAsync(Arg.Any<Domain.Users.Profile>(), cancellationSource.Token);
         await _passwordRepository.Received().InsertAsync(Arg.Any<Password>(), cancellationSource.Token);
         await _sessionFactory.Received().CreateAsync(Arg.Any<User>(), cancellationSource.Token);
         await _sessionRepository.Received().UpsertAsync(Arg.Any<Session>(), cancellationSource.Token);
