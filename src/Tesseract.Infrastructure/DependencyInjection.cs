@@ -63,6 +63,7 @@ public static class DependencyInjection
             services.AddScoped<IResponseRepository, DbResponseRepository>();
             services.AddScoped<IRoomRepository, DbRoomRepository>();
             services.AddScoped<IRoomMembershipRepository, DbRoomMembershipRepository>();
+            services.AddScoped<IRoomMessageRepository, DbRoomMessageRepository>();
             services.AddScoped<ISessionRepository, DbSessionRepository>();
             services.AddScoped<IUserRepository, DbUserRepository>();
             services.AddScoped<IVersionRepository, InMemoryVersionRepository>();
