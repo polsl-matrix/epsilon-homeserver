@@ -4,5 +4,6 @@ namespace Tesseract.Application.ClientServer.Auth.Abstractions;
 
 public interface IProfileRepository
 {
-    Task InsertAsync(Profile profile, CancellationToken cancellationToken);
+    Task InsertAsync(Tesseract.Domain.Users.Profile profile, CancellationToken cancellationToken);
+    Task UpsertDisplayNameAsync(UserHandle handle, string? displayName, CancellationToken cancellationToken);
 }
