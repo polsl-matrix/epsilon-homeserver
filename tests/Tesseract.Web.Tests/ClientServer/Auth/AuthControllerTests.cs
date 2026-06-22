@@ -6,6 +6,7 @@ using Tesseract.Application.ClientServer.Auth;
 using Tesseract.Domain.Users;
 using Tesseract.Web.ClientServer.Auth;
 using Tesseract.Web.ClientServer.Auth.Contracts;
+using Tesseract.Web.Common.Auth;
 using LoginFlow = Tesseract.Application.ClientServer.Auth.Models.LoginFlow;
 
 namespace Tesseract.Web.Tests.ClientServer.Auth;
@@ -13,12 +14,14 @@ namespace Tesseract.Web.Tests.ClientServer.Auth;
 public class AuthControllerTests
 {
     private readonly IMediator _mediator;
+    private readonly ICurrentUser _currentUser;
     private readonly AuthController _controller;
 
     public AuthControllerTests()
     {
         _mediator = Substitute.For<IMediator>();
-        _controller = new AuthController(_mediator);
+        _currentUser = Substitute.For<ICurrentUser>();
+        _controller = new AuthController(_mediator, _currentUser);
     }
 
     public static TheoryData<UserHandle> ValidUserHandles =>
@@ -222,5 +225,61 @@ public class AuthControllerTests
         await _controller.RegisterAccount(request, cancellationToken);
 
         await _mediator.Received().Send(Arg.Any<RegisterAccount.Command>(), cancellationToken);
+    }
+
+    [Fact]
+    public async Task LogoutAll_CurrentUserAvailable_PassesCurrentUserToMediator()
+    {
+        var userId = UserId.Random();
+        _currentUser.Id.Returns(userId);
+
+        LogoutAllUserSessions.Command? calledCommand = null;
+        _mediator.Send(Arg.Any<LogoutAllUserSessions.Command>(), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask)
+            .AndDoes(call => calledCommand = call.Arg<LogoutAllUserSessions.Command>());
+
+        await _controller.LogoutAll(CancellationToken.None);
+
+        calledCommand.Should().NotBeNull();
+        calledCommand.UserId.Should().Be(userId);
+    }
+
+    [Fact]
+    public async Task LogoutAll_MediatorAcceptsCommand_ReturnsEmptyObject()
+    {
+        _currentUser.Id.Returns(UserId.Random());
+        _mediator.Send(Arg.Any<LogoutAllUserSessions.Command>(), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask);
+
+        var result = await _controller.LogoutAll(CancellationToken.None);
+
+        result.GetType().GetProperties().Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task LogoutAll_CancellationTokenProvided_PassesSameTokenToMediator()
+    {
+        var cancellationToken = new CancellationTokenSource().Token;
+        _currentUser.Id.Returns(UserId.Random());
+        _mediator.Send(Arg.Any<LogoutAllUserSessions.Command>(), cancellationToken)
+            .Returns(Task.CompletedTask);
+
+        await _controller.LogoutAll(cancellationToken);
+
+        await _mediator.Received().Send(Arg.Any<LogoutAllUserSessions.Command>(), cancellationToken);
+    }
+
+    [Fact]
+    public async Task LogoutAll_MediatorThrowsException_PropagatesException()
+    {
+        var exception = new InvalidOperationException("Something went wrong.");
+        _currentUser.Id.Returns(UserId.Random());
+        _mediator.Send(Arg.Any<LogoutAllUserSessions.Command>(), Arg.Any<CancellationToken>())
+            .Throws(exception);
+
+        var act = async () => await _controller.LogoutAll(CancellationToken.None);
+
+        var thrown = await act.Should().ThrowAsync<InvalidOperationException>();
+        thrown.Which.Should().BeSameAs(exception);
     }
 }

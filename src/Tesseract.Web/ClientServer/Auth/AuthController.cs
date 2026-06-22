@@ -3,13 +3,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Tesseract.Application.ClientServer.Auth;
 using Tesseract.Web.ClientServer.Auth.Contracts;
+using Tesseract.Web.Common.Auth;
 
 namespace Tesseract.Web.ClientServer.Auth;
 
 [ApiController]
 [Route("_matrix/client")]
 // TODO: Add rate limiter.
-public class AuthController(IMediator mediator)
+public class AuthController(IMediator mediator, ICurrentUser currentUser)
 {
     [HttpGet("v3/login")]
     [AllowAnonymous]
@@ -71,5 +72,16 @@ public class AuthController(IMediator mediator)
             AccessToken = result.AccessToken,
             RefreshToken = result.RefreshToken,
         };
+    }
+
+    [HttpPost("v3/logout/all")]
+    [Authorize]
+    public async Task<object> LogoutAll(CancellationToken cancellationToken)
+    {
+        var command = new LogoutAllUserSessions.Command(currentUser.Id);
+
+        await mediator.Send(command, cancellationToken);
+
+        return new { };
     }
 }
