@@ -91,8 +91,7 @@ public class AuthController(IMediator mediator, ICurrentUser user)
 
     [HttpGet("v3/account/whoami")]
     [Authorize]
-    public async Task<GetCurrentUserDetailsResponse> GetCurrentUserDetails(
-        string authorization, CancellationToken cancellationToken)
+    public async Task<GetCurrentUserDetailsResponse> GetCurrentUserDetails(CancellationToken cancellationToken)
     {
         var query = new GetCurrentSessionDetails.Query(user.SessionId);
         var result = await mediator.Send(query, cancellationToken);

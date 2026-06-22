@@ -9,7 +9,7 @@ internal class DbProfileRepository(IDbConnectionFactory dbConnectionFactory) : I
 {
     public async Task InsertAsync(Profile profile, CancellationToken cancellationToken)
     {
-        await using var connection = dbConnectionFactory.CreateConnection();
+        using var connection = dbConnectionFactory.CreateConnection();
 
         const string sql = """
                            INSERT INTO identity.profiles(user_id, display_name, avatar_url)
@@ -62,5 +62,23 @@ internal class DbProfileRepository(IDbConnectionFactory dbConnectionFactory) : I
         };
 
         await connection.ExecuteAsync(sql, parameters);
+    }
+
+    public async Task<string?> GetDisplayNameAsync(UserId userId, CancellationToken cancellationToken)
+    {
+        await using var connection = dbConnectionFactory.CreateConnection();
+
+        const string sql = """
+                           SELECT p.display_name
+                           FROM identity.profiles p
+                           WHERE p.user_id = @UserId;
+                           """;
+
+        var parameters = new
+        {
+            UserId = userId.Value,
+        };
+
+        return await connection.QuerySingleOrDefaultAsync<string?>(sql, parameters);
     }
 }

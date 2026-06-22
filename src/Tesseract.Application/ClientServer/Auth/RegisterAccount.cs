@@ -33,7 +33,7 @@ public static class RegisterAccount
             await EnsureUsernameNotTakenAsync(handle, cancellationToken);
 
             var user = new User(UserId.Random(), handle);
-            var profile = Domain.Users.Profile.Empty(user.Id);
+            var profile = Tesseract.Domain.Users.Profile.Empty(user.Id);
 
             var password = await HashPassword(user.Id, request.Password, cancellationToken);
 

@@ -10,7 +10,7 @@ namespace Tesseract.Web.ClientServer.Profile;
 [ApiController]
 // TODO: Add rate limiter.
 [Route("_matrix/client/v3/profile/{userHandle}")]
-public sealed class ProfileController(ISender sender, ICurrentUser user) : ControllerBase
+public sealed class ProfileController(IMediator mediator, ICurrentUser user) : ControllerBase
 {
     [Authorize]
     [HttpPut("displayname")]
@@ -18,9 +18,21 @@ public sealed class ProfileController(ISender sender, ICurrentUser user) : Contr
         CancellationToken cancellationToken)
     {
         var command = new UpdateDisplayName.Command(user.Id, userHandle, request.DisplayName);
-        _ = await sender.Send(command, cancellationToken);
+        _ = await mediator.Send(command, cancellationToken);
 
         return new UpdateDisplayNameResponse();
+    }
+
+    [HttpGet("displayname")]
+    [AllowAnonymous]
+    public async Task<GetDisplayNameResponse> GetDisplayName(string userHandle, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(new GetDisplayName.Query(userHandle), cancellationToken);
+
+        return new GetDisplayNameResponse
+        {
+            DisplayName = result.DisplayName,
+        };
     }
 
     [HttpPut("avatar_url")]
@@ -29,7 +41,7 @@ public sealed class ProfileController(ISender sender, ICurrentUser user) : Contr
         CancellationToken cancellationToken)
     {
         var command = new UpdateAvatarUrl.Command(user.Id, userHandle, request.AvatarUrl);
-        _ = await sender.Send(command, cancellationToken);
+        _ = await mediator.Send(command, cancellationToken);
 
         return new UpdateAvatarUrlResponse();
     }

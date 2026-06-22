@@ -283,7 +283,7 @@ public class AuthControllerTests
         _mediator.Send(Arg.Any<GetCurrentSessionDetails.Query>(), Arg.Any<CancellationToken>())
             .Returns(new GetCurrentSessionDetails.Response(new UserHandle("ferret", "burrow.home")));
 
-        var result = await _controller.GetCurrentUserDetails("Bearer access-token", CancellationToken.None);
+        var result = await _controller.GetCurrentUserDetails(CancellationToken.None);
 
         result.UserId.Should().Be("@ferret:burrow.home");
     }
@@ -295,7 +295,7 @@ public class AuthControllerTests
         _mediator.Send(Arg.Any<GetCurrentSessionDetails.Query>(), cancellationToken)
             .Returns(new GetCurrentSessionDetails.Response(new UserHandle("clock", "tower.time")));
 
-        await _controller.GetCurrentUserDetails("Bearer access-token", cancellationToken);
+        await _controller.GetCurrentUserDetails(cancellationToken);
 
         await _mediator.Received().Send(Arg.Any<GetCurrentSessionDetails.Query>(), cancellationToken);
     }
