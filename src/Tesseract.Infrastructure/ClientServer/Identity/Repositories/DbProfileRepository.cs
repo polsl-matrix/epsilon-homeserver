@@ -81,4 +81,22 @@ internal class DbProfileRepository(IDbConnectionFactory dbConnectionFactory) : I
 
         return await connection.QuerySingleOrDefaultAsync<string?>(sql, parameters);
     }
+
+    public async Task<string?> GetAvatarUrlAsync(UserId userId, CancellationToken cancellationToken)
+    {
+        await using var connection = dbConnectionFactory.CreateConnection();
+
+        const string sql = """
+                           SELECT p.avatar_url
+                           FROM identity.profiles p
+                           WHERE p.user_id = @UserId;
+                           """;
+
+        var parameters = new
+        {
+            UserId = userId.Value,
+        };
+
+        return await connection.QuerySingleOrDefaultAsync<string?>(sql, parameters);
+    }
 }
