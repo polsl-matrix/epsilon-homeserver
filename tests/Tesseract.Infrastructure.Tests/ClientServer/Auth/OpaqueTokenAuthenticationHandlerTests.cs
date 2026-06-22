@@ -9,6 +9,7 @@ using NSubstitute;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using Tesseract.Application.ClientServer.Auth;
+using Tesseract.Application.ClientServer.Auth.Models;
 using Tesseract.Domain.Users;
 using Tesseract.Infrastructure.ClientServer.Auth;
 
@@ -83,7 +84,7 @@ public class OpaqueTokenAuthenticationHandlerTests
         _httpContext.Request.Headers[HeaderNames.Authorization] = $"Bearer {token}";
 
         _mediator.Send(Arg.Is<AuthenticateUser.Command>(c => c.AccessToken == token), Arg.Any<CancellationToken>())
-            .Returns(new AuthenticateUser.Response(null));
+            .Returns(new AuthenticateUser.Response(null, null));
 
         await _handler.AuthenticateAsync();
 
@@ -99,7 +100,7 @@ public class OpaqueTokenAuthenticationHandlerTests
 
         _mediator
             .Send(Arg.Any<AuthenticateUser.Command>(), Arg.Any<CancellationToken>())
-            .Returns(new AuthenticateUser.Response(null));
+            .Returns(new AuthenticateUser.Response(null, null));
 
         var result = await _handler.AuthenticateAsync();
 
@@ -118,8 +119,9 @@ public class OpaqueTokenAuthenticationHandlerTests
         await _handler.InitializeAsync(scheme, _httpContext);
 
         var user = new User(UserId.Random(), new UserHandle("jack", "black.cherry"));
+        var sessionId = SessionId.Random();
         _mediator.Send(Arg.Any<AuthenticateUser.Command>(), Arg.Any<CancellationToken>())
-            .Returns(new AuthenticateUser.Response(user));
+            .Returns(new AuthenticateUser.Response(user, sessionId));
 
         // Act
         var result = await _handler.AuthenticateAsync();
@@ -140,9 +142,10 @@ public class OpaqueTokenAuthenticationHandlerTests
         await _handler.InitializeAsync(scheme, _httpContext);
 
         var user = new User(UserId.Random(), new UserHandle("6fire7", "water.flows"));
+        var sessionId = SessionId.Random();
         _mediator
             .Send(Arg.Any<AuthenticateUser.Command>(), Arg.Any<CancellationToken>())
-            .Returns(new AuthenticateUser.Response(user));
+            .Returns(new AuthenticateUser.Response(user, sessionId));
 
         // Act
         var result = await _handler.AuthenticateAsync();
@@ -151,6 +154,9 @@ public class OpaqueTokenAuthenticationHandlerTests
         var principal = result.Ticket.Principal;
         var nameIdentifierClaim = principal.FindFirst(ClaimTypes.NameIdentifier);
         nameIdentifierClaim.Should().NotBeNull();
-        nameIdentifierClaim!.Value.Should().Be(user.Id.Value.ToString());
+        nameIdentifierClaim.Value.Should().Be(user.Id.Value.ToString());
+        var sessionIdentifierClaim = principal.FindFirst(ClaimTypes.Sid);
+        sessionIdentifierClaim.Should().NotBeNull();
+        sessionIdentifierClaim.Value.Should().Be(sessionId.Value.ToString());
     }
 }

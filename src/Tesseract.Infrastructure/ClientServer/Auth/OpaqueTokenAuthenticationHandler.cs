@@ -10,6 +10,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Tesseract.Application.ClientServer.Auth;
+using Tesseract.Application.ClientServer.Auth.Models;
 using Tesseract.Domain.Users;
 
 namespace Tesseract.Infrastructure.ClientServer.Auth;
@@ -31,12 +32,12 @@ public class OpaqueTokenAuthenticationHandler(
 
         var response = await mediator.Send(new AuthenticateUser.Command(token));
 
-        if (response.User is not { } user)
+        if (response.User is not { } user || response.SessionId is not { } sessionId)
         {
             return AuthenticateResult.Fail("User session was not found or has expired.");
         }
 
-        var claims = MapUserToClaims(user);
+        var claims = MapSessionToClaims(user, sessionId);
 
         var identity = new ClaimsIdentity(claims, Scheme.Name);
         var principal = new ClaimsPrincipal(identity);
@@ -89,13 +90,15 @@ public class OpaqueTokenAuthenticationHandler(
         return header.Parameter;
     }
 
-    private static IReadOnlyList<Claim> MapUserToClaims(User user)
+    private static IReadOnlyList<Claim> MapSessionToClaims(User user, SessionId session)
     {
         var userId = user.Id.Value.ToString();
+        var sessionId = session.Value.ToString();
 
         return
         [
             new Claim(ClaimTypes.NameIdentifier, userId),
+            new Claim(ClaimTypes.Sid, sessionId),
         ];
     }
 
