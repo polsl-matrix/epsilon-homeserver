@@ -9,7 +9,7 @@ internal class MessageRoomEventMapper : EventMapper<MessageRoomEvent, MessageRoo
 
     protected override MessageRoomEventDao ToDao(MessageRoomEvent typedEvent) => new()
     {
-        EventId = typedEvent.Id.Value,
+        EventHandle = typedEvent.Handle.ToString(),
         RoomHandle = typedEvent.Room.Handle.ToString(),
         SenderHandle = typedEvent.Sender.Handle.ToString(),
         Timestamp = typedEvent.Timestamp,

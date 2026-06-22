@@ -2,6 +2,7 @@ using Dapper;
 using System.Text.Json;
 using Tesseract.Application.ClientServer.Rooms.Abstractions;
 using Tesseract.Domain.Events;
+using Tesseract.Domain.Rooms;
 using Tesseract.Infrastructure.Common.Database.Interfaces;
 
 namespace Tesseract.Infrastructure.ClientServer.Events;
@@ -24,19 +25,84 @@ internal class DbEventRepository : IEventRepository
         await using var connection = _dbConnectionFactory.CreateConnection();
 
         const string sql = """
-                           INSERT INTO chat.room_events(event_id, room_id, timestamp, payload)
-                           VALUES (@EventId, @RoomId, @Timestamp, @Payload);
+                           INSERT INTO chat.room_events(event_id, room_id, timestamp, payload, event_type, state_key)
+                           VALUES (@EventId, @RoomId, @Timestamp, @Payload, @EventType, @StateKey);
                            """;
 
         var parameters = new
         {
             EventId = @event.Id.Value,
+            EventType = @event.Type,
             RoomId = @event.Room.Id.Value,
             Timestamp = @event.Timestamp,
+            StateKey = @event.StateKey,
             Payload = SerializePayload(@event),
         };
 
         await connection.ExecuteAsync(sql, parameters);
+    }
+
+    public async Task<IEnumerable<string>> GetByRoomIdAsync(RoomId roomId, CancellationToken cancellationToken)
+    {
+        await using var connection = _dbConnectionFactory.CreateConnection();
+
+        const string sql = """
+                           SELECT payload
+                           FROM chat.room_events
+                           WHERE room_id = @RoomId
+                           ORDER BY timestamp;
+                           """;
+
+        var parameters = new
+        {
+            RoomId = roomId.Value,
+        };
+
+        return await connection.QueryAsync<string>(sql, parameters);
+    }
+
+    public async Task<IEnumerable<string>> GetByTypeAndRoomIdAsync(string type, RoomId roomId,
+        CancellationToken cancellationToken)
+    {
+        await using var connection = _dbConnectionFactory.CreateConnection();
+
+        const string sql = """
+                           SELECT payload
+                           FROM chat.room_events
+                           WHERE room_id = @RoomId
+                             AND event_type = @EventType 
+                           ORDER BY timestamp;
+                           """;
+
+        var parameters = new
+        {
+            EventType = type,
+            RoomId = roomId.Value,
+        };
+
+        return await connection.QueryAsync<string>(sql, parameters);
+    }
+
+    public async Task<IEnumerable<string>> GetStateByRoomIdAsync(string type, RoomId roomId,
+        CancellationToken cancellationToken)
+    {
+        await using var connection = _dbConnectionFactory.CreateConnection();
+
+        const string sql = """
+                           SELECT payload
+                           FROM chat.room_events
+                           WHERE room_id = @RoomId
+                             AND state_key IS NOT NULL 
+                           ORDER BY timestamp;
+                           """;
+
+        var parameters = new
+        {
+            EventType = type,
+            RoomId = roomId.Value,
+        };
+
+        return await connection.QueryAsync<string>(sql, parameters);
     }
 
     private string SerializePayload(Event @event)

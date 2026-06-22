@@ -1,5 +1,6 @@
 using MediatR;
 using Tesseract.Application.ClientServer.Auth.Abstractions;
+using Tesseract.Application.ClientServer.Auth.Models;
 using Tesseract.Application.ClientServer.Identity.Abstractions;
 using Tesseract.Domain.Users;
 
@@ -21,14 +22,14 @@ public static class AuthenticateUser
 
             if (await sessionRepository.GetByAccessTokenAsync(accessTokenHash, cancellationToken) is not { } session)
             {
-                return new Response(null);
+                return new Response(null, null);
             }
 
             var user = await userRepository.GetByIdAsync(session.UserId, cancellationToken);
 
-            return new Response(user);
+            return new Response(user, session.Id);
         }
     }
 
-    public record Response(User? User);
+    public record Response(User? User, SessionId? SessionId);
 }

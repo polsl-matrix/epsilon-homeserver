@@ -18,6 +18,7 @@ public class MatrixExceptionMapperTests
         { new ForbiddenException(), StatusCodes.Status403Forbidden, MatrixErrorCodes.Forbidden, null },
         { new InvalidUsernameException("UppercaseName"), StatusCodes.Status400BadRequest, MatrixErrorCodes.InvalidUsername, "not valid" },
         { new ProfileFieldNotFoundException("@alice:example.com", "displayname"), StatusCodes.Status404NotFound, MatrixErrorCodes.NotFound, "profile field" },
+        { new CannotUpdateOtherUserProfileException("@alice:example.com", "@bob:example.com"), StatusCodes.Status403Forbidden, MatrixErrorCodes.Forbidden, "another user's profile" },
         { new UsernameTakenException("@alice:example.com"), StatusCodes.Status400BadRequest, MatrixErrorCodes.UserInUse, "already taken" },
         // @formatter:on
     };

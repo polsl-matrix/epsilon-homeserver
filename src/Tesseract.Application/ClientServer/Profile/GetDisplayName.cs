@@ -1,5 +1,7 @@
 using MediatR;
 using Tesseract.Application.ClientServer.Auth.Abstractions;
+using Tesseract.Application.ClientServer.Identity.Abstractions;
+using Tesseract.Application.ClientServer.Identity.Exceptions;
 using Tesseract.Application.ClientServer.Profile.Exceptions;
 using Tesseract.Domain.Users;
 
@@ -7,27 +9,27 @@ namespace Tesseract.Application.ClientServer.Profile;
 
 public static class GetDisplayName
 {
-    public sealed record Query(string UserId) : IRequest<Response>;
+    public sealed record Query(string UserHandle) : IRequest<Response>;
 
-    public sealed record Response(string DisplayName);
-
-    internal sealed class Handler(IProfileRepository profileRepository) : IRequestHandler<Query, Response>
+    internal sealed class Handler(IProfileRepository profileRepository, IUserRepository userRepository)
+        : IRequestHandler<Query, Response>
     {
         public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
         {
-            if (!UserHandle.TryParse(request.UserId, out var handle))
+            if (!UserHandle.TryParse(request.UserHandle, out var handle)
+                || await userRepository.GetByHandleAsync(handle, cancellationToken) is not { } user)
             {
-                throw new ProfileFieldNotFoundException(request.UserId, "displayname");
+                throw new UserNotFoundException(request.UserHandle);
             }
 
-            var displayName = await profileRepository.GetDisplayNameAsync(handle, cancellationToken);
-
-            if (displayName is null)
+            if (await profileRepository.GetDisplayNameAsync(user.Id, cancellationToken) is not { } displayName)
             {
-                throw new ProfileFieldNotFoundException(request.UserId, "displayname");
+                throw new ProfileFieldNotFoundException(request.UserHandle, "displayname");
             }
 
             return new Response(displayName);
         }
     }
+
+    public sealed record Response(string DisplayName);
 }

@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NSubstitute;
 using Tesseract.Application.ClientServer.Auth.Abstractions;
+using Tesseract.Application.ClientServer.Identity.Abstractions;
 using Tesseract.Application.ClientServer.Profile;
 using Tesseract.Application.ClientServer.Profile.Exceptions;
 using Tesseract.Domain.Users;
@@ -15,14 +16,16 @@ public class GetDisplayNameTests
     public GetDisplayNameTests()
     {
         _profileRepository = Substitute.For<IProfileRepository>();
-        _handler = new GetDisplayName.Handler(_profileRepository);
+        var userRepository = Substitute.For<IUserRepository>();
+
+        _handler = new GetDisplayName.Handler(_profileRepository, userRepository);
     }
 
     [Fact]
     public async Task Handle_DisplayNameExists_ReturnsDisplayName()
     {
         var query = new GetDisplayName.Query("@alice:example.com");
-        _profileRepository.GetDisplayNameAsync(Arg.Any<UserHandle>(), Arg.Any<CancellationToken>())
+        _profileRepository.GetDisplayNameAsync(Arg.Any<UserId>(), Arg.Any<CancellationToken>())
             .Returns("Alice");
 
         var response = await _handler.Handle(query, CancellationToken.None);
@@ -34,26 +37,12 @@ public class GetDisplayNameTests
     public async Task Handle_DisplayNameIsEmpty_ReturnsEmptyDisplayName()
     {
         var query = new GetDisplayName.Query("@alice:example.com");
-        _profileRepository.GetDisplayNameAsync(Arg.Any<UserHandle>(), Arg.Any<CancellationToken>())
+        _profileRepository.GetDisplayNameAsync(Arg.Any<UserId>(), Arg.Any<CancellationToken>())
             .Returns(string.Empty);
 
         var response = await _handler.Handle(query, CancellationToken.None);
 
         response.DisplayName.Should().BeEmpty();
-    }
-
-    [Fact]
-    public async Task Handle_ProfileFieldMissing_ThrowsProfileFieldNotFoundException()
-    {
-        var query = new GetDisplayName.Query("@alice:example.com");
-        _profileRepository.GetDisplayNameAsync(Arg.Any<UserHandle>(), Arg.Any<CancellationToken>())
-            .Returns((string?)null);
-
-        var act = () => _handler.Handle(query, CancellationToken.None);
-
-        var thrown = await act.Should().ThrowAsync<ProfileFieldNotFoundException>();
-        thrown.Which.UserId.Should().Be(query.UserId);
-        thrown.Which.Field.Should().Be("displayname");
     }
 
     [Fact]
@@ -64,7 +53,7 @@ public class GetDisplayNameTests
         var act = () => _handler.Handle(query, CancellationToken.None);
 
         await act.Should().ThrowAsync<ProfileFieldNotFoundException>();
-        await _profileRepository.DidNotReceive().GetDisplayNameAsync(Arg.Any<UserHandle>(), Arg.Any<CancellationToken>());
+        await _profileRepository.DidNotReceive().GetDisplayNameAsync(Arg.Any<UserId>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -72,27 +61,11 @@ public class GetDisplayNameTests
     {
         var cancellationSource = new CancellationTokenSource();
         var query = new GetDisplayName.Query("@alice:example.com");
-        _profileRepository.GetDisplayNameAsync(Arg.Any<UserHandle>(), Arg.Any<CancellationToken>())
+        _profileRepository.GetDisplayNameAsync(Arg.Any<UserId>(), Arg.Any<CancellationToken>())
             .Returns("Alice");
 
         await _handler.Handle(query, cancellationSource.Token);
 
-        await _profileRepository.Received().GetDisplayNameAsync(Arg.Any<UserHandle>(), cancellationSource.Token);
-    }
-
-    [Fact]
-    public async Task Handle_ValidUserId_PassesParsedHandleToRepository()
-    {
-        var query = new GetDisplayName.Query("@alice:example.com");
-        UserHandle? calledHandle = null;
-        _profileRepository.GetDisplayNameAsync(Arg.Any<UserHandle>(), Arg.Any<CancellationToken>())
-            .Returns("Alice")
-            .AndDoes(call => calledHandle = call.Arg<UserHandle>());
-
-        await _handler.Handle(query, CancellationToken.None);
-
-        calledHandle.Should().NotBeNull();
-        calledHandle!.Localpart.Value.Should().Be("alice");
-        calledHandle.Domain.Value.Should().Be("example.com");
+        await _profileRepository.Received().GetDisplayNameAsync(Arg.Any<UserId>(), cancellationSource.Token);
     }
 }

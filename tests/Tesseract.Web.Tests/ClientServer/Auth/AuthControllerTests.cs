@@ -6,6 +6,7 @@ using Tesseract.Application.ClientServer.Auth;
 using Tesseract.Domain.Users;
 using Tesseract.Web.ClientServer.Auth;
 using Tesseract.Web.ClientServer.Auth.Contracts;
+using Tesseract.Web.Common.Auth;
 using LoginFlow = Tesseract.Application.ClientServer.Auth.Models.LoginFlow;
 
 namespace Tesseract.Web.Tests.ClientServer.Auth;
@@ -18,7 +19,9 @@ public class AuthControllerTests
     public AuthControllerTests()
     {
         _mediator = Substitute.For<IMediator>();
-        _controller = new AuthController(_mediator);
+        var user = Substitute.For<ICurrentUser>();
+
+        _controller = new AuthController(_mediator, user);
     }
 
     public static TheoryData<UserHandle> ValidUserHandles =>
@@ -222,5 +225,78 @@ public class AuthControllerTests
         await _controller.RegisterAccount(request, cancellationToken);
 
         await _mediator.Received().Send(Arg.Any<RegisterAccount.Command>(), cancellationToken);
+    }
+
+    [Fact]
+    public async Task CheckUsernameAvailability_QueryContainsUsername_PassesSameUsernameToMediator()
+    {
+        CheckUsernameAvailability.Query? calledQuery = null;
+        _mediator.Send(Arg.Any<CheckUsernameAvailability.Query>(), Arg.Any<CancellationToken>())
+            .Returns(new CheckUsernameAvailability.Response(true))
+            .AndDoes(call => calledQuery = call.Arg<CheckUsernameAvailability.Query>());
+
+        await _controller.CheckUsernameAvailability("alice", CancellationToken.None);
+
+        calledQuery.Should().NotBeNull();
+        calledQuery.Username.Should().Be("alice");
+    }
+
+    [Fact]
+    public async Task CheckUsernameAvailability_MediatorReturnsResponse_MapsAvailableCorrectly()
+    {
+        _mediator.Send(Arg.Any<CheckUsernameAvailability.Query>(), Arg.Any<CancellationToken>())
+            .Returns(new CheckUsernameAvailability.Response(true));
+
+        var result = await _controller.CheckUsernameAvailability("bob", CancellationToken.None);
+
+        result.Available.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task CheckUsernameAvailability_CancellationTokenProvided_PassesSameTokenToMediator()
+    {
+        var cancellationToken = new CancellationTokenSource().Token;
+        _mediator.Send(Arg.Any<CheckUsernameAvailability.Query>(), cancellationToken)
+            .Returns(new CheckUsernameAvailability.Response(true));
+
+        await _controller.CheckUsernameAvailability("carol", cancellationToken);
+
+        await _mediator.Received().Send(Arg.Any<CheckUsernameAvailability.Query>(), cancellationToken);
+    }
+
+    [Fact]
+    public async Task CheckUsernameAvailability_MediatorThrowsException_PropagatesException()
+    {
+        var exception = new InvalidOperationException("Something went wrong.");
+        _mediator.Send(Arg.Any<CheckUsernameAvailability.Query>(), Arg.Any<CancellationToken>())
+            .Throws(exception);
+
+        var act = async () => await _controller.CheckUsernameAvailability("dave", CancellationToken.None);
+
+        var thrown = await act.Should().ThrowAsync<InvalidOperationException>();
+        thrown.Which.Should().BeSameAs(exception);
+    }
+
+    [Fact]
+    public async Task GetCurrentUserDetails_MediatorReturnsResponse_MapsValuesCorrectly()
+    {
+        _mediator.Send(Arg.Any<GetCurrentSessionDetails.Query>(), Arg.Any<CancellationToken>())
+            .Returns(new GetCurrentSessionDetails.Response(new UserHandle("ferret", "burrow.home")));
+
+        var result = await _controller.GetCurrentUserDetails("Bearer access-token", CancellationToken.None);
+
+        result.UserId.Should().Be("@ferret:burrow.home");
+    }
+
+    [Fact]
+    public async Task GetCurrentUserDetails_CancellationTokenProvided_PassesSameTokenToMediator()
+    {
+        var cancellationToken = new CancellationTokenSource().Token;
+        _mediator.Send(Arg.Any<GetCurrentSessionDetails.Query>(), cancellationToken)
+            .Returns(new GetCurrentSessionDetails.Response(new UserHandle("clock", "tower.time")));
+
+        await _controller.GetCurrentUserDetails("Bearer access-token", cancellationToken);
+
+        await _mediator.Received().Send(Arg.Any<GetCurrentSessionDetails.Query>(), cancellationToken);
     }
 }
