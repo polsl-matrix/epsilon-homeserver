@@ -27,7 +27,8 @@ public sealed class ProfileController(IMediator mediator, ICurrentUser user) : C
     [AllowAnonymous]
     public async Task<GetDisplayNameResponse> GetDisplayName(string userHandle, CancellationToken cancellationToken)
     {
-        var result = await mediator.Send(new GetDisplayName.Query(userHandle), cancellationToken);
+        var command = new GetDisplayName.Query(userHandle);
+        var result = await mediator.Send(command, cancellationToken);
 
         return new GetDisplayNameResponse
         {
@@ -44,5 +45,18 @@ public sealed class ProfileController(IMediator mediator, ICurrentUser user) : C
         _ = await mediator.Send(command, cancellationToken);
 
         return new UpdateAvatarUrlResponse();
+    }
+
+    [HttpGet("avatar_url")]
+    [AllowAnonymous]
+    public async Task<GetAvatarUrlResponse> GetAvatarUrl(string userHandle, CancellationToken cancellationToken)
+    {
+        var command = new GetAvatarUrl.Query(userHandle);
+        var result = await mediator.Send(command, cancellationToken);
+
+        return new GetAvatarUrlResponse
+        {
+            AvatarUrl = result.AvatarUrl,
+        };
     }
 }
