@@ -1,6 +1,5 @@
 using Tesseract.Application.ClientServer.Auth.Abstractions;
 using Tesseract.Domain.Users;
-using Tesseract.Domain.Users.Values;
 
 namespace Tesseract.Application.ClientServer.Auth.Flows;
 

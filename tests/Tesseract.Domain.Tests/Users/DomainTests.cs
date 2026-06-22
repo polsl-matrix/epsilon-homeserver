@@ -1,6 +1,6 @@
 using FluentAssertions;
 using Tesseract.Domain.Common.Exceptions;
-using VDomain = Tesseract.Domain.Users.Values.Domain;
+using VDomain = Tesseract.Domain.Common.Values.Domain;
 
 namespace Tesseract.Domain.Tests.Users;
 

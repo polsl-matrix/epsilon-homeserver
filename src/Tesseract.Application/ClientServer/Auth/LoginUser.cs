@@ -1,7 +1,7 @@
 using MediatR;
 using Tesseract.Application.ClientServer.Auth.Abstractions;
 using Tesseract.Application.ClientServer.Auth.Exceptions;
-using Tesseract.Domain.Users.Values;
+using Tesseract.Domain.Users;
 
 namespace Tesseract.Application.ClientServer.Auth;
 
@@ -11,7 +11,7 @@ public static class LoginUser
 
     internal sealed class Handler : IRequestHandler<Command, Response>
     {
-        private readonly Dictionary<string, IAuthenticationFlow> _flows;
+        private readonly Dictionary<string, IAuthenticationFlow> _authenticationFlows;
 
         private readonly ISessionFactory _sessionFactory;
         private readonly ISessionRepository _sessionRepository;
@@ -19,7 +19,7 @@ public static class LoginUser
         public Handler(IEnumerable<IAuthenticationFlow> flows,
             ISessionFactory sessionFactory, ISessionRepository sessionRepository)
         {
-            _flows = flows.ToDictionary(flow => flow.Type);
+            _authenticationFlows = flows.ToDictionary(flow => flow.Type);
 
             _sessionFactory = sessionFactory;
             _sessionRepository = sessionRepository;
@@ -27,12 +27,13 @@ public static class LoginUser
 
         public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
         {
-            if (!_flows.TryGetValue(request.Type, out var flow))
+            if (!_authenticationFlows.TryGetValue(request.Type, out var authenticationFlow))
             {
                 throw new BadLoginTypeException(request.Type);
             }
 
-            if (await flow.AuthenticateAsync(request.User, request.Password, cancellationToken) is not { } user)
+            if (await authenticationFlow
+                    .AuthenticateAsync(request.User, request.Password, cancellationToken) is not { } user)
             {
                 throw new ForbiddenException();
             }

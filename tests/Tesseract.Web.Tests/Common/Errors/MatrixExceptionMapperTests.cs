@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Tesseract.Application.ClientServer.Auth.Exceptions;
+using Tesseract.Application.ClientServer.Profile.Exceptions;
 using Tesseract.Web.Common.Errors;
 using Tesseract.Web.Common.Errors.Contracts;
 
@@ -17,6 +18,7 @@ public class MatrixExceptionMapperTests
         { new ForbiddenException(), StatusCodes.Status403Forbidden, MatrixErrorCodes.Forbidden, null },
         { new InvalidUsernameException("UppercaseName"), StatusCodes.Status400BadRequest, MatrixErrorCodes.InvalidUsername, "not valid" },
         { new UnknownAccessTokenException(), StatusCodes.Status401Unauthorized, MatrixErrorCodes.UnknownToken, "access token" },
+        { new CannotUpdateOtherUserProfileException("@alice:example.com", "@bob:example.com"), StatusCodes.Status403Forbidden, MatrixErrorCodes.Forbidden, "another user's profile" },
         { new UsernameTakenException("@alice:example.com"), StatusCodes.Status400BadRequest, MatrixErrorCodes.UserInUse, "already taken" },
         // @formatter:on
     };

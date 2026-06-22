@@ -1,5 +1,5 @@
 using FluentAssertions;
-using Tesseract.Domain.Users.Values;
+using Tesseract.Domain.Users;
 
 namespace Tesseract.Domain.Tests.Users;
 

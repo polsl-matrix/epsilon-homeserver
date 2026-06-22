@@ -2,7 +2,7 @@ using MediatR;
 using Tesseract.Application.ClientServer.Auth.Abstractions;
 using Tesseract.Application.ClientServer.Auth.Exceptions;
 using Tesseract.Application.ClientServer.Identity.Abstractions;
-using Tesseract.Domain.Users.Values;
+using Tesseract.Domain.Users;
 
 namespace Tesseract.Application.ClientServer.Auth;
 

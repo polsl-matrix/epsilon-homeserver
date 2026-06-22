@@ -6,7 +6,6 @@ using Tesseract.Application.ClientServer.Identity.Abstractions;
 using Tesseract.Application.Common.Configuration;
 using Tesseract.Application.Common.Transactions;
 using Tesseract.Domain.Users;
-using Tesseract.Domain.Users.Values;
 
 namespace Tesseract.Application.ClientServer.Auth;
 
@@ -34,7 +33,7 @@ public static class RegisterAccount
             await EnsureUsernameNotTakenAsync(handle, cancellationToken);
 
             var user = new User(UserId.Random(), handle);
-            var profile = Profile.Empty(user.Id);
+            var profile = Domain.Users.Profile.Empty(user.Id);
 
             var password = await HashPassword(user.Id, request.Password, cancellationToken);
 

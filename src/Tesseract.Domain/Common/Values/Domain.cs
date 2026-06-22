@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 using Tesseract.Domain.Common.Constants;
 using Tesseract.Domain.Common.Exceptions;
 
-namespace Tesseract.Domain.Users.Values;
+namespace Tesseract.Domain.Common.Values;
 
 public partial record Domain
 {

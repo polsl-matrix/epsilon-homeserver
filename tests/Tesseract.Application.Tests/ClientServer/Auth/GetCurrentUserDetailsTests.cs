@@ -6,7 +6,6 @@ using Tesseract.Application.ClientServer.Auth.Exceptions;
 using Tesseract.Application.ClientServer.Auth.Models;
 using Tesseract.Application.ClientServer.Identity.Abstractions;
 using Tesseract.Domain.Users;
-using Tesseract.Domain.Users.Values;
 
 namespace Tesseract.Application.Tests.ClientServer.Auth;
 

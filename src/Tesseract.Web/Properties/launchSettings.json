@@ -1,4 +1,4 @@
-﻿{
+{
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "profiles": {
     "https": {
@@ -10,6 +10,8 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "OTEL_SERVICE_NAME": "tesseract-homeserver",
         "OTEL_RESOURCE_ATTRIBUTES": "service.instance.id=local",
+        "OTEL_EXPORTER_OTLP_ENDPOINT": "http://localhost:4317",
+        "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",
         "ConnectionStrings__Default": ""
       }
     }
