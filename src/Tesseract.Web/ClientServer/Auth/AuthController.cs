@@ -105,9 +105,19 @@ public class AuthController(IMediator mediator, ICurrentUser user)
 
     [HttpPost("logout")]
     [Authorize]
-    public async Task<LogoutUserResponse> LogoutUser(CancellationToken cancellationToken)
+    public async Task<LogoutUserResponse> LogoutCurrentUserSession(CancellationToken cancellationToken)
     {
         var command = new LogoutCurrentUserSession.Query(user.SessionId);
+        _ = await mediator.Send(command, cancellationToken);
+
+        return new LogoutUserResponse();
+    }
+
+    [HttpPost("logout/all")]
+    [Authorize]
+    public async Task<LogoutUserResponse> LogoutAllUserSessions(CancellationToken cancellationToken)
+    {
+        var command = new LogoutAllUserSessions.Query(user.Id);
         _ = await mediator.Send(command, cancellationToken);
 
         return new LogoutUserResponse();
