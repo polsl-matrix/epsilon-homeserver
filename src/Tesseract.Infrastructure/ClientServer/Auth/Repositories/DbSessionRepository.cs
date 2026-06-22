@@ -1,6 +1,7 @@
 using Dapper;
 using Tesseract.Application.ClientServer.Auth.Abstractions;
 using Tesseract.Application.ClientServer.Auth.Models;
+using Tesseract.Domain.Users;
 using Tesseract.Infrastructure.ClientServer.Auth.Dao;
 using Tesseract.Infrastructure.ClientServer.Auth.Mappers;
 using Tesseract.Infrastructure.Common.Database.Interfaces;
@@ -50,6 +51,21 @@ internal class DbSessionRepository(IDbConnectionFactory dbConnectionFactory) : I
             UserId = session.UserId.Value,
             CurrentAccessTokenHash = session.AccessTokenHash,
             CurrentRefreshTokenHash = session.RefreshTokenHash,
+        });
+    }
+
+    public async Task DeleteAllByUserIdAsync(UserId userId, CancellationToken cancellationToken)
+    {
+        using var connection = dbConnectionFactory.CreateConnection();
+
+        const string sql = """
+                           DELETE FROM auth.sessions
+                           WHERE user_id = @UserId;
+                           """;
+
+        await connection.ExecuteAsync(sql, new
+        {
+            UserId = userId.Value,
         });
     }
 }
