@@ -26,6 +26,11 @@ public static class AuthenticateUser
 
             var user = await userRepository.GetByIdAsync(session.UserId, cancellationToken);
 
+            if (user?.Deactivated is true)
+            {
+                return new Response(null);
+            }
+
             return new Response(user);
         }
     }
