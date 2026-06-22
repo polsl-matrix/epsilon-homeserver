@@ -1,4 +1,3 @@
-using FluentAssertions;
 using NSubstitute;
 using Tesseract.Application.ClientServer.Auth;
 using Tesseract.Application.ClientServer.Auth.Abstractions;
@@ -32,16 +31,6 @@ public class DeactivateAccountTests
 
         await _userRepository.Received().MarkDeactivatedAsync(userId, Arg.Any<CancellationToken>());
         await _sessionRepository.Received().DeleteAllByUserIdAsync(userId, Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task Handle_ValidUser_ReturnsNoSupportUnbindResult()
-    {
-        var command = new DeactivateAccount.Command(UserId.Random());
-
-        var result = await _handler.Handle(command, CancellationToken.None);
-
-        result.IdServerUnbindResult.Should().Be("no-support");
     }
 
     [Fact]

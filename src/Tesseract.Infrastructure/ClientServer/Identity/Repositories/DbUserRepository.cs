@@ -11,7 +11,7 @@ internal class DbUserRepository(IDbConnectionFactory dbConnectionFactory) : IUse
 {
     public async Task InsertAsync(User user, CancellationToken cancellationToken)
     {
-        using var connection = dbConnectionFactory.CreateConnection();
+        await using var connection = dbConnectionFactory.CreateConnection();
 
         const string sql = """
                            INSERT INTO identity.users(user_id, localpart, domain, deactivated)
@@ -31,12 +31,12 @@ internal class DbUserRepository(IDbConnectionFactory dbConnectionFactory) : IUse
 
     public async Task<User?> GetByIdAsync(UserId id, CancellationToken cancellationToken)
     {
-        using var connection = dbConnectionFactory.CreateConnection();
+        await using var connection = dbConnectionFactory.CreateConnection();
 
         const string sql = $"""
-                            SELECT user_id {nameof(UserDao.UserId)},
-                                   localpart {nameof(UserDao.Localpart)},
-                                   domain {nameof(UserDao.Domain)},
+                            SELECT user_id     {nameof(UserDao.UserId)},
+                                   localpart   {nameof(UserDao.Localpart)},
+                                   domain      {nameof(UserDao.Domain)},
                                    deactivated {nameof(UserDao.Deactivated)}
                             FROM identity.users
                             WHERE user_id = @UserId;
@@ -57,12 +57,12 @@ internal class DbUserRepository(IDbConnectionFactory dbConnectionFactory) : IUse
 
     public async Task<User?> GetByHandleAsync(UserHandle handle, CancellationToken cancellationToken)
     {
-        using var connection = dbConnectionFactory.CreateConnection();
+        await using var connection = dbConnectionFactory.CreateConnection();
 
         const string sql = $"""
-                            SELECT user_id {nameof(UserDao.UserId)},
-                                   localpart {nameof(UserDao.Localpart)},
-                                   domain {nameof(UserDao.Domain)},
+                            SELECT user_id     {nameof(UserDao.UserId)},
+                                   localpart   {nameof(UserDao.Localpart)},
+                                   domain      {nameof(UserDao.Domain)},
                                    deactivated {nameof(UserDao.Deactivated)}
                             FROM identity.users
                             WHERE localpart = @Localpart
@@ -85,7 +85,7 @@ internal class DbUserRepository(IDbConnectionFactory dbConnectionFactory) : IUse
 
     public async Task MarkDeactivatedAsync(UserId id, CancellationToken cancellationToken)
     {
-        using var connection = dbConnectionFactory.CreateConnection();
+        await using var connection = dbConnectionFactory.CreateConnection();
 
         const string sql = """
                            UPDATE identity.users

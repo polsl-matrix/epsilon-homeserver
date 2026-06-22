@@ -234,25 +234,13 @@ public class AuthControllerTests
         DeactivateAccount.Command? calledCommand = null;
         _currentUser.Id.Returns(userId);
         _mediator.Send(Arg.Any<DeactivateAccount.Command>(), Arg.Any<CancellationToken>())
-            .Returns(new DeactivateAccount.Response("no-support"))
+            .Returns(new DeactivateAccount.Response())
             .AndDoes(call => calledCommand = call.Arg<DeactivateAccount.Command>());
 
-        await _controller.DeactivateAccount(CancellationToken.None);
+        await _controller.DeactivateAccount(new DeactivateAccountRequest(), CancellationToken.None);
 
         calledCommand.Should().NotBeNull();
         calledCommand.UserId.Should().Be(userId);
-    }
-
-    [Fact]
-    public async Task DeactivateAccount_MediatorReturnsResponse_MapsValuesCorrectly()
-    {
-        _currentUser.Id.Returns(UserId.Random());
-        _mediator.Send(Arg.Any<DeactivateAccount.Command>(), Arg.Any<CancellationToken>())
-            .Returns(new DeactivateAccount.Response("no-support"));
-
-        var result = await _controller.DeactivateAccount(CancellationToken.None);
-
-        result.IdServerUnbindResult.Should().Be("no-support");
     }
 
     [Fact]
@@ -261,9 +249,9 @@ public class AuthControllerTests
         var cancellationToken = new CancellationTokenSource().Token;
         _currentUser.Id.Returns(UserId.Random());
         _mediator.Send(Arg.Any<DeactivateAccount.Command>(), cancellationToken)
-            .Returns(new DeactivateAccount.Response("no-support"));
+            .Returns(new DeactivateAccount.Response());
 
-        await _controller.DeactivateAccount(cancellationToken);
+        await _controller.DeactivateAccount(new DeactivateAccountRequest(), cancellationToken);
 
         await _mediator.Received().Send(Arg.Any<DeactivateAccount.Command>(), cancellationToken);
     }
@@ -276,7 +264,7 @@ public class AuthControllerTests
         _mediator.Send(Arg.Any<DeactivateAccount.Command>(), Arg.Any<CancellationToken>())
             .Throws(exception);
 
-        var act = async () => await _controller.DeactivateAccount(CancellationToken.None);
+        var act = async () => await _controller.DeactivateAccount(new DeactivateAccountRequest(), CancellationToken.None);
 
         var thrown = await act.Should().ThrowAsync<InvalidOperationException>();
         thrown.Which.Should().BeSameAs(exception);

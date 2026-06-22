@@ -1,3 +1,3 @@
 namespace Tesseract.Web.ClientServer.Auth.Contracts;
 
-public sealed class DeactivateAccountResponse;
+public sealed class DeactivateAccountRequest;

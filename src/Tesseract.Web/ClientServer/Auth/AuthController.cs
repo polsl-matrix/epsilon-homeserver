@@ -10,7 +10,7 @@ namespace Tesseract.Web.ClientServer.Auth;
 [ApiController]
 [Route("_matrix/client")]
 // TODO: Add rate limiter.
-public class AuthController(IMediator mediator, ICurrentUser currentUser)
+public class AuthController(IMediator mediator, ICurrentUser user)
 {
     [HttpGet("v3/login")]
     [AllowAnonymous]
@@ -76,15 +76,12 @@ public class AuthController(IMediator mediator, ICurrentUser currentUser)
 
     [HttpPost("v3/account/deactivate")]
     [Authorize]
-    public async Task<DeactivateAccountResponse> DeactivateAccount(CancellationToken cancellationToken)
+    public async Task<DeactivateAccountResponse> DeactivateAccount(
+        DeactivateAccountRequest request, CancellationToken cancellationToken)
     {
-        var command = new DeactivateAccount.Command(currentUser.Id);
+        var command = new DeactivateAccount.Command(user.Id);
+        _ = await mediator.Send(command, cancellationToken);
 
-        var result = await mediator.Send(command, cancellationToken);
-
-        return new DeactivateAccountResponse
-        {
-            IdServerUnbindResult = result.IdServerUnbindResult,
-        };
+        return new DeactivateAccountResponse();
     }
 }

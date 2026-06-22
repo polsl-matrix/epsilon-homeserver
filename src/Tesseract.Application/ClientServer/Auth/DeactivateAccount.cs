@@ -9,7 +9,9 @@ public static class DeactivateAccount
 {
     public sealed record Command(UserId UserId) : IRequest<Response>;
 
-    internal sealed class Handler(IUserRepository userRepository, ISessionRepository sessionRepository)
+    internal sealed class Handler(
+        IUserRepository userRepository,
+        ISessionRepository sessionRepository)
         : IRequestHandler<Command, Response>
     {
         public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
@@ -17,9 +19,9 @@ public static class DeactivateAccount
             await userRepository.MarkDeactivatedAsync(request.UserId, cancellationToken);
             await sessionRepository.DeleteAllByUserIdAsync(request.UserId, cancellationToken);
 
-            return new Response("no-support");
+            return new Response();
         }
     }
 
-    public sealed record Response(string IdServerUnbindResult);
+    public sealed record Response;
 }
