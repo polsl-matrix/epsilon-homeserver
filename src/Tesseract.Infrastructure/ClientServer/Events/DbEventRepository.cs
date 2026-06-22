@@ -61,6 +61,28 @@ internal class DbEventRepository : IEventRepository
         return await connection.QueryAsync<string>(sql, parameters);
     }
 
+    public async Task<IEnumerable<string>> GetByTypeAndRoomIdAsync(string type, RoomId roomId,
+        CancellationToken cancellationToken)
+    {
+        await using var connection = _dbConnectionFactory.CreateConnection();
+
+        const string sql = """
+                           SELECT payload
+                           FROM chat.room_events
+                           WHERE room_id = @RoomId
+                             AND event_type = @EventType 
+                           ORDER BY timestamp;
+                           """;
+
+        var parameters = new
+        {
+            EventType = type,
+            RoomId = roomId.Value,
+        };
+
+        return await connection.QueryAsync<string>(sql, parameters);
+    }
+
     private string SerializePayload(Event @event)
     {
         if (!_eventMappers.TryGetValue(@event.Type, out var eventMapper))
