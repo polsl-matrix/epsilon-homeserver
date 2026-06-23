@@ -29,12 +29,24 @@ public class RoomController(IMediator mediator, ICurrentUser user)
     public async Task<JoinRoomResponse> JoinRoom(JoinRoomRequest request, string roomHandle,
         CancellationToken cancellationToken)
     {
-        var query = new JoinRoom.Command(roomHandle, user.Id);
-        var result = await mediator.Send(query, cancellationToken);
+        var command = new JoinRoom.Command(roomHandle, user.Id);
+        var result = await mediator.Send(command, cancellationToken);
 
         return new JoinRoomResponse
         {
             RoomHandle = result.Handle.ToString(),
+        };
+    }
+
+    [HttpGet("joined_rooms")]
+    public async Task<JoinedRoomsResponse> GetJoinedRooms(CancellationToken cancellationToken)
+    {
+        var query = new GetJoinedRooms.Query(user.Id);
+        var result = await mediator.Send(query, cancellationToken);
+
+        return new JoinedRoomsResponse
+        {
+            JoinedRoomHandles = [.. result.RoomHandles.Select(rh => rh.ToString())],
         };
     }
 
