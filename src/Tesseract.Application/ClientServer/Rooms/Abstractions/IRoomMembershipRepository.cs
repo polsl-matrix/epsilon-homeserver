@@ -6,4 +6,5 @@ public interface IRoomMembershipRepository
 {
     Task InsertAsync(RoomMembership roomMembership, CancellationToken cancellationToken);
     Task<RoomMembership?> GetByRoomIdAndUserIdAsync(RoomId roomId, UserId userId, CancellationToken cancellationToken);
+    Task<IEnumerable<Room>> GetRoomsByUserIdAsync(UserId userId, CancellationToken cancellationToken);
 }

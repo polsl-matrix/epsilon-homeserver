@@ -53,4 +53,28 @@ internal class DbRoomMembershipRepository(IDbConnectionFactory dbConnectionFacto
 
         return membershipDao.ToDomain();
     }
+
+    public async Task<IEnumerable<Room>> GetRoomsByUserIdAsync(UserId userId,
+        CancellationToken cancellationToken)
+    {
+        await using var connection = dbConnectionFactory.CreateConnection();
+
+        const string sql = $"""
+                            SELECT r.room_id   {nameof(RoomDao.RoomId)},
+                                   r.localpart {nameof(RoomDao.Localpart)},
+                                   r.domain    {nameof(RoomDao.Domain)}
+                            FROM chat.room_memberships m
+                                JOIN chat.rooms r ON m.room_id = r.room_id
+                            WHERE m.user_id = @UserId;
+                            """;
+
+        var parameters = new
+        {
+            UserId = userId.Value,
+        };
+
+        var roomDaos = await connection.QueryAsync<RoomDao>(sql, parameters);
+
+        return roomDaos.Select(roomDao => roomDao.ToDomain());
+    }
 }
