@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using Tesseract.Application.ClientServer.Rooms;
@@ -8,6 +9,7 @@ using Tesseract.Web.Common.Auth;
 namespace Tesseract.Web.ClientServer.Rooms;
 
 [ApiController]
+[Authorize]
 // TODO: Add rate limiter.
 [Route("_matrix/client/v3")]
 public class RoomController(IMediator mediator, ICurrentUser user)

@@ -12,13 +12,4 @@ public sealed class RegisterAccountRequest
     [JsonPropertyName("username")]
     [RegularExpression(Patterns.Localpart)]
     public required string Username { get; init; }
-
-    public sealed class AuthenticationData
-    {
-        [JsonPropertyName("type")]
-        public string? Type { get; init; }
-
-        [JsonPropertyName("session")]
-        public string? Session { get; init; }
-    }
 }
