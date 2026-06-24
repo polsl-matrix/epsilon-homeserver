@@ -5,7 +5,7 @@ dotnet build --no-restore || {
   exit 1
 }
 
-dotnet build --no-restore || {
+dotnet test --no-restore || {
   echo "Tests failed. Fix code before pushing."
   exit 1
 }

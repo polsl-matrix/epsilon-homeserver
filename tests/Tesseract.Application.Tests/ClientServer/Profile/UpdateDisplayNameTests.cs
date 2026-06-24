@@ -1,8 +1,8 @@
 using FluentAssertions;
 using NSubstitute;
 using Tesseract.Application.ClientServer.Auth.Abstractions;
-using Tesseract.Application.ClientServer.Auth.Exceptions;
 using Tesseract.Application.ClientServer.Identity.Abstractions;
+using Tesseract.Application.ClientServer.Identity.Exceptions;
 using Tesseract.Application.ClientServer.Profile;
 using Tesseract.Application.ClientServer.Profile.Exceptions;
 using Tesseract.Domain.Users;
@@ -66,7 +66,7 @@ public sealed class UpdateDisplayNameTests
     }
 
     [Fact]
-    public async Task Handle_CurrentUserMissing_ThrowsForbiddenException()
+    public async Task Handle_CurrentUserMissing_ThrowsUserNotFoundException()
     {
         var userId = UserId.Random();
         var command = new UpdateDisplayName.Command(userId, "@alice:example.com", "Alice");
@@ -74,7 +74,7 @@ public sealed class UpdateDisplayNameTests
 
         var act = () => _handler.Handle(command, CancellationToken.None);
 
-        await act.Should().ThrowAsync<ForbiddenException>();
+        await act.Should().ThrowAsync<UserNotFoundException>();
         await _profileRepository.DidNotReceive()
             .UpsertDisplayNameAsync(Arg.Any<UserId>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
