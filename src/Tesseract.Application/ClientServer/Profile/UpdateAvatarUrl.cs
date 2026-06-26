@@ -1,7 +1,7 @@
 using MediatR;
 using Tesseract.Application.ClientServer.Auth.Abstractions;
-using Tesseract.Application.ClientServer.Auth.Exceptions;
 using Tesseract.Application.ClientServer.Identity.Abstractions;
+using Tesseract.Application.ClientServer.Identity.Exceptions;
 using Tesseract.Application.ClientServer.Profile.Exceptions;
 using Tesseract.Domain.Users;
 
@@ -19,7 +19,7 @@ public static class UpdateAvatarUrl
         {
             if (await userRepository.GetByIdAsync(request.UserId, cancellationToken) is not { } user)
             {
-                throw new ForbiddenException();
+                throw new UserNotFoundException(request.UserHandle);
             }
 
             if (!UserHandle.TryParse(request.UserHandle, out var userHandle) || user.Handle != userHandle)
